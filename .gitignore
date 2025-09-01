@@ -32,3 +32,8 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Kotlin metadata
+.kotlin/
+*.kotlin_metadata
+kotlinTransformedMetadataLibraries/

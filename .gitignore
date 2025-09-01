@@ -37,3 +37,48 @@ google-services.json
 .kotlin/
 *.kotlin_metadata
 kotlinTransformedMetadataLibraries/
+
+# Xcode
+*.xcodeproj/project.pbxproj
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcuserstate
+
+# iOS App específico
+iosApp/Pods/
+iosApp/Podfile.lock
+iosApp/*.xcworkspace
+iosApp/DerivedData/
+
+# Archivos de configuración sensible iOS
+iosApp/GoogleService-Info.plist
+iosApp/Config.plist
+iosApp/iosApp/Info.plist.backup
+
+# Certificados y provisioning
+iosApp/*.p12
+iosApp/*.mobileprovision
+iosApp/*.cer
+iosApp/*.certSigningRequest
+
+# Xcode user data
+iosApp/*.xcodeproj/xcuserdata/
+iosApp/*.xcworkspace/xcuserdata/
+iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Build artifacts iOS
+iosApp/build/
+iosApp/DerivedData/
+iosApp/*.dSYM.zip
+iosApp/*.ipa
+
+# Fastlane (si lo usas)
+iosApp/fastlane/report.xml
+iosApp/fastlane/Preview.html
+iosApp/fastlane/screenshots/
+iosApp/fastlane/test_output/
+
+# Archivos temporales macOS en iOS
+iosApp/.DS_Store
+iosApp/**/.DS_Store
+project.pbxproj

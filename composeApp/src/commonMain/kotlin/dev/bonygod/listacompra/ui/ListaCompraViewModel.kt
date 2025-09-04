@@ -29,7 +29,7 @@ class ListaCompraViewModel : ViewModel() {
         // Simulación de llamada al servicio (debes reemplazar por tu lógica real)
         // Por ejemplo, podrías usar coroutines para la llamada asíncrona
         // servicio.obtenerProductos { nuevosProductos ->
-        //     setState { updateListaComra(ListaCompraUI(productos = nuevosProductos)) }
+        //     setState { updateListaCompra(ListaCompraUI(productos = nuevosProductos)) }
         //     setState { showLoading(false) }
         // }
     }

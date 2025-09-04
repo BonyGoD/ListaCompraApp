@@ -1,11 +1,9 @@
 package dev.bonygod.listacompra.ui.composables
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowColumn
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,11 +48,10 @@ fun HomeContent(data: ListaCompraUI) {
                             fontSize = 24.sp
                         )
                     }
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .size(1.dp)
-                        .padding(horizontal = 5.dp)
-                        .border(1.dp, Color.Black))
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 5.dp),
+                        thickness = 1.dp,
+                        color = Color.Black)
                 }
             }
         }

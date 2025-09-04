@@ -16,7 +16,7 @@ data class ListaCompraState(
         return copy(listaCompraUI = updatedListaCompraUI)
     }
 
-    fun updateListaComra(listaCompraUI: ListaCompraUI): ListaCompraState {
+    fun updateListaCompra(listaCompraUI: ListaCompraUI): ListaCompraState {
         return copy(listaCompraUI = listaCompraUI)
     }
 }

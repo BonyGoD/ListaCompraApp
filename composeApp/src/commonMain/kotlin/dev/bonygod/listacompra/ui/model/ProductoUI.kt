@@ -7,6 +7,6 @@ data class ProductoUI(
     val unidades: Int = 0
 ) {
     fun updateUnidades(producto: ProductoUI, unidades: Int): ProductoUI {
-        return producto.copy(unidades = unidades)
+        return copy(unidades = unidades)
     }
 }

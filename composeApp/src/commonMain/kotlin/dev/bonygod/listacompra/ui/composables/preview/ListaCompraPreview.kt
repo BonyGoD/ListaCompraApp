@@ -22,12 +22,12 @@ object ListaCompraPreview {
                 unidades = 12
             ),
             ProductoUI(
-                nombre = "Platanos",
+                nombre = "Plátanos",
                 fecha = "2024-07-02",
                 unidades = 5
             ),
             ProductoUI(
-                nombre = "Azucar",
+                nombre = "Azúcar",
                 fecha = "2024-07-03",
                 unidades = 3
             ),

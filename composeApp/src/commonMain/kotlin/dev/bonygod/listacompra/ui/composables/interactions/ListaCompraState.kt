@@ -11,6 +11,9 @@ data class ListaCompraState(
         return copy(loadingState = show)
     }
 
+    fun getListaCompraUI(nuevaLista: ListaCompraUI): ListaCompraState =
+        copy(listaCompraUI = nuevaLista)
+
     fun updateUnidadesProducto(productId: String, unidades: Int): ListaCompraState {
         val updatedListaCompraUI = listaCompraUI.updateUnidadesProducto(productId, unidades)
         return copy(listaCompraUI = updatedListaCompraUI)

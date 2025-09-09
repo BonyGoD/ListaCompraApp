@@ -27,6 +27,8 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            // Especificar el bundle ID para evitar warnings
+            binaryOption("bundleId", "dev.bonygod.listacompra.ComposeApp")
         }
     }
     
@@ -50,7 +52,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            // androidx.lifecycle.viewmodelCompose causa conflictos en iOS
+            //implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlin.serialization)
             implementation(libs.kotlinx.datetime)

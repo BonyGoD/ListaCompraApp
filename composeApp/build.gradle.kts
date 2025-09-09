@@ -8,13 +8,14 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.google.services.firebase)
 }
 
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
     
@@ -26,6 +27,8 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            // Especificar el bundle ID para evitar warnings
+            binaryOption("bundleId", "dev.bonygod.listacompra.ComposeApp")
         }
     }
     
@@ -35,6 +38,12 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+
+            //Dependency Injection
+            implementation(libs.koin.android)
+
+            //Firebase
+            implementation(project.dependencies.platform(libs.firebase.bom))
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -43,8 +52,20 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            // androidx.lifecycle.viewmodelCompose causa conflictos en iOS
+            //implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.kotlin.serialization)
+            implementation(libs.kotlinx.datetime)
+
+            //Dependency Injection
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+
+            //GitLive Firebase
+            implementation(libs.gitlive.firebase.firestore)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -52,6 +73,10 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+
+            //Dependency Injection for JVM
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
         }
     }
 }

@@ -29,6 +29,7 @@ render.experimental.xml
 
 # Google Services (e.g. APIs or Firebase)
 google-services.json
+GoogleService-Info.plist
 
 # Android Profiling
 *.hprof
@@ -68,7 +69,6 @@ iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/
 
 # Build artifacts iOS
 iosApp/build/
-iosApp/DerivedData/
 iosApp/*.dSYM.zip
 iosApp/*.ipa
 

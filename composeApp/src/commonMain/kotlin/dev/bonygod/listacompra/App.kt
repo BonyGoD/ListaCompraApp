@@ -2,7 +2,6 @@ package dev.bonygod.listacompra
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import dev.bonygod.listacompra.data.repository.ProductosRepository
 import dev.bonygod.listacompra.ui.screens.HomeScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

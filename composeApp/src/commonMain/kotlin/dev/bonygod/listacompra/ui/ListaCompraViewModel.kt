@@ -22,8 +22,12 @@ class ListaCompraViewModel(
 
     init {
         viewModelScope.launch {
-            getProductosUseCase().collect { listaCompraUI ->
-                setState { getListaCompraUI(listaCompraUI) }
+            try {
+                getProductosUseCase().collect { listaCompraUI ->
+                    setState { getListaCompraUI(listaCompraUI) }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

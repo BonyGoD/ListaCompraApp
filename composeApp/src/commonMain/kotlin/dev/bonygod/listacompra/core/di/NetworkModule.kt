@@ -3,6 +3,8 @@ package dev.bonygod.listacompra.core.di
 import dev.bonygod.listacompra.core.network.NetworkProvider
 import dev.bonygod.listacompra.data.network.ListaCompraDataService
 import dev.bonygod.listacompra.data.repository.ProductosRepository
+import dev.bonygod.listacompra.domain.usecase.DeleteAllProductosUseCase
+import dev.bonygod.listacompra.domain.usecase.DeleteProductoUseCase
 import dev.bonygod.listacompra.domain.usecase.GetProductosUseCase
 import dev.bonygod.listacompra.ui.ListaCompraViewModel
 import org.koin.core.context.startKoin
@@ -22,7 +24,8 @@ val viewModelsModule = module {
 
 val dataModule = module {
     single { GetProductosUseCase(get()) }
-
+    single { DeleteProductoUseCase(get()) }
+    single { DeleteAllProductosUseCase(get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

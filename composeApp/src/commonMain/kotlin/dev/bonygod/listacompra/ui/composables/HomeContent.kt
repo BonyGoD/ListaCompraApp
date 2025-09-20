@@ -1,6 +1,7 @@
 package dev.bonygod.listacompra.ui.composables
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,15 +23,20 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.listacompra.ScreenWrapper
+import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.ui.composables.preview.ListaCompraPreview
 import dev.bonygod.listacompra.ui.model.ListaCompraUI
 import listacompra.composeapp.generated.resources.Res
+import listacompra.composeapp.generated.resources.basura
 import listacompra.composeapp.generated.resources.update_icon
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun HomeContent(data: ListaCompraUI) {
+fun HomeContent(
+    data: ListaCompraUI,
+    onEvent: (ListaCompraEvent) -> Unit = {}
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.weight(1f)) {
             Box(modifier = Modifier.fillMaxWidth().padding(end = 10.dp, top = 10.dp)) {
@@ -45,8 +51,16 @@ fun HomeContent(data: ListaCompraUI) {
                     Box(modifier = Modifier.fillMaxWidth().height(50.dp)) {
                         Text(
                             modifier = Modifier.padding(10.dp),
-                            text = producto.nombre,
+                            text = producto.nombre.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
                             fontSize = 24.sp
+                        )
+                        Image(
+                            painter = painterResource(Res.drawable.basura),
+                            contentDescription = "Icono borrar",
+                            modifier = Modifier
+                                .size(20.dp)
+                                .align(Alignment.CenterEnd)
+                                .clickable(onClick = { onEvent(ListaCompraEvent.BorrarProducto(producto.id)) })
                         )
                     }
                     HorizontalDivider(
@@ -69,7 +83,7 @@ fun HomeContent(data: ListaCompraUI) {
                     text = "Borrar lista"
                 )
             },
-            onClick = { /*TODO*/ }
+            onClick = { onEvent(ListaCompraEvent.BorrarTodosLosProductos) }
         )
     }
 }

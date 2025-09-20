@@ -22,4 +22,15 @@ data class ListaCompraState(
     fun updateListaCompra(listaCompraUI: ListaCompraUI): ListaCompraState {
         return copy(listaCompraUI = listaCompraUI)
     }
+
+    fun removeProducto(productId: String): ListaCompraState {
+        val updatedProductos = listaCompraUI.productos.filter { it.id != productId }
+        val updatedListaCompraUI = listaCompraUI.copy(productos = updatedProductos)
+        return copy(listaCompraUI = updatedListaCompraUI)
+    }
+
+    fun clearAllProductos(): ListaCompraState {
+        val updatedListaCompraUI = listaCompraUI.copy(productos = emptyList())
+        return copy(listaCompraUI = updatedListaCompraUI)
+    }
 }

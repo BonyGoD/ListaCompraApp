@@ -12,14 +12,34 @@ class ListaCompraDataService(
     fun getProductos() = flow {
         firebase.collection("lista-compra").snapshots.collect { querySnapshot ->
             val productos = querySnapshot.documents.map { documentSnapshot ->
-                val fechaTimestamp = documentSnapshot.get("fecha") as? Timestamp
-                ProductoResponse(
-                    id = documentSnapshot.id,
-                    producto = documentSnapshot.get("producto") as? String ?: "",
-                    fecha = fechaTimestamp?.timeStampTransform() ?: ""
-                ).toDomain()
-            }
+                    val fechaTimestamp = documentSnapshot.get("fecha") as? Timestamp
+                    ProductoResponse(
+                        id = documentSnapshot.id,
+                        producto = documentSnapshot.get("producto") as? String ?: "",
+                        fecha = fechaTimestamp?.timeStampTransform() ?: ""
+                    ).toDomain()
+                }.sortedBy { producto ->
+                    producto.fecha
+                }
             emit(productos)
+        }
+    }
+
+    suspend fun deleteProductos(id: String) {
+        firebase.collection("lista-compra").document(id).delete()
+    }
+
+    suspend fun deleteAllProductos() {
+        try {
+            // Obtener todos los documentos de la colección
+            val querySnapshot = firebase.collection("lista-compra").get()
+
+            // Eliminar cada documento individualmente
+            querySnapshot.documents.forEach { document ->
+                firebase.collection("lista-compra").document(document.id).delete()
+            }
+        } catch (e: Exception) {
+            throw Exception("Error al eliminar todos los productos: ${e.message}", e)
         }
     }
 }

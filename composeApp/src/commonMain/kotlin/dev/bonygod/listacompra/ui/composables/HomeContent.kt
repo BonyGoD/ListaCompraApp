@@ -3,12 +3,13 @@ package dev.bonygod.listacompra.ui.composables
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -39,8 +40,8 @@ fun HomeContent(data: ListaCompraUI) {
                     modifier = Modifier.size(20.dp).align(Alignment.CenterEnd)
                 )
             }
-            FlowColumn(modifier = Modifier.padding(10.dp)) {
-                data.productos.forEach { producto ->
+            LazyColumn(modifier = Modifier.padding(10.dp)) {
+                items(data.productos) { producto ->
                     Box(modifier = Modifier.fillMaxWidth().height(50.dp)) {
                         Text(
                             modifier = Modifier.padding(10.dp),
@@ -51,7 +52,8 @@ fun HomeContent(data: ListaCompraUI) {
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 5.dp),
                         thickness = 1.dp,
-                        color = Color.Black)
+                        color = Color.Black
+                    )
                 }
             }
         }

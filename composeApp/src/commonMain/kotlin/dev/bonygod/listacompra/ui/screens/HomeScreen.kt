@@ -11,5 +11,8 @@ fun HomeScreen() {
     val viewModel: ListaCompraViewModel = koinViewModel()
     val state = viewModel.state.collectAsState()
 
-    HomeContent(state.value.listaCompraUI)
+    HomeContent(
+        data = state.value.listaCompraUI,
+        onEvent = viewModel::onEvent
+    )
 }

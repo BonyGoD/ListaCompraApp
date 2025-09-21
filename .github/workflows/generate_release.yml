@@ -1,0 +1,51 @@
+name: Release on version bump
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Get current versionName from composeApp/build.gradle.kts
+        id: gradle_version
+        run: |
+          VERSION=$(grep 'versionName[[:space:]]*=' composeApp/build.gradle.kts | head -1 | sed 's/.*versionName[[:space:]]*=[[:space:]]*//;s/"//g')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get previous versionName from main
+        id: previous_version
+        run: |
+          git fetch origin main:refs/remotes/origin/main
+          git show origin/main:composeApp/build.gradle.kts > old_build.gradle.kts || touch old_build.gradle.kts
+          PREV_VERSION=$(grep 'versionName[[:space:]]*=' old_build.gradle.kts | head -1 | sed 's/.*versionName[[:space:]]*=[[:space:]]*//;s/"//g')
+          echo "prev_version=$PREV_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Compare versionNames
+        id: version_compare
+        run: |
+          echo "Current version: ${{ steps.gradle_version.outputs.version }}"
+          echo "Previous version: ${{ steps.previous_version.outputs.prev_version }}"
+          if [ "${{ steps.gradle_version.outputs.version }}" = "${{ steps.previous_version.outputs.prev_version }}" ]; then
+            echo "No version bump detected."
+            echo "bump=false" >> $GITHUB_OUTPUT
+          else
+            echo "bump=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release Tag
+        if: steps.version_compare.outputs.bump == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ steps.gradle_version.outputs.version }}"
+          release_name: "v${{ steps.gradle_version.outputs.version }}"
+          body: "Release for version v${{ steps.gradle_version.outputs.version }}"
+          draft: false
+          prerelease: false

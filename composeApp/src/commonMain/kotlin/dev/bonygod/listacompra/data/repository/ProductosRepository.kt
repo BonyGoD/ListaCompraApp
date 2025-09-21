@@ -10,4 +10,12 @@ class ProductosRepository(
     fun getProductos(): Flow<List<Producto>> {
         return listaCompraDataService.getProductos()
     }
+
+    suspend fun deleteProducto(id: String) {
+        listaCompraDataService.deleteProductos(id)
+    }
+
+    suspend fun deleteAllProductos() {
+        listaCompraDataService.deleteAllProductos()
+    }
 }

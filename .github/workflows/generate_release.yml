@@ -18,11 +18,10 @@ jobs:
           VERSION=$(grep 'versionName[[:space:]]*=' composeApp/build.gradle.kts | head -1 | sed 's/.*versionName[[:space:]]*=[[:space:]]*//;s/"//g')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Get previous versionName from main
+      - name: Get previous versionName from parent commit
         id: previous_version
         run: |
-          git fetch origin main:refs/remotes/origin/main
-          git show origin/main:composeApp/build.gradle.kts > old_build.gradle.kts || touch old_build.gradle.kts
+          git show HEAD^:composeApp/build.gradle.kts > old_build.gradle.kts || touch old_build.gradle.kts
           PREV_VERSION=$(grep 'versionName[[:space:]]*=' old_build.gradle.kts | head -1 | sed 's/.*versionName[[:space:]]*=[[:space:]]*//;s/"//g')
           echo "prev_version=$PREV_VERSION" >> $GITHUB_OUTPUT
 

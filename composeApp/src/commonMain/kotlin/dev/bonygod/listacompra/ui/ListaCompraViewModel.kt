@@ -44,6 +44,12 @@ class ListaCompraViewModel(
         when (event) {
             is ListaCompraEvent.BorrarProducto -> borrarProducto(event.productId)
             is ListaCompraEvent.BorrarTodosLosProductos -> borrarTodosLosProductos()
+            is ListaCompraEvent.ShowDialog -> setState { showDialog(event.show) }
+            is ListaCompraEvent.ConfirmDelete -> {
+                borrarTodosLosProductos()
+                setState { showDialog(false) }
+            }
+            is ListaCompraEvent.CancelDialog -> setState { showDialog(false) }
         }
     }
 
@@ -62,7 +68,6 @@ class ListaCompraViewModel(
     }
 
     private fun borrarTodosLosProductos() {
-        setState { showLoading(true) }
         viewModelScope.launch {
             try {
                 deleteAllProductosUseCase.invoke()

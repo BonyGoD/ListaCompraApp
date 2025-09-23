@@ -4,11 +4,16 @@ import dev.bonygod.listacompra.ui.model.ListaCompraUI
 
 data class ListaCompraState(
     val loadingState: Boolean = false,
+    val dialogState: Boolean = false,
     val error: String? = null,
     val listaCompraUI: ListaCompraUI = ListaCompraUI()
 ) {
     fun showLoading(show: Boolean = false): ListaCompraState {
         return copy(loadingState = show)
+    }
+
+    fun showDialog(show: Boolean = false): ListaCompraState {
+        return copy(dialogState = show)
     }
 
     fun getListaCompraUI(nuevaLista: ListaCompraUI): ListaCompraState =

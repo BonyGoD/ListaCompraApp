@@ -23,7 +23,9 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.listacompra.ScreenWrapper
+import dev.bonygod.listacompra.ui.composables.components.ConfirmDialog
 import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraEvent
+import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.ui.composables.preview.ListaCompraPreview
 import dev.bonygod.listacompra.ui.model.ListaCompraUI
 import listacompra.composeapp.generated.resources.Res
@@ -35,6 +37,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun HomeContent(
     data: ListaCompraUI,
+    state: ListaCompraState,
     onEvent: (ListaCompraEvent) -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -83,7 +86,18 @@ fun HomeContent(
                     text = "Borrar lista"
                 )
             },
-            onClick = { onEvent(ListaCompraEvent.BorrarTodosLosProductos) }
+            onClick = {
+                onEvent(ListaCompraEvent.ShowDialog(true))
+            }
+        )
+    }
+
+    if (state.dialogState) {
+        ConfirmDialog(
+            title = "¿Estas seguro de borrar todos los productos?",
+            message = "Esta acción no se puede deshacer.",
+            onConfirm = { onEvent(ListaCompraEvent.ConfirmDelete) },
+            onCancel = { onEvent(ListaCompraEvent.CancelDialog) }
         )
     }
 }
@@ -92,6 +106,9 @@ fun HomeContent(
 @Composable
 fun AppAndroidPreview() {
     ScreenWrapper {
-        HomeContent(data = ListaCompraPreview.ListaCompraUI)
+        HomeContent(
+            data = ListaCompraPreview.ListaCompraUI,
+            state = ListaCompraState(listaCompraUI = ListaCompraPreview.ListaCompraUI),
+        )
     }
 }

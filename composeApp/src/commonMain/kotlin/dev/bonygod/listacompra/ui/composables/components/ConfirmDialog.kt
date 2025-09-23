@@ -50,16 +50,16 @@ fun ConfirmDialog(
                 Row {
                     Button(
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                        onClick = onCancel
+                        onClick = onConfirm
                     ) {
-                        Text(cancelText)
+                        Text(confirmText)
                     }
                     Button(
                         modifier = Modifier.padding(start = 8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00913F)),
-                        onClick = onConfirm
+                        onClick = onCancel
                     ) {
-                        Text(confirmText)
+                        Text(cancelText)
                     }
                 }
             }

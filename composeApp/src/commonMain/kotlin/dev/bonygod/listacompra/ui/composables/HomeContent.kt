@@ -94,7 +94,7 @@ fun HomeContent(
 
     if (state.dialogState) {
         ConfirmDialog(
-            title = "¿Estas seguro de borrar todos los productos?",
+            title = "¿Estás seguro de borrar todos los productos?",
             message = "Esta acción no se puede deshacer.",
             onConfirm = { onEvent(ListaCompraEvent.ConfirmDelete) },
             onCancel = { onEvent(ListaCompraEvent.CancelDialog) }

@@ -4,10 +4,10 @@ import dev.bonygod.listacompra.data.datasource.model.entity.ProductoResponse
 import dev.bonygod.listacompra.domain.mapper.toDomain
 import dev.bonygod.listacompra.util.timeStampTransform
 import dev.gitlive.firebase.firestore.Timestamp
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.flow
 
 class ListaCompraDataService(
     private val firebase: dev.gitlive.firebase.firestore.FirebaseFirestore
@@ -26,6 +26,13 @@ class ListaCompraDataService(
                 }
             emit(productos)
         }
+    }
+
+    suspend fun updateProducto(id: String, nombre: String) {
+        firebase.collection("lista-compra").document(id).set(
+            data = mapOf("producto" to nombre),
+            merge = true
+        )
     }
 
     suspend fun deleteProductos(id: String) {

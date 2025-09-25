@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.listacompra.ScreenWrapper
 import dev.bonygod.listacompra.ui.composables.components.ConfirmDialog
+import dev.bonygod.listacompra.ui.composables.components.ErrorAlert
+import dev.bonygod.listacompra.ui.composables.components.SuccessAlert
 import dev.bonygod.listacompra.ui.composables.components.TextComponent
 import dev.bonygod.listacompra.ui.composables.components.TextFieldComponent
 import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraEvent
@@ -93,6 +95,22 @@ fun HomeContent(
             message = "Esta acción no se puede deshacer.",
             onConfirm = { onEvent(ListaCompraEvent.ConfirmDelete) },
             onCancel = { onEvent(ListaCompraEvent.CancelDialog) }
+        )
+    }
+
+    if (state.showErrorAlert) {
+        ErrorAlert(
+            title = state.errorAlertTitle,
+            message = state.errorAlertMessage,
+            onDismiss = { onEvent(ListaCompraEvent.HideErrorAlert) }
+        )
+    }
+
+    if (state.showSuccessAlert) {
+        SuccessAlert(
+            title = state.successAlertTitle,
+            message = state.successAlertMessage,
+            onDismiss = { onEvent(ListaCompraEvent.HideSuccessAlert) }
         )
     }
 }

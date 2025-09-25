@@ -11,4 +11,6 @@ sealed class ListaCompraEvent {
     data class UpdateEditingText(val text: String) : ListaCompraEvent()
     data object SaveEditedProduct : ListaCompraEvent()
     data object CancelEditing : ListaCompraEvent()
+    data object HideErrorAlert : ListaCompraEvent()
+    data object HideSuccessAlert : ListaCompraEvent()
 }

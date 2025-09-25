@@ -57,6 +57,8 @@ class ListaCompraViewModel(
             is ListaCompraEvent.UpdateEditingText -> setState { updateEditingText(event.text) }
             is ListaCompraEvent.SaveEditedProduct -> saveEditedProduct()
             is ListaCompraEvent.CancelEditing -> setState { cancelEditing() }
+            is ListaCompraEvent.HideErrorAlert -> setState { hideErrorAlert() }
+            is ListaCompraEvent.HideSuccessAlert -> setState { hideSuccessAlert() }
         }
     }
 
@@ -76,12 +78,29 @@ class ListaCompraViewModel(
         val editingText = currentState.editingText
 
         if (editingId != null && editingText.isNotBlank()) {
+            val originalProduct = currentState.listaCompraUI.productos.find { it.id == editingId }
+
             setState { saveEditedProduct() }
+
             viewModelScope.launch {
                 try {
                     updateProductoUseCase.invoke(editingId, editingText)
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    if (originalProduct != null) {
+                        setState {
+                            startEditingProduct(editingId, originalProduct.nombre)
+                        }
+                    } else {
+                        setState { cancelEditing() }
+                    }
+                    // Mostrar mensaje de error al usuario
+                    setState {
+                        showErrorAlert(
+                            "Error al actualizar",
+                            "No se pudo actualizar el producto. Verifica tu conexión a internet e inténtalo nuevamente."
+                        )
+                    }
                 }
             }
         } else {
@@ -99,6 +118,12 @@ class ListaCompraViewModel(
             } catch (e: Exception) {
                 e.printStackTrace()
                 setState { showLoading(false) }
+                setState {
+                    showErrorAlert(
+                        "Error al eliminar",
+                        "No se pudo eliminar el producto. Verifica tu conexión a internet e inténtalo nuevamente."
+                    )
+                }
             }
         }
     }
@@ -112,6 +137,12 @@ class ListaCompraViewModel(
             } catch (e: Exception) {
                 e.printStackTrace()
                 setState { showLoading(false) }
+                setState {
+                    showErrorAlert(
+                        "Error al eliminar lista",
+                        "No se pudo eliminar la lista completa. Verifica tu conexión a internet e inténtalo nuevamente."
+                    )
+                }
             }
         }
     }

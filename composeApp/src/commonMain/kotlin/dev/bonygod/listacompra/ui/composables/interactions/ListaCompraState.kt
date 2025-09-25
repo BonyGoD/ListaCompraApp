@@ -8,7 +8,13 @@ data class ListaCompraState(
     val error: String? = null,
     val listaCompraUI: ListaCompraUI = ListaCompraUI(),
     val editingProductId: String? = null,
-    val editingText: String = ""
+    val editingText: String = "",
+    val showErrorAlert: Boolean = false,
+    val errorAlertTitle: String = "",
+    val errorAlertMessage: String = "",
+    val showSuccessAlert: Boolean = false,
+    val successAlertTitle: String = "",
+    val successAlertMessage: String = ""
 ) {
     fun showLoading(show: Boolean = false): ListaCompraState {
         return copy(loadingState = show)
@@ -63,6 +69,38 @@ data class ListaCompraState(
             listaCompraUI = updatedListaCompraUI,
             editingProductId = null,
             editingText = ""
+        )
+    }
+
+    fun showErrorAlert(title: String, message: String): ListaCompraState {
+        return copy(
+            showErrorAlert = true,
+            errorAlertTitle = title,
+            errorAlertMessage = message
+        )
+    }
+
+    fun hideErrorAlert(): ListaCompraState {
+        return copy(
+            showErrorAlert = false,
+            errorAlertTitle = "",
+            errorAlertMessage = ""
+        )
+    }
+
+    fun showSuccessAlert(title: String, message: String): ListaCompraState {
+        return copy(
+            showSuccessAlert = true,
+            successAlertTitle = title,
+            successAlertMessage = message
+        )
+    }
+
+    fun hideSuccessAlert(): ListaCompraState {
+        return copy(
+            showSuccessAlert = false,
+            successAlertTitle = "",
+            successAlertMessage = ""
         )
     }
 

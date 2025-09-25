@@ -6,7 +6,9 @@ data class ListaCompraState(
     val loadingState: Boolean = false,
     val dialogState: Boolean = false,
     val error: String? = null,
-    val listaCompraUI: ListaCompraUI = ListaCompraUI()
+    val listaCompraUI: ListaCompraUI = ListaCompraUI(),
+    val editingProductId: String? = null,
+    val editingText: String = ""
 ) {
     fun showLoading(show: Boolean = false): ListaCompraState {
         return copy(loadingState = show)
@@ -37,5 +39,34 @@ data class ListaCompraState(
     fun clearAllProductos(): ListaCompraState {
         val updatedListaCompraUI = listaCompraUI.copy(productos = emptyList())
         return copy(listaCompraUI = updatedListaCompraUI)
+    }
+
+    fun startEditingProduct(productId: String, currentName: String): ListaCompraState {
+        return copy(editingProductId = productId, editingText = currentName)
+    }
+
+    fun updateEditingText(text: String): ListaCompraState {
+        return copy(editingText = text)
+    }
+
+    fun saveEditedProduct(): ListaCompraState {
+        val editingId = editingProductId ?: return this
+        val updatedProductos = listaCompraUI.productos.map { producto ->
+            if (producto.id == editingId) {
+                producto.copy(nombre = editingText)
+            } else {
+                producto
+            }
+        }
+        val updatedListaCompraUI = listaCompraUI.copy(productos = updatedProductos)
+        return copy(
+            listaCompraUI = updatedListaCompraUI,
+            editingProductId = null,
+            editingText = ""
+        )
+    }
+
+    fun cancelEditing(): ListaCompraState {
+        return copy(editingProductId = null, editingText = "")
     }
 }

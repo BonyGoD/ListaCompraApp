@@ -1,12 +1,10 @@
 package dev.bonygod.listacompra.ui.composables
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,12 +22,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.listacompra.ScreenWrapper
 import dev.bonygod.listacompra.ui.composables.components.ConfirmDialog
+import dev.bonygod.listacompra.ui.composables.components.TextComponent
+import dev.bonygod.listacompra.ui.composables.components.TextFieldComponent
 import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.ui.composables.preview.ListaCompraPreview
 import dev.bonygod.listacompra.ui.model.ListaCompraUI
 import listacompra.composeapp.generated.resources.Res
-import listacompra.composeapp.generated.resources.basura
 import listacompra.composeapp.generated.resources.update_icon
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -46,24 +45,20 @@ fun HomeContent(
                 Image(
                     painter = painterResource(Res.drawable.update_icon),
                     contentDescription = "Icono update",
-                    modifier = Modifier.size(20.dp).align(Alignment.CenterEnd)
+                    modifier = Modifier.size(30.dp).align(Alignment.CenterEnd)
                 )
             }
             LazyColumn(modifier = Modifier.padding(10.dp)) {
                 items(data.productos) { producto ->
-                    Box(modifier = Modifier.fillMaxWidth().height(50.dp)) {
-                        Text(
-                            modifier = Modifier.padding(10.dp),
-                            text = producto.nombre.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
-                            fontSize = 24.sp
+                    if (state.editingProductId == producto.id) {
+                        TextFieldComponent(
+                            onEvent = onEvent,
+                            state = state
                         )
-                        Image(
-                            painter = painterResource(Res.drawable.basura),
-                            contentDescription = "Icono borrar",
-                            modifier = Modifier
-                                .size(20.dp)
-                                .align(Alignment.CenterEnd)
-                                .clickable(onClick = { onEvent(ListaCompraEvent.BorrarProducto(producto.id)) })
+                    } else {
+                        TextComponent(
+                            producto = producto,
+                            onEvent = onEvent
                         )
                     }
                     HorizontalDivider(

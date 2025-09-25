@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dev.bonygod.listacompra.domain.usecase.DeleteAllProductosUseCase
 import dev.bonygod.listacompra.domain.usecase.DeleteProductoUseCase
 import dev.bonygod.listacompra.domain.usecase.GetProductosUseCase
+import dev.bonygod.listacompra.domain.usecase.UpdateProductoUseCase
 import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.ui.composables.preview.ListaCompraPreview
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 class ListaCompraViewModel(
     private val getProductosUseCase: GetProductosUseCase,
     private val deleteProductoUseCase: DeleteProductoUseCase,
-    private val deleteAllProductosUseCase: DeleteAllProductosUseCase
+    private val deleteAllProductosUseCase: DeleteAllProductosUseCase,
+    private val updateProductoUseCase: UpdateProductoUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(ListaCompraState())
     val state: StateFlow<ListaCompraState> = _state
@@ -50,6 +52,40 @@ class ListaCompraViewModel(
                 setState { showDialog(false) }
             }
             is ListaCompraEvent.CancelDialog -> setState { showDialog(false) }
+            is ListaCompraEvent.UpdateProducto -> updateProducto(event.productoId, event.nombre)
+            is ListaCompraEvent.StartEditingProduct -> setState { startEditingProduct(event.productId, event.currentName) }
+            is ListaCompraEvent.UpdateEditingText -> setState { updateEditingText(event.text) }
+            is ListaCompraEvent.SaveEditedProduct -> saveEditedProduct()
+            is ListaCompraEvent.CancelEditing -> setState { cancelEditing() }
+        }
+    }
+
+    private fun updateProducto(id: String, nombre: String) {
+        viewModelScope.launch {
+            try {
+                updateProductoUseCase.invoke(id, nombre)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun saveEditedProduct() {
+        val currentState = _state.value
+        val editingId = currentState.editingProductId
+        val editingText = currentState.editingText
+
+        if (editingId != null && editingText.isNotBlank()) {
+            setState { saveEditedProduct() }
+            viewModelScope.launch {
+                try {
+                    updateProductoUseCase.invoke(editingId, editingText)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        } else {
+            setState { cancelEditing() }
         }
     }
 

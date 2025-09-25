@@ -11,6 +11,10 @@ class ProductosRepository(
         return listaCompraDataService.getProductos()
     }
 
+    suspend fun updateProducto(id: String, nombre: String) {
+        listaCompraDataService.updateProducto(id, nombre)
+    }
+
     suspend fun deleteProducto(id: String) {
         listaCompraDataService.deleteProductos(id)
     }

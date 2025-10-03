@@ -2,6 +2,7 @@ package dev.bonygod.listacompra.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.bonygod.listacompra.domain.usecase.AddProductoUseCase
 import dev.bonygod.listacompra.domain.usecase.DeleteAllProductosUseCase
 import dev.bonygod.listacompra.domain.usecase.DeleteProductoUseCase
 import dev.bonygod.listacompra.domain.usecase.GetProductosUseCase
@@ -17,7 +18,8 @@ class ListaCompraViewModel(
     private val getProductosUseCase: GetProductosUseCase,
     private val deleteProductoUseCase: DeleteProductoUseCase,
     private val deleteAllProductosUseCase: DeleteAllProductosUseCase,
-    private val updateProductoUseCase: UpdateProductoUseCase
+    private val updateProductoUseCase: UpdateProductoUseCase,
+    private val addProductoUseCase: AddProductoUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(ListaCompraState())
     val state: StateFlow<ListaCompraState> = _state
@@ -59,13 +61,16 @@ class ListaCompraViewModel(
             is ListaCompraEvent.CancelEditing -> setState { cancelEditing() }
             is ListaCompraEvent.HideErrorAlert -> setState { hideErrorAlert() }
             is ListaCompraEvent.HideSuccessAlert -> setState { hideSuccessAlert() }
+            is ListaCompraEvent.ShowBottomSheet -> setState { showBottomSheet(event.show) }
+            is ListaCompraEvent.UpdateNewProductText -> setState { updateNewProductText(event.text) }
+            is ListaCompraEvent.AddProducto -> addProducto()
         }
     }
 
     private fun updateProducto(id: String, nombre: String) {
         viewModelScope.launch {
             try {
-                updateProductoUseCase.invoke(id, nombre)
+                updateProductoUseCase(id, nombre)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -84,7 +89,7 @@ class ListaCompraViewModel(
 
             viewModelScope.launch {
                 try {
-                    updateProductoUseCase.invoke(editingId, editingText)
+                    updateProductoUseCase(editingId, editingText)
                 } catch (e: Exception) {
                     e.printStackTrace()
                     if (originalProduct != null) {
@@ -94,7 +99,7 @@ class ListaCompraViewModel(
                     } else {
                         setState { cancelEditing() }
                     }
-                    // Mostrar mensaje de error al usuario
+
                     setState {
                         showErrorAlert(
                             "Error al actualizar",
@@ -108,11 +113,38 @@ class ListaCompraViewModel(
         }
     }
 
+    private fun addProducto() {
+        val currentState = _state.value
+        val newProductText = currentState.newProductText.trim()
+
+        if (newProductText.isNotBlank()) {
+            viewModelScope.launch {
+                try {
+                    addProductoUseCase(newProductText)
+                    setState {
+                        copy(
+                            showBottomSheet = false,
+                            newProductText = ""
+                        )
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    setState {
+                        showErrorAlert(
+                            "Error al agregar producto",
+                            "No se pudo agregar el producto. Verifica tu conexión a internet e inténtalo nuevamente."
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private fun borrarProducto(id: String) {
         setState { showLoading(true) }
         viewModelScope.launch {
             try {
-                deleteProductoUseCase.invoke(id)
+                deleteProductoUseCase(id)
                 setState { removeProducto(id) }
                 setState { showLoading(false) }
             } catch (e: Exception) {

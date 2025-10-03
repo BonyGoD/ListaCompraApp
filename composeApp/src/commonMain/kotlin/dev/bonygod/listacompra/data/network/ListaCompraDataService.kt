@@ -52,4 +52,17 @@ class ListaCompraDataService(
             throw Exception("Error al eliminar todos los productos: ${e.message}", e)
         }
     }
+
+    suspend fun addProducto(producto: String) {
+        try {
+            firebase.collection("lista-compra").add(
+                data = mapOf(
+                    "producto" to producto,
+                    "fecha" to Timestamp.now()
+                )
+            )
+        } catch (e: Exception) {
+            throw Exception("Error al insertar el producto: ${e.message}", e)
+        }
+    }
 }

@@ -14,7 +14,9 @@ data class ListaCompraState(
     val errorAlertMessage: String = "",
     val showSuccessAlert: Boolean = false,
     val successAlertTitle: String = "",
-    val successAlertMessage: String = ""
+    val successAlertMessage: String = "",
+    val showBottomSheet: Boolean = false,
+    val newProductText: String = ""
 ) {
     fun showLoading(show: Boolean = false): ListaCompraState {
         return copy(loadingState = show)
@@ -24,17 +26,7 @@ data class ListaCompraState(
         return copy(dialogState = show)
     }
 
-    fun getListaCompraUI(nuevaLista: ListaCompraUI): ListaCompraState =
-        copy(listaCompraUI = nuevaLista)
-
-    fun updateUnidadesProducto(productId: String, unidades: Int): ListaCompraState {
-        val updatedListaCompraUI = listaCompraUI.updateUnidadesProducto(productId, unidades)
-        return copy(listaCompraUI = updatedListaCompraUI)
-    }
-
-    fun updateListaCompra(listaCompraUI: ListaCompraUI): ListaCompraState {
-        return copy(listaCompraUI = listaCompraUI)
-    }
+    fun getListaCompraUI(nuevaLista: ListaCompraUI): ListaCompraState = copy(listaCompraUI = nuevaLista)
 
     fun removeProducto(productId: String): ListaCompraState {
         val updatedProductos = listaCompraUI.productos.filter { it.id != productId }
@@ -106,5 +98,13 @@ data class ListaCompraState(
 
     fun cancelEditing(): ListaCompraState {
         return copy(editingProductId = null, editingText = "")
+    }
+
+    fun showBottomSheet(show: Boolean = false): ListaCompraState {
+        return copy(showBottomSheet = show)
+    }
+
+    fun updateNewProductText(text: String): ListaCompraState {
+        return copy(newProductText = text)
     }
 }

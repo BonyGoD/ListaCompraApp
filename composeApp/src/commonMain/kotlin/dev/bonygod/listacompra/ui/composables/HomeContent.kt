@@ -1,6 +1,7 @@
 package dev.bonygod.listacompra.ui.composables
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.listacompra.ScreenWrapper
+import dev.bonygod.listacompra.ui.composables.components.AddProductBottomSheet
 import dev.bonygod.listacompra.ui.composables.components.ConfirmDialog
 import dev.bonygod.listacompra.ui.composables.components.ErrorAlert
 import dev.bonygod.listacompra.ui.composables.components.SuccessAlert
@@ -31,7 +33,7 @@ import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.ui.composables.preview.ListaCompraPreview
 import dev.bonygod.listacompra.ui.model.ListaCompraUI
 import listacompra.composeapp.generated.resources.Res
-import listacompra.composeapp.generated.resources.update_icon
+import listacompra.composeapp.generated.resources.add_button
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -43,11 +45,25 @@ fun HomeContent(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.weight(1f)) {
-            Box(modifier = Modifier.fillMaxWidth().padding(end = 10.dp, top = 10.dp)) {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(end = 10.dp, top = 10.dp, bottom = 20.dp)
+            ) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = "Lista de la compra",
+                    fontSize = 25.sp,
+                    fontWeight = Bold
+                )
                 Image(
-                    painter = painterResource(Res.drawable.update_icon),
-                    contentDescription = "Icono update",
-                    modifier = Modifier.size(30.dp).align(Alignment.CenterEnd)
+                    painter = painterResource(Res.drawable.add_button),
+                    contentDescription = "Icono agregar producto",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable {
+                            onEvent(ListaCompraEvent.ShowBottomSheet(true))
+                        }
+                        .align(Alignment.CenterEnd)
+                        .padding(10.dp)
                 )
             }
             LazyColumn(modifier = Modifier.padding(10.dp)) {
@@ -111,6 +127,14 @@ fun HomeContent(
             title = state.successAlertTitle,
             message = state.successAlertMessage,
             onDismiss = { onEvent(ListaCompraEvent.HideSuccessAlert) }
+        )
+    }
+
+    if (state.showBottomSheet) {
+        AddProductBottomSheet(
+            newProductText = state.newProductText,
+            onEvent = onEvent,
+            onDismiss = { onEvent(ListaCompraEvent.ShowBottomSheet(false)) }
         )
     }
 }

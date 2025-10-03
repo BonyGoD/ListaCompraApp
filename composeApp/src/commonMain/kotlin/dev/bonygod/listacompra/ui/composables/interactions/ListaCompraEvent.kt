@@ -13,4 +13,7 @@ sealed class ListaCompraEvent {
     data object CancelEditing : ListaCompraEvent()
     data object HideErrorAlert : ListaCompraEvent()
     data object HideSuccessAlert : ListaCompraEvent()
+    data class ShowBottomSheet(val show: Boolean) : ListaCompraEvent()
+    data class UpdateNewProductText(val text: String) : ListaCompraEvent()
+    data object AddProducto : ListaCompraEvent()
 }

@@ -22,4 +22,8 @@ class ProductosRepository(
     suspend fun deleteAllProductos() {
         listaCompraDataService.deleteAllProductos()
     }
+
+    suspend fun addProducto(producto: String) {
+        listaCompraDataService.addProducto(producto)
+    }
 }

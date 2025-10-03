@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.sp
 import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraEvent
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+// NOTE: Using ExperimentalMaterial3Api because ModalBottomSheet and related components are currently only available as experimental in Material3.
+// Be aware that future Compose updates may introduce breaking changes. Consider updating to stable APIs when available.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddProductBottomSheet(

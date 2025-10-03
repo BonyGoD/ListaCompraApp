@@ -59,11 +59,11 @@ fun HomeContent(
                     contentDescription = "Icono agregar producto",
                     modifier = Modifier
                         .size(40.dp)
-                        .align(Alignment.CenterEnd)
-                        .padding(10.dp)
                         .clickable {
                             onEvent(ListaCompraEvent.ShowBottomSheet(true))
                         }
+                        .align(Alignment.CenterEnd)
+                        .padding(10.dp)
                 )
             }
             LazyColumn(modifier = Modifier.padding(10.dp)) {

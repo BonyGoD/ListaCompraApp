@@ -144,7 +144,7 @@ class ListaCompraViewModel(
         setState { showLoading(true) }
         viewModelScope.launch {
             try {
-                deleteProductoUseCase.invoke(id)
+                deleteProductoUseCase(id)
                 setState { removeProducto(id) }
                 setState { showLoading(false) }
             } catch (e: Exception) {

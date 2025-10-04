@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.ui.composables.interactions
 
+import androidx.compose.ui.text.input.TextFieldValue
 import dev.bonygod.listacompra.ui.model.ListaCompraUI
 
 data class ListaCompraState(
@@ -16,7 +17,7 @@ data class ListaCompraState(
     val successAlertTitle: String = "",
     val successAlertMessage: String = "",
     val showBottomSheet: Boolean = false,
-    val newProductText: String = ""
+    val newProductText: TextFieldValue = TextFieldValue("")
 ) {
     fun showLoading(show: Boolean = false): ListaCompraState {
         return copy(loadingState = show)
@@ -104,7 +105,7 @@ data class ListaCompraState(
         return copy(showBottomSheet = show)
     }
 
-    fun updateNewProductText(text: String): ListaCompraState {
+    fun updateNewProductText(text: TextFieldValue): ListaCompraState {
         return copy(newProductText = text)
     }
 }

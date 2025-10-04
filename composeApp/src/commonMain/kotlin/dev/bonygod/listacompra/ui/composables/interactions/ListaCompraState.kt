@@ -9,7 +9,7 @@ data class ListaCompraState(
     val error: String? = null,
     val listaCompraUI: ListaCompraUI = ListaCompraUI(),
     val editingProductId: String? = null,
-    val editingText: String = "",
+    val editingText: TextFieldValue = TextFieldValue(""),
     val showErrorAlert: Boolean = false,
     val errorAlertTitle: String = "",
     val errorAlertMessage: String = "",
@@ -41,10 +41,10 @@ data class ListaCompraState(
     }
 
     fun startEditingProduct(productId: String, currentName: String): ListaCompraState {
-        return copy(editingProductId = productId, editingText = currentName)
+        return copy(editingProductId = productId, editingText = TextFieldValue(currentName))
     }
 
-    fun updateEditingText(text: String): ListaCompraState {
+    fun updateEditingText(text: TextFieldValue): ListaCompraState {
         return copy(editingText = text)
     }
 
@@ -52,7 +52,7 @@ data class ListaCompraState(
         val editingId = editingProductId ?: return this
         val updatedProductos = listaCompraUI.productos.map { producto ->
             if (producto.id == editingId) {
-                producto.copy(nombre = editingText)
+                producto.copy(nombre = editingText.text)
             } else {
                 producto
             }
@@ -61,7 +61,7 @@ data class ListaCompraState(
         return copy(
             listaCompraUI = updatedListaCompraUI,
             editingProductId = null,
-            editingText = ""
+            editingText = TextFieldValue("")
         )
     }
 
@@ -98,7 +98,7 @@ data class ListaCompraState(
     }
 
     fun cancelEditing(): ListaCompraState {
-        return copy(editingProductId = null, editingText = "")
+        return copy(editingProductId = null, editingText = TextFieldValue(""))
     }
 
     fun showBottomSheet(show: Boolean = false): ListaCompraState {

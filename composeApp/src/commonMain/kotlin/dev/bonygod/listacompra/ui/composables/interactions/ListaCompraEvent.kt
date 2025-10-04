@@ -10,7 +10,7 @@ sealed class ListaCompraEvent {
     data object ConfirmDelete : ListaCompraEvent()
     data object CancelDialog : ListaCompraEvent()
     data class StartEditingProduct(val productId: String, val currentName: String) : ListaCompraEvent()
-    data class UpdateEditingText(val text: String) : ListaCompraEvent()
+    data class UpdateEditingText(val text: TextFieldValue) : ListaCompraEvent()
     data object SaveEditedProduct : ListaCompraEvent()
     data object CancelEditing : ListaCompraEvent()
     data object HideErrorAlert : ListaCompraEvent()

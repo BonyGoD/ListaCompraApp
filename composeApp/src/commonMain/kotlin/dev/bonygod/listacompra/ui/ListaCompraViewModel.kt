@@ -81,7 +81,7 @@ class ListaCompraViewModel(
     private fun saveEditedProduct() {
         val currentState = _state.value
         val editingId = currentState.editingProductId
-        val editingText = currentState.editingText
+        val editingText = currentState.editingText.text
 
         if (editingId != null && editingText.isNotBlank()) {
             val originalProduct = currentState.listaCompraUI.productos.find { it.id == editingId }

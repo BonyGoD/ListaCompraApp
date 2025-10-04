@@ -1,5 +1,7 @@
 package dev.bonygod.listacompra.ui.composables.interactions
 
+import androidx.compose.ui.text.input.TextFieldValue
+
 sealed class ListaCompraEvent {
     data class BorrarProducto(val productId: String) : ListaCompraEvent()
     data object BorrarTodosLosProductos : ListaCompraEvent()
@@ -8,12 +10,12 @@ sealed class ListaCompraEvent {
     data object ConfirmDelete : ListaCompraEvent()
     data object CancelDialog : ListaCompraEvent()
     data class StartEditingProduct(val productId: String, val currentName: String) : ListaCompraEvent()
-    data class UpdateEditingText(val text: String) : ListaCompraEvent()
+    data class UpdateEditingText(val text: TextFieldValue) : ListaCompraEvent()
     data object SaveEditedProduct : ListaCompraEvent()
     data object CancelEditing : ListaCompraEvent()
     data object HideErrorAlert : ListaCompraEvent()
     data object HideSuccessAlert : ListaCompraEvent()
     data class ShowBottomSheet(val show: Boolean) : ListaCompraEvent()
-    data class UpdateNewProductText(val text: String) : ListaCompraEvent()
+    data class UpdateNewProductText(val text: TextFieldValue) : ListaCompraEvent()
     data object AddProducto : ListaCompraEvent()
 }

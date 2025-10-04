@@ -19,14 +19,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraEvent
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraState
 
 // NOTE: Using ExperimentalMaterial3Api because ModalBottomSheet and related components are currently only available as experimental in Material3.
 // Be aware that future Compose updates may introduce breaking changes. Consider updating to stable APIs when available.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddProductBottomSheet(
-    newProductText: String,
+    state: ListaCompraState,
     onEvent: (ListaCompraEvent) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -49,7 +49,7 @@ fun AddProductBottomSheet(
             )
 
             OutlinedTextField(
-                value = newProductText,
+                value = state.newProductText,
                 onValueChange = { onEvent(ListaCompraEvent.UpdateNewProductText(it)) },
                 label = { Text("Nombre del producto") },
                 modifier = Modifier.fillMaxWidth()
@@ -60,7 +60,7 @@ fun AddProductBottomSheet(
             Button(
                 onClick = { onEvent(ListaCompraEvent.AddProducto) },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = newProductText.isNotBlank(),
+                enabled = state.newProductText.text.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF00913F)
                 )

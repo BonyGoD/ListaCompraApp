@@ -132,7 +132,7 @@ fun HomeContent(
 
     if (state.showBottomSheet) {
         AddProductBottomSheet(
-            newProductText = state.newProductText,
+            state = state,
             onEvent = onEvent,
             onDismiss = { onEvent(ListaCompraEvent.ShowBottomSheet(false)) }
         )

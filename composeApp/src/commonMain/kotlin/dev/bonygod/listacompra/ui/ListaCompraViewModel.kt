@@ -13,6 +13,7 @@ import dev.bonygod.listacompra.ui.composables.preview.ListaCompraPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import androidx.compose.ui.text.input.TextFieldValue
 
 class ListaCompraViewModel(
     private val getProductosUseCase: GetProductosUseCase,
@@ -80,7 +81,7 @@ class ListaCompraViewModel(
     private fun saveEditedProduct() {
         val currentState = _state.value
         val editingId = currentState.editingProductId
-        val editingText = currentState.editingText
+        val editingText = currentState.editingText.text
 
         if (editingId != null && editingText.isNotBlank()) {
             val originalProduct = currentState.listaCompraUI.productos.find { it.id == editingId }
@@ -115,7 +116,7 @@ class ListaCompraViewModel(
 
     private fun addProducto() {
         val currentState = _state.value
-        val newProductText = currentState.newProductText.trim()
+        val newProductText = currentState.newProductText.text.trim()
 
         if (newProductText.isNotBlank()) {
             viewModelScope.launch {
@@ -124,7 +125,7 @@ class ListaCompraViewModel(
                     setState {
                         copy(
                             showBottomSheet = false,
-                            newProductText = ""
+                            newProductText = TextFieldValue("")
                         )
                     }
                 } catch (e: Exception) {

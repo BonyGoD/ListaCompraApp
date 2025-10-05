@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,6 +35,7 @@ import dev.bonygod.listacompra.ui.composables.preview.ListaCompraPreview
 import dev.bonygod.listacompra.ui.model.ListaCompraUI
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.add_button
+import listacompra.composeapp.generated.resources.basura
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -54,17 +56,26 @@ fun HomeContent(
                     fontSize = 25.sp,
                     fontWeight = Bold
                 )
-                Image(
-                    painter = painterResource(Res.drawable.add_button),
-                    contentDescription = "Icono agregar producto",
+                Column(
                     modifier = Modifier
-                        .size(40.dp)
-                        .clickable {
-                            onEvent(ListaCompraEvent.ShowBottomSheet(true))
-                        }
                         .align(Alignment.CenterEnd)
-                        .padding(10.dp)
-                )
+                        .clickable {
+                            onEvent(ListaCompraEvent.ShowDialog(true))
+                        }
+                        .padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.basura),
+                        contentDescription = "Icono borrar todo",
+                        modifier = Modifier.size(30.dp)
+                    )
+                    Text(
+                        text = "Borrar lista",
+                        fontSize = 10.sp,
+                        color = Color.Gray
+                    )
+                }
             }
             LazyColumn(modifier = Modifier.padding(10.dp)) {
                 items(data.productos) { producto ->
@@ -79,10 +90,8 @@ fun HomeContent(
                             onEvent = onEvent
                         )
                     }
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 5.dp),
-                        thickness = 1.dp,
-                        color = Color.Black
+                    Spacer(
+                        modifier = Modifier.padding(vertical = 3.dp)
                     )
                 }
             }
@@ -91,16 +100,16 @@ fun HomeContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00913F)),
             content = {
                 Text(
                     fontWeight = Bold,
                     fontSize = 15.sp,
-                    text = "Borrar lista"
+                    text = "Agregar producto"
                 )
             },
             onClick = {
-                onEvent(ListaCompraEvent.ShowDialog(true))
+                onEvent(ListaCompraEvent.ShowBottomSheet(true))
             }
         )
     }

@@ -51,7 +51,7 @@ fun HomeContent(
                 modifier = Modifier.fillMaxWidth().padding(end = 10.dp, top = 10.dp, bottom = 20.dp)
             ) {
                 Text(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier.align(Alignment.CenterStart).padding(start = 10.dp),
                     text = "Lista de la compra",
                     fontSize = 25.sp,
                     fontWeight = Bold

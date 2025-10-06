@@ -34,7 +34,6 @@ import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.ui.composables.preview.ListaCompraPreview
 import dev.bonygod.listacompra.ui.model.ListaCompraUI
 import listacompra.composeapp.generated.resources.Res
-import listacompra.composeapp.generated.resources.add_button
 import listacompra.composeapp.generated.resources.basura
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

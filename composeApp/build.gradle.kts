@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.composeHotReload)
+    //alias(libs.plugins.composeHotReload)
     alias(libs.plugins.google.services.firebase)
 }
 
@@ -18,22 +18,25 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-            binaryOption("bundleId", "dev.bonygod.listacompra.ComposeApp")
+
+    if (System.getProperty("os.name").contains("Mac", ignoreCase = true)) {
+        listOf(
+            iosX64(),
+            iosArm64(),
+            iosSimulatorArm64()
+        ).forEach { iosTarget ->
+            iosTarget.binaries.framework {
+                baseName = "ComposeApp"
+                isStatic = true
+                binaryOption("bundleId", "dev.bonygod.listacompra.ComposeApp")
+            }
         }
     }
-    
+
     jvm()
-    
+
     sourceSets {
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -66,6 +69,7 @@ kotlin {
             //GitLive Firebase
             implementation(libs.gitlive.firebase.firestore)
         }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }

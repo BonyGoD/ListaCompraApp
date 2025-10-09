@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.ui
 
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.bonygod.listacompra.domain.usecase.AddProductoUseCase
@@ -13,7 +14,6 @@ import dev.bonygod.listacompra.ui.composables.preview.ListaCompraPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import androidx.compose.ui.text.input.TextFieldValue
 
 class ListaCompraViewModel(
     private val getProductosUseCase: GetProductosUseCase,
@@ -54,9 +54,21 @@ class ListaCompraViewModel(
                 borrarTodosLosProductos()
                 setState { showDialog(false) }
             }
+
             is ListaCompraEvent.CancelDialog -> setState { showDialog(false) }
-            is ListaCompraEvent.UpdateProducto -> updateProducto(event.productoId, event.nombre)
-            is ListaCompraEvent.StartEditingProduct -> setState { startEditingProduct(event.productId, event.currentName) }
+            is ListaCompraEvent.UpdateProducto -> updateProducto(
+                event.productoId,
+                event.nombre,
+                event.isImportant
+            )
+
+            is ListaCompraEvent.StartEditingProduct -> setState {
+                startEditingProduct(
+                    event.productId,
+                    event.currentName
+                )
+            }
+
             is ListaCompraEvent.UpdateEditingText -> setState { updateEditingText(event.text) }
             is ListaCompraEvent.SaveEditedProduct -> saveEditedProduct()
             is ListaCompraEvent.CancelEditing -> setState { cancelEditing() }
@@ -68,10 +80,10 @@ class ListaCompraViewModel(
         }
     }
 
-    private fun updateProducto(id: String, nombre: String) {
+    private fun updateProducto(id: String, nombre: String, isImportant: Boolean = false) {
         viewModelScope.launch {
             try {
-                updateProductoUseCase(id, nombre)
+                updateProductoUseCase(id, nombre, isImportant)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -90,7 +102,11 @@ class ListaCompraViewModel(
 
             viewModelScope.launch {
                 try {
-                    updateProductoUseCase(editingId, editingText)
+                    updateProductoUseCase(
+                        editingId,
+                        editingText,
+                        false
+                    ) // isImportant = false por defecto
                 } catch (e: Exception) {
                     e.printStackTrace()
                     if (originalProduct != null) {

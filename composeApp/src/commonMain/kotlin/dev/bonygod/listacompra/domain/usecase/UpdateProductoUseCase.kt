@@ -5,7 +5,7 @@ import dev.bonygod.listacompra.data.repository.ProductosRepository
 class UpdateProductoUseCase(
     private val productosRepository: ProductosRepository
 ) {
-    suspend operator fun invoke(id: String, nombre: String) {
-        productosRepository.updateProducto(id, nombre)
+    suspend operator fun invoke(id: String, nombre: String, isImportant: Boolean) {
+        productosRepository.updateProducto(id, nombre, isImportant)
     }
 }

@@ -5,7 +5,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 sealed class ListaCompraEvent {
     data class BorrarProducto(val productId: String) : ListaCompraEvent()
     data object BorrarTodosLosProductos : ListaCompraEvent()
-    data class UpdateProducto(val productoId: String, val nombre: String): ListaCompraEvent()
+    data class UpdateProducto(val productoId: String, val nombre: String, val isImportant: Boolean = false): ListaCompraEvent()
     data class ShowDialog(val show: Boolean) : ListaCompraEvent()
     data object ConfirmDelete : ListaCompraEvent()
     data object CancelDialog : ListaCompraEvent()

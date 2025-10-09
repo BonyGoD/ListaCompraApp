@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class ProductoResponse(
     val id: String = "",
     val producto: String = "",
-    val fecha: String = ""
+    val fecha: String = "",
+    val isImportant: Boolean = false
 )

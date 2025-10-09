@@ -8,7 +8,8 @@ fun Producto.toUI(): ProductoUI {
     return ProductoUI(
         id = this.id,
         nombre = this.nombre,
-        fecha = this.fecha
+        fecha = this.fecha,
+        isImportant = this.isImportant,
     )
 }
 

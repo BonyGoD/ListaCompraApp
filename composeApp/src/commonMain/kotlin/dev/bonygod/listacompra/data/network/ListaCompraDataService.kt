@@ -19,7 +19,8 @@ class ListaCompraDataService(
                     ProductoResponse(
                         id = documentSnapshot.id,
                         producto = documentSnapshot.get("producto") as? String ?: "",
-                        fecha = fechaTimestamp?.timeStampTransform() ?: ""
+                        fecha = fechaTimestamp?.timeStampTransform() ?: "",
+                        isImportant = documentSnapshot.get("isImportant") as? Boolean ?: false
                     ).toDomain()
                 }.sortedBy { producto ->
                     producto.fecha
@@ -28,9 +29,12 @@ class ListaCompraDataService(
         }
     }
 
-    suspend fun updateProducto(id: String, nombre: String) {
+    suspend fun updateProducto(id: String, nombre: String, isImportant: Boolean) {
         firebase.collection("lista-compra").document(id).set(
-            data = mapOf("producto" to nombre),
+            data = mapOf(
+                "producto" to nombre,
+                "isImportant" to isImportant
+            ),
             merge = true
         )
     }

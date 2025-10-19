@@ -39,7 +39,7 @@ import org.jetbrains.compose.resources.painterResource
 fun TextComponent(
     producto: ProductoUI,
     onEvent: (ListaCompraEvent) -> Unit,
-    longPressDelayMillis: Long = 500L
+    longPressDelayMillis: Long = 1000L
 ) {
     var isPressed by remember { mutableStateOf(false) }
 

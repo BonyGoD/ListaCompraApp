@@ -15,11 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.listacompra.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.ui.model.ProductoUI
-import kotlinx.coroutines.delay
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.basura_black
 import listacompra.composeapp.generated.resources.edit_icon
@@ -38,23 +32,8 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun TextComponent(
     producto: ProductoUI,
-    onEvent: (ListaCompraEvent) -> Unit,
-    longPressDelayMillis: Long = 1000L
+    onEvent: (ListaCompraEvent) -> Unit
 ) {
-    var isPressed by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isPressed) {
-        if (isPressed) {
-            delay(longPressDelayMillis)
-            if (isPressed) {
-                onEvent(ListaCompraEvent.UpdateProducto(
-                    productoId = producto.id,
-                    nombre = producto.nombre,
-                    isImportant = producto.isImportatProduct))
-            }
-        }
-    }
-
     val backgroundColor = when {
         producto.isImportant -> Color(0xFFFFB3BA)
         else -> Color.Transparent
@@ -69,10 +48,11 @@ fun TextComponent(
             .clip(RoundedCornerShape(12.dp))
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onPress = {
-                        isPressed = true
-                        awaitRelease()
-                        isPressed = false
+                    onLongPress = {
+                        onEvent(ListaCompraEvent.UpdateProducto(
+                            productoId = producto.id,
+                            nombre = producto.nombre,
+                            isImportant = !producto.isImportant))
                     }
                 )
             }

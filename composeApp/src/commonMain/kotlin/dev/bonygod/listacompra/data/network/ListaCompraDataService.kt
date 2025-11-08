@@ -4,10 +4,10 @@ import dev.bonygod.listacompra.data.datasource.model.entity.ProductoResponse
 import dev.bonygod.listacompra.domain.mapper.toDomain
 import dev.bonygod.listacompra.util.timeStampTransform
 import dev.gitlive.firebase.firestore.Timestamp
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.flow
 
 class ListaCompraDataService(
     private val firebase: dev.gitlive.firebase.firestore.FirebaseFirestore
@@ -19,13 +19,24 @@ class ListaCompraDataService(
                     ProductoResponse(
                         id = documentSnapshot.id,
                         producto = documentSnapshot.get("producto") as? String ?: "",
-                        fecha = fechaTimestamp?.timeStampTransform() ?: ""
+                        fecha = fechaTimestamp?.timeStampTransform() ?: "",
+                        isImportant = documentSnapshot.get("isImportant") as? Boolean ?: false
                     ).toDomain()
                 }.sortedBy { producto ->
                     producto.fecha
                 }
             emit(productos)
         }
+    }
+
+    suspend fun updateProducto(id: String, nombre: String, isImportant: Boolean) {
+        firebase.collection("lista-compra").document(id).set(
+            data = mapOf(
+                "producto" to nombre,
+                "isImportant" to isImportant
+            ),
+            merge = true
+        )
     }
 
     suspend fun deleteProductos(id: String) {
@@ -43,6 +54,19 @@ class ListaCompraDataService(
             }
         } catch (e: Exception) {
             throw Exception("Error al eliminar todos los productos: ${e.message}", e)
+        }
+    }
+
+    suspend fun addProducto(producto: String) {
+        try {
+            firebase.collection("lista-compra").add(
+                data = mapOf(
+                    "producto" to producto,
+                    "fecha" to Timestamp.now()
+                )
+            )
+        } catch (e: Exception) {
+            throw Exception("Error al insertar el producto: ${e.message}", e)
         }
     }
 }

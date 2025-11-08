@@ -11,11 +11,19 @@ class ProductosRepository(
         return listaCompraDataService.getProductos()
     }
 
+    suspend fun updateProducto(id: String, nombre: String, isImportant: Boolean) {
+        listaCompraDataService.updateProducto(id, nombre, isImportant)
+    }
+
     suspend fun deleteProducto(id: String) {
         listaCompraDataService.deleteProductos(id)
     }
 
     suspend fun deleteAllProductos() {
         listaCompraDataService.deleteAllProductos()
+    }
+
+    suspend fun addProducto(producto: String) {
+        listaCompraDataService.addProducto(producto)
     }
 }

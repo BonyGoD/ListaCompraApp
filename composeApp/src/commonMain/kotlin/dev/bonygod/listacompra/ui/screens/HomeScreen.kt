@@ -13,6 +13,7 @@ fun HomeScreen() {
 
     HomeContent(
         data = state.value.listaCompraUI,
+        state = state.value,
         onEvent = viewModel::onEvent
     )
 }

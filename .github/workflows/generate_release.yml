@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: read
 
 jobs:
   release:
@@ -14,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get current versionName from composeApp/build.gradle.kts
         id: gradle_version
@@ -52,35 +55,76 @@ jobs:
         if: steps.version_compare.outputs.bump == 'true'
         id: changelog
         run: |
+          echo "=== Generando changelog ==="
+          
           if [ -z "${{ steps.latest_tag.outputs.tag }}" ]; then
-            # Si no hay tag previo, obtener todos los commits
+            echo "No hay tag previo, obteniendo todos los commits de merge"
             COMMITS=$(git log --pretty=format:"%s" --merges)
           else
-            # Obtener commits desde el último tag
+            echo "Obteniendo commits desde ${{ steps.latest_tag.outputs.tag }} hasta HEAD"
             COMMITS=$(git log ${{ steps.latest_tag.outputs.tag }}..HEAD --pretty=format:"%s" --merges)
           fi
           
-          # Extraer títulos de PRs (formato: "Merge pull request #X from ..." o "Title (#X)")
-          CHANGELOG="## What's Changed"$'\n'
+          echo "=== Commits encontrados: ==="
+          echo "$COMMITS"
+          echo "=== Fin de commits ==="
+          
+          # Extraer títulos de PRs
+          CHANGELOG="## What's Changed"
+          PR_COUNT=0
+          
           while IFS= read -r commit; do
+            if [ -z "$commit" ]; then
+              continue
+            fi
+            
+            echo "Procesando commit: $commit"
+            
+            # Formato 1: "Merge pull request #X from ..."
             if [[ $commit =~ Merge\ pull\ request\ \#([0-9]+) ]]; then
               PR_NUM="${BASH_REMATCH[1]}"
+              echo "  Detectado PR #${PR_NUM} (formato merge)"
+              
               # Obtener el título del PR usando la API de GitHub
-              PR_TITLE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              PR_TITLE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
                 "https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUM}" | \
                 jq -r '.title // empty')
-              if [ -n "$PR_TITLE" ]; then
+              
+              if [ -n "$PR_TITLE" ] && [ "$PR_TITLE" != "null" ]; then
+                echo "  Título obtenido: $PR_TITLE"
                 CHANGELOG="${CHANGELOG}"$'\n'"- ${PR_TITLE} (#${PR_NUM})"
+                PR_COUNT=$((PR_COUNT + 1))
+              else
+                echo "  No se pudo obtener el título, usando commit message"
+                CHANGELOG="${CHANGELOG}"$'\n'"- ${commit}"
+                PR_COUNT=$((PR_COUNT + 1))
               fi
+              
+            # Formato 2: "Title (#123)" - Squash merge
             elif [[ $commit =~ \(#([0-9]+)\)$ ]]; then
-              # Formato squash merge: "Title (#123)"
+              echo "  Detectado PR (formato squash merge)"
               CHANGELOG="${CHANGELOG}"$'\n'"- ${commit}"
+              PR_COUNT=$((PR_COUNT + 1))
             fi
           done <<< "$COMMITS"
           
+          echo ""
+          echo "=== Total de PRs encontrados: $PR_COUNT ==="
+          
+          # Si no se encontraron PRs, añadir mensaje por defecto
+          if [ $PR_COUNT -eq 0 ]; then
+            echo "No se encontraron PRs, añadiendo mensaje por defecto"
+            CHANGELOG="${CHANGELOG}"$'\n'"- Release version v${{ steps.gradle_version.outputs.version }}"
+          fi
+          
           # Guardar changelog en un archivo temporal
           echo "$CHANGELOG" > changelog.txt
+          
+          echo ""
+          echo "=== CHANGELOG FINAL ==="
           cat changelog.txt
+          echo "=== FIN CHANGELOG ==="
 
       - name: Create Release
         if: steps.version_compare.outputs.bump == 'true'

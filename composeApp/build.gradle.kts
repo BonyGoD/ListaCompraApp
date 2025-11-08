@@ -92,8 +92,8 @@ android {
         applicationId = "dev.bonygod.listacompra"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 2
-        versionName = "1.1.1"
+        versionCode = 3
+        versionName = "2.0.0"
     }
     packaging {
         resources {
@@ -126,7 +126,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "dev.bonygod.listacompra"
-            packageVersion = "1.1.1"
+            packageVersion = "2.0.0"
         }
     }
 }

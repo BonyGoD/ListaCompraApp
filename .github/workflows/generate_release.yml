@@ -40,14 +40,54 @@ jobs:
             echo "bump=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create Release Tag
+      - name: Get latest release tag
         if: steps.version_compare.outputs.bump == 'true'
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: latest_tag
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "Latest tag: $LATEST_TAG"
+
+      - name: Generate changelog from PR titles
+        if: steps.version_compare.outputs.bump == 'true'
+        id: changelog
+        run: |
+          if [ -z "${{ steps.latest_tag.outputs.tag }}" ]; then
+            # Si no hay tag previo, obtener todos los commits
+            COMMITS=$(git log --pretty=format:"%s" --merges)
+          else
+            # Obtener commits desde el último tag
+            COMMITS=$(git log ${{ steps.latest_tag.outputs.tag }}..HEAD --pretty=format:"%s" --merges)
+          fi
+          
+          # Extraer títulos de PRs (formato: "Merge pull request #X from ..." o "Title (#X)")
+          CHANGELOG="## What's Changed"$'\n'
+          while IFS= read -r commit; do
+            if [[ $commit =~ Merge\ pull\ request\ \#([0-9]+) ]]; then
+              PR_NUM="${BASH_REMATCH[1]}"
+              # Obtener el título del PR usando la API de GitHub
+              PR_TITLE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUM}" | \
+                jq -r '.title // empty')
+              if [ -n "$PR_TITLE" ]; then
+                CHANGELOG="${CHANGELOG}"$'\n'"- ${PR_TITLE} (#${PR_NUM})"
+              fi
+            elif [[ $commit =~ \(#([0-9]+)\)$ ]]; then
+              # Formato squash merge: "Title (#123)"
+              CHANGELOG="${CHANGELOG}"$'\n'"- ${commit}"
+            fi
+          done <<< "$COMMITS"
+          
+          # Guardar changelog en un archivo temporal
+          echo "$CHANGELOG" > changelog.txt
+          cat changelog.txt
+
+      - name: Create Release
+        if: steps.version_compare.outputs.bump == 'true'
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: "v${{ steps.gradle_version.outputs.version }}"
-          release_name: "v${{ steps.gradle_version.outputs.version }}"
-          body: "Release for version v${{ steps.gradle_version.outputs.version }}"
+          name: "v${{ steps.gradle_version.outputs.version }}"
+          body_path: changelog.txt
           draft: false
           prerelease: false

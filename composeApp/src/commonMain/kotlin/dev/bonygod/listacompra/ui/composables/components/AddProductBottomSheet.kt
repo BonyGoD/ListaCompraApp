@@ -47,6 +47,7 @@ fun AddProductBottomSheet(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
+
             OutlinedTextField(
                 value = state.newProductText,
                 onValueChange = { onEvent(ListaCompraEvent.UpdateNewProductText(it)) },

@@ -54,7 +54,6 @@ fun AddProductBottomSheet(
                 label = { Text("Nombre del producto") },
                 modifier = Modifier.fillMaxWidth()
             )
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(

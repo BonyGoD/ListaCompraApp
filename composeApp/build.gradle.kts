@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     //alias(libs.plugins.composeHotReload)
     alias(libs.plugins.google.services.firebase)
+    alias(libs.plugins.firebase.crashlytics.gradle)
 }
 
 kotlin {
@@ -68,6 +69,8 @@ kotlin {
 
             //GitLive Firebase
             implementation(libs.gitlive.firebase.firestore)
+            implementation(libs.gitlive.firebase.crashlytics)
+            implementation(libs.gitlive.firebase.analitics)
         }
 
         commonTest.dependencies {

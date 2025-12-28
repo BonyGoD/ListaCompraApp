@@ -24,9 +24,10 @@ koin-compose = "4.1.1"
 #Firebase-Firestore
 google-services = "4.4.3"
 firebase-bom = "34.3.0"
+firebase-crashlytics = "3.0.6"
 
 #GitLive
-gitlive = "2.3.0"
+gitlive = "2.4.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -49,6 +50,8 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 
 #GitLive
 gitlive-firebase-firestore = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "gitlive" }
+gitlive-firebase-crashlytics = { group = "dev.gitlive", name = "firebase-crashlytics", version.ref = "gitlive" }
+gitlive-firebase-analitics = { group = "dev.gitlive", name = "firebase-analytics", version.ref = "gitlive" }
 
 #Dependency Injection
 koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }
@@ -67,3 +70,4 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 
 #Firebase-Firestore
 google-services-firebase = { id = "com.google.gms.google-services", version.ref = "google-services" }
+firebase-crashlytics-gradle = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics" }

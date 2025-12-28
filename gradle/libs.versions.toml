@@ -51,6 +51,7 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 #GitLive
 gitlive-firebase-firestore = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "gitlive" }
 gitlive-firebase-crashlytics = { group = "dev.gitlive", name = "firebase-crashlytics", version.ref = "gitlive" }
+gitlive-firebase-analitics = { group = "dev.gitlive", name = "firebase-analytics", version.ref = "gitlive" }
 
 #Dependency Injection
 koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }

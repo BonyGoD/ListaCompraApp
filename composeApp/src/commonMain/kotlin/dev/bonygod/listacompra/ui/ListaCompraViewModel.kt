@@ -3,6 +3,7 @@ package dev.bonygod.listacompra.ui
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.domain.usecase.AddProductoUseCase
 import dev.bonygod.listacompra.domain.usecase.DeleteAllProductosUseCase
 import dev.bonygod.listacompra.domain.usecase.DeleteProductoUseCase
@@ -20,7 +21,8 @@ class ListaCompraViewModel(
     private val deleteProductoUseCase: DeleteProductoUseCase,
     private val deleteAllProductosUseCase: DeleteAllProductosUseCase,
     private val updateProductoUseCase: UpdateProductoUseCase,
-    private val addProductoUseCase: AddProductoUseCase
+    private val addProductoUseCase: AddProductoUseCase,
+    private val analyticsService: AnalyticsService
 ) : ViewModel() {
     private val _state = MutableStateFlow(ListaCompraState())
     val state: StateFlow<ListaCompraState> = _state
@@ -30,6 +32,7 @@ class ListaCompraViewModel(
     }
 
     init {
+        analyticsService.logScreenView("lista_compra_screen")
         viewModelScope.launch {
             try {
                 getProductosUseCase().collect { listaCompraUI ->
@@ -84,6 +87,7 @@ class ListaCompraViewModel(
         viewModelScope.launch {
             try {
                 updateProductoUseCase(id, nombre, isImportant)
+                analyticsService.logProductoUpdated(nombre, isImportant)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -107,6 +111,7 @@ class ListaCompraViewModel(
                         editingText,
                         false
                     ) // isImportant = false por defecto
+                    analyticsService.logProductoUpdated(editingText, false)
                 } catch (e: Exception) {
                     e.printStackTrace()
                     if (originalProduct != null) {
@@ -138,6 +143,7 @@ class ListaCompraViewModel(
             viewModelScope.launch {
                 try {
                     addProductoUseCase(newProductText)
+                    analyticsService.logProductoAdded(newProductText)
                     setState {
                         copy(
                             showBottomSheet = false,
@@ -161,7 +167,12 @@ class ListaCompraViewModel(
         setState { showLoading(true) }
         viewModelScope.launch {
             try {
+                // Obtener el nombre del producto antes de borrarlo
+                val producto = _state.value.listaCompraUI.productos.find { it.id == id }
                 deleteProductoUseCase(id)
+                if (producto != null) {
+                    analyticsService.logProductoDeleted(producto.nombre)
+                }
                 setState { removeProducto(id) }
                 setState { showLoading(false) }
             } catch (e: Exception) {
@@ -180,7 +191,9 @@ class ListaCompraViewModel(
     private fun borrarTodosLosProductos() {
         viewModelScope.launch {
             try {
+                val totalProductos = _state.value.listaCompraUI.productos.size
                 deleteAllProductosUseCase.invoke()
+                analyticsService.logListaCleared(totalProductos)
                 setState { clearAllProductos() }
                 setState { showLoading(false) }
             } catch (e: Exception) {

@@ -70,6 +70,7 @@ kotlin {
             //GitLive Firebase
             implementation(libs.gitlive.firebase.firestore)
             implementation(libs.gitlive.firebase.crashlytics)
+            implementation(libs.gitlive.firebase.analitics)
         }
 
         commonTest.dependencies {

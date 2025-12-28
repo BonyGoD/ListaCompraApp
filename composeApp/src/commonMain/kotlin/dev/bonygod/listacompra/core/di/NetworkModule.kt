@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.core.di
 
+import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.network.NetworkProvider
 import dev.bonygod.listacompra.data.network.ListaCompraDataService
 import dev.bonygod.listacompra.data.repository.ProductosRepository
@@ -16,6 +17,8 @@ import org.koin.dsl.module
 
 val appModule = module {
     single { NetworkProvider().provideFirebaseClient() }
+    single { NetworkProvider().provideAnalytics() }
+    single { AnalyticsService(get()) }
     single { ListaCompraDataService(get()) }
     single { ProductosRepository(get()) }
 }

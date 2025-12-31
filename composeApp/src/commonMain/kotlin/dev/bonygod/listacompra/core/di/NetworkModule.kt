@@ -2,14 +2,14 @@ package dev.bonygod.listacompra.core.di
 
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.network.NetworkProvider
-import dev.bonygod.listacompra.data.network.ListaCompraDataService
-import dev.bonygod.listacompra.data.repository.ProductosRepository
-import dev.bonygod.listacompra.domain.usecase.AddProductoUseCase
-import dev.bonygod.listacompra.domain.usecase.DeleteAllProductosUseCase
-import dev.bonygod.listacompra.domain.usecase.DeleteProductoUseCase
-import dev.bonygod.listacompra.domain.usecase.GetProductosUseCase
-import dev.bonygod.listacompra.domain.usecase.UpdateProductoUseCase
-import dev.bonygod.listacompra.ui.ListaCompraViewModel
+import dev.bonygod.listacompra.home.data.network.ListaCompraDataService
+import dev.bonygod.listacompra.home.data.repository.ProductosRepository
+import dev.bonygod.listacompra.home.domain.usecase.AddProductoUseCase
+import dev.bonygod.listacompra.home.domain.usecase.DeleteAllProductosUseCase
+import dev.bonygod.listacompra.home.domain.usecase.DeleteProductoUseCase
+import dev.bonygod.listacompra.home.domain.usecase.GetProductosUseCase
+import dev.bonygod.listacompra.home.domain.usecase.UpdateProductoUseCase
+import dev.bonygod.listacompra.home.ui.ListaCompraViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
@@ -29,9 +29,21 @@ val viewModelsModule = module {
 
 val dataModule = module {
     single { GetProductosUseCase(get()) }
-    single { DeleteProductoUseCase(get()) }
-    single { DeleteAllProductosUseCase(get()) }
-    single { UpdateProductoUseCase(get()) }
+    single {
+        DeleteProductoUseCase(
+            get()
+        )
+    }
+    single {
+        DeleteAllProductosUseCase(
+            get()
+        )
+    }
+    single {
+        UpdateProductoUseCase(
+            get()
+        )
+    }
     single { AddProductoUseCase(get()) }
 }
 

@@ -2,7 +2,7 @@ package dev.bonygod.listacompra.core.di
 
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.network.NetworkProvider
-import dev.bonygod.listacompra.home.data.network.ListaCompraDataService
+import dev.bonygod.listacompra.home.data.datasource.ListaCompraDataSource
 import dev.bonygod.listacompra.home.data.repository.ProductosRepository
 import dev.bonygod.listacompra.home.domain.usecase.AddProductoUseCase
 import dev.bonygod.listacompra.home.domain.usecase.DeleteAllProductosUseCase
@@ -19,7 +19,7 @@ val appModule = module {
     single { NetworkProvider().provideFirebaseClient() }
     single { NetworkProvider().provideAnalytics() }
     single { AnalyticsService(get()) }
-    single { ListaCompraDataService(get()) }
+    single { ListaCompraDataSource(get()) }
     single { ProductosRepository(get()) }
 }
 

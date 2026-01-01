@@ -1,27 +1,28 @@
 package dev.bonygod.listacompra.home.data.repository
 
+import dev.bonygod.listacompra.home.data.datasource.ListaCompraDataSource
 import kotlinx.coroutines.flow.Flow
 
 class ProductosRepository(
-    private val listaCompraDataService: dev.bonygod.listacompra.home.data.network.ListaCompraDataService
+    private val listaCompraDataSource: ListaCompraDataSource
 ) {
     fun getProductos(): Flow<List<dev.bonygod.listacompra.home.domain.model.Producto>> {
-        return listaCompraDataService.getProductos()
+        return listaCompraDataSource.getProductos()
     }
 
     suspend fun updateProducto(id: String, nombre: String, isImportant: Boolean) {
-        listaCompraDataService.updateProducto(id, nombre, isImportant)
+        listaCompraDataSource.updateProducto(id, nombre, isImportant)
     }
 
     suspend fun deleteProducto(id: String) {
-        listaCompraDataService.deleteProductos(id)
+        listaCompraDataSource.deleteProductos(id)
     }
 
     suspend fun deleteAllProductos() {
-        listaCompraDataService.deleteAllProductos()
+        listaCompraDataSource.deleteAllProductos()
     }
 
     suspend fun addProducto(producto: String) {
-        listaCompraDataService.addProducto(producto)
+        listaCompraDataSource.addProducto(producto)
     }
 }

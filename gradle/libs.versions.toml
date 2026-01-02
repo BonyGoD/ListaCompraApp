@@ -37,6 +37,7 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 
 #GitLive
 gitlive-firebase-firestore = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "gitlive" }
+gitlive-firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "gitlive" }
 gitlive-firebase-crashlytics = { group = "dev.gitlive", name = "firebase-crashlytics", version.ref = "gitlive" }
 gitlive-firebase-analitics = { group = "dev.gitlive", name = "firebase-analytics", version.ref = "gitlive" }
 
@@ -54,6 +55,7 @@ composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "com
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 #Firebase-Firestore
 google-services-firebase = { id = "com.google.gms.google-services", version.ref = "google-services" }

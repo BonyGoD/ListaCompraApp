@@ -1,4 +1,4 @@
-package dev.bonygod.listacompra.home.data.datasource.model.entity
+package dev.bonygod.listacompra.home.data.model.entity
 
 import kotlinx.serialization.Serializable
 

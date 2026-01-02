@@ -12,6 +12,7 @@ import dev.bonygod.listacompra.home.domain.usecase.UpdateProductoUseCase
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.home.ui.composables.preview.ListaCompraPreview
+import dev.bonygod.listacompra.login.data.datasource.UsuariosDataSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,7 +23,8 @@ class ListaCompraViewModel(
     private val deleteAllProductosUseCase: DeleteAllProductosUseCase,
     private val updateProductoUseCase: UpdateProductoUseCase,
     private val addProductoUseCase: AddProductoUseCase,
-    private val analyticsService: AnalyticsService
+    private val analyticsService: AnalyticsService,
+    private val usuariosDataSource: UsuariosDataSource
 ) : ViewModel() {
     private val _state = MutableStateFlow(ListaCompraState())
     val state: StateFlow<ListaCompraState> = _state
@@ -195,6 +197,7 @@ class ListaCompraViewModel(
     private fun borrarTodosLosProductos() {
         viewModelScope.launch {
             try {
+                usuariosDataSource.registrarUsuario("i.boniquet@gmail.com", "123456")
                 val totalProductos = _state.value.listaCompraUI.productos.size
                 deleteAllProductosUseCase.invoke()
                 analyticsService.logListaCleared(totalProductos)

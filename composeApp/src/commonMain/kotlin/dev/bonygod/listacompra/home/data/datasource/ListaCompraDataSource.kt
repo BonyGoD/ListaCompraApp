@@ -1,6 +1,6 @@
 package dev.bonygod.listacompra.home.data.datasource
 
-import dev.bonygod.listacompra.home.data.datasource.model.entity.ProductoResponse
+import dev.bonygod.listacompra.home.data.model.entity.ProductoResponse
 import dev.bonygod.listacompra.home.domain.mapper.toDomain
 import dev.bonygod.listacompra.util.timeStampTransform
 import dev.gitlive.firebase.firestore.FirebaseFirestore

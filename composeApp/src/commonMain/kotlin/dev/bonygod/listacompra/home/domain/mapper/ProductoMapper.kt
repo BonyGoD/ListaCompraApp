@@ -1,7 +1,10 @@
 package dev.bonygod.listacompra.home.domain.mapper
 
-fun dev.bonygod.listacompra.home.data.datasource.model.entity.ProductoResponse.toDomain(): dev.bonygod.listacompra.home.domain.model.Producto {
-    return _root_ide_package_.dev.bonygod.listacompra.home.domain.model.Producto(
+import dev.bonygod.listacompra.home.data.model.entity.ProductoResponse
+import dev.bonygod.listacompra.home.domain.model.Producto
+
+fun ProductoResponse.toDomain(): Producto {
+    return Producto(
         id = this.id,
         nombre = this.producto,
         fecha = this.fecha,

@@ -1,12 +1,13 @@
 package dev.bonygod.listacompra.home.data.repository
 
 import dev.bonygod.listacompra.home.data.datasource.ListaCompraDataSource
+import dev.bonygod.listacompra.home.domain.model.Producto
 import kotlinx.coroutines.flow.Flow
 
 class ProductosRepository(
     private val listaCompraDataSource: ListaCompraDataSource
 ) {
-    fun getProductos(): Flow<List<dev.bonygod.listacompra.home.domain.model.Producto>> {
+    fun getProductos(): Flow<List<Producto>> {
         return listaCompraDataSource.getProductos()
     }
 

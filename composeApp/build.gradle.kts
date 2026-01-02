@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
     //alias(libs.plugins.composeHotReload)
 }
 
@@ -64,6 +65,7 @@ kotlin {
 
             //GitLive Firebase
             implementation(libs.gitlive.firebase.firestore)
+            implementation(libs.gitlive.firebase.auth)
             implementation(libs.gitlive.firebase.crashlytics)
             implementation(libs.gitlive.firebase.analitics)
         }

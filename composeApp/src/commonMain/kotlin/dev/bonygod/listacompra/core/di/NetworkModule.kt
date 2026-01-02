@@ -10,7 +10,14 @@ import dev.bonygod.listacompra.home.domain.usecase.DeleteProductoUseCase
 import dev.bonygod.listacompra.home.domain.usecase.GetProductosUseCase
 import dev.bonygod.listacompra.home.domain.usecase.UpdateProductoUseCase
 import dev.bonygod.listacompra.home.ui.ListaCompraViewModel
-import dev.bonygod.listacompra.login.data.datasource.UsuariosDataSource
+import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
+import dev.bonygod.listacompra.login.data.repository.UserRepository
+import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
+import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
+import dev.bonygod.listacompra.login.domain.usecase.ResetPasswordUseCase
+import dev.bonygod.listacompra.login.domain.usecase.UserGoogleLoginUseCase
+import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
+import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
@@ -22,8 +29,9 @@ val appModule = module {
     single { NetworkProvider().provideAuth() }
     single { AnalyticsService(get()) }
     single { ListaCompraDataSource(get()) }
-    single { UsuariosDataSource(get(), get()) }
+    single { UsersDataSource(get(), get()) }
     single { ProductosRepository(get()) }
+    single { UserRepository(get()) }
 }
 
 val viewModelsModule = module {
@@ -48,6 +56,12 @@ val dataModule = module {
         )
     }
     single { AddProductoUseCase(get()) }
+    single { GetUserUseCase(get()) }
+    single { UserLoginUseCase(get()) }
+    single { UserGoogleLoginUseCase(get()) }
+    single { LogOutUseCase(get()) }
+    single { ResetPasswordUseCase(get()) }
+    single { UserRegisterUseCase(get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

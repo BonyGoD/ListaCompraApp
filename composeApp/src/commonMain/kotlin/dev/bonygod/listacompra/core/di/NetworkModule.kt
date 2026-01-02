@@ -10,7 +10,7 @@ import dev.bonygod.listacompra.home.domain.usecase.DeleteProductoUseCase
 import dev.bonygod.listacompra.home.domain.usecase.GetProductosUseCase
 import dev.bonygod.listacompra.home.domain.usecase.UpdateProductoUseCase
 import dev.bonygod.listacompra.home.ui.ListaCompraViewModel
-import dev.bonygod.listacompra.login.data.datasource.UsuariosDataSource
+import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
@@ -22,7 +22,7 @@ val appModule = module {
     single { NetworkProvider().provideAuth() }
     single { AnalyticsService(get()) }
     single { ListaCompraDataSource(get()) }
-    single { UsuariosDataSource(get(), get()) }
+    single { UsersDataSource(get(), get()) }
     single { ProductosRepository(get()) }
 }
 

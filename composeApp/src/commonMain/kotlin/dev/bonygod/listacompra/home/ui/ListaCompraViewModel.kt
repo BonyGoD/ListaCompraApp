@@ -23,8 +23,7 @@ class ListaCompraViewModel(
     private val deleteAllProductosUseCase: DeleteAllProductosUseCase,
     private val updateProductoUseCase: UpdateProductoUseCase,
     private val addProductoUseCase: AddProductoUseCase,
-    private val analyticsService: AnalyticsService,
-    private val usersDataSource: UsersDataSource
+    private val analyticsService: AnalyticsService
 ) : ViewModel() {
     private val _state = MutableStateFlow(ListaCompraState())
     val state: StateFlow<ListaCompraState> = _state
@@ -197,7 +196,6 @@ class ListaCompraViewModel(
     private fun borrarTodosLosProductos() {
         viewModelScope.launch {
             try {
-                usersDataSource.userRegister("i.boniquet@gmail.com", "123456")
                 val totalProductos = _state.value.listaCompraUI.productos.size
                 deleteAllProductosUseCase.invoke()
                 analyticsService.logListaCleared(totalProductos)

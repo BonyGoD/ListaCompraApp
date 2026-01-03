@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.core.di
 
+import dev.bonygod.listacompra.BuildConfig
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.network.NetworkProvider
 import dev.bonygod.listacompra.home.data.datasource.ListaCompraDataSource
@@ -20,6 +21,7 @@ import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
@@ -32,6 +34,8 @@ val appModule = module {
     single { UsersDataSource(get(), get()) }
     single { ProductosRepository(get()) }
     single { UserRepository(get()) }
+    single<String>(named("API_KEY")) { BuildConfig.FIREBASE_API_KEY }
+    single<String>(named("CLIENT_ID")) { BuildConfig.CLIENT_ID }
 }
 
 val viewModelsModule = module {

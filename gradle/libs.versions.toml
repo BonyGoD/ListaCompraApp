@@ -24,6 +24,15 @@ firebase-crashlytics = "3.0.6"
 #GitLive
 gitlive = "2.4.0"
 
+#Sigin with Google
+googleid = "1.1.1"
+playServicesAuth = "21.4.0"
+credentialsPlayServicesAuth = "1.5.0"
+firebaseAuthKtx = "23.2.1"
+
+#BuildConfig
+buildConfig = "6.0.7"
+
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
@@ -34,12 +43,19 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 
 #Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx"}
 
 #GitLive
 gitlive-firebase-firestore = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "gitlive" }
 gitlive-firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "gitlive" }
 gitlive-firebase-crashlytics = { group = "dev.gitlive", name = "firebase-crashlytics", version.ref = "gitlive" }
 gitlive-firebase-analitics = { group = "dev.gitlive", name = "firebase-analytics", version.ref = "gitlive" }
+
+#Sigin with Google
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentialsPlayServicesAuth" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentialsPlayServicesAuth" }
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 
 #Dependency Injection
 koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }
@@ -60,3 +76,6 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 #Firebase-Firestore
 google-services-firebase = { id = "com.google.gms.google-services", version.ref = "google-services" }
 firebase-crashlytics-gradle = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics" }
+
+#BuildConfig
+gradleBuildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }

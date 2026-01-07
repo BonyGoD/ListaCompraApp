@@ -9,6 +9,7 @@
 import Foundation
 import GoogleSignIn
 import UIKit
+import FirebaseAuth
 
 /// Servicio encargado de gestionar la autenticación con Google Sign-In
 @objc public class GoogleSignInBridge: NSObject {
@@ -54,20 +55,35 @@ import UIKit
             // accessToken es String, no opcional
             let accessToken = user.accessToken.tokenString
 
-            // Obtener datos del usuario
+            // Obtener datos del usuario de Google
             let email = user.profile?.email ?? ""
             let displayName = user.profile?.name ?? ""
             let photoURL = user.profile?.imageURL(withDimension: 200)?.absoluteString ?? ""
 
-            let userData = GoogleUserData(
-                idToken: idToken,
-                accessToken: accessToken,
-                email: email,
-                displayName: displayName,
-                photoURL: photoURL
+            // Autenticar en Firebase con las credenciales de Google
+            let credential = GoogleAuthProvider.credential(
+                withIDToken: idToken,
+                accessToken: accessToken
             )
 
-            completion(userData, nil)
+            Auth.auth().signIn(with: credential) { authResult, firebaseError in
+                if let firebaseError = firebaseError {
+                    completion(nil, firebaseError as NSError)
+                    return
+                }
+
+                // Usar el UID de Firebase, no el de Google
+                let firebaseUid = authResult?.user.uid ?? ""
+
+                let userData = GoogleUserData(
+                    displayName: displayName,
+                    uid: firebaseUid,
+                    email: email,
+                    photoURL: photoURL
+                )
+
+                completion(userData, nil)
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ actual class GoogleAuthHelper(
     private val credentialManager: CredentialManager
 ) : KoinComponent {
     actual suspend fun signInWithGoogle(
-        onSuccess: (String, String, String, String, String) -> Unit,
+        onSuccess: (String, String, String, String) -> Unit,
         onError: (String) -> Unit
     ) {
         val clientId: String by inject(named("CLIENT_ID"))
@@ -46,7 +46,7 @@ actual class GoogleAuthHelper(
                 val uid = user?.uid
                 val profileImageUrl = user?.photoUrl?.toString()
 
-                onSuccess(user?.displayName ?: "user", uid ?: "", idToken ?: "", user?.email ?: "", profileImageUrl ?: "")
+                onSuccess(user?.displayName ?: "user", uid ?: "", user?.email ?: "", profileImageUrl ?: "")
             } else {
                 onError("Invalid credential type")
             }

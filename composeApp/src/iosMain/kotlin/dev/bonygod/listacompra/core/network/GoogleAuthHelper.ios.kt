@@ -1,9 +1,5 @@
 package dev.bonygod.listacompra.core.network
 
-import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.GoogleAuthProvider
-import dev.gitlive.firebase.auth.auth
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.UIKit.UIApplication
 import kotlin.coroutines.resume
@@ -13,7 +9,7 @@ import kotlin.coroutines.resume
 actual class GoogleAuthHelper {
 
     actual suspend fun signInWithGoogle(
-        onSuccess: (String, String, String, String, String) -> Unit,
+        onSuccess: (String, String, String, String) -> Unit,
         onError: (String) -> Unit,
     ) {
         suspendCancellableCoroutine<Unit> { cont ->
@@ -29,30 +25,8 @@ actual class GoogleAuthHelper {
 
             // Registrar los callbacks con datos completos del usuario
             GoogleSignInCallback.registerWithUserData(
-                onSuccess = { idToken, accessToken, email, displayName, photoURL ->
-                    // Autenticar con Firebase usando el token de Google
-                    kotlinx.coroutines.GlobalScope.launch {
-                        try {
-                            val credential = GoogleAuthProvider.credential(idToken, accessToken)
-                            val result = Firebase.auth.signInWithCredential(credential)
-                            val user = result.user
-
-                            if (user != null) {
-                                onSuccess(
-                                    displayName,
-                                    user.uid,
-                                    idToken,
-                                    email,
-                                    photoURL
-                                )
-                            } else {
-                                onError("Usuario de Firebase es null")
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                        cont.resume(Unit)
-                    }
+                onSuccess = { displayName, uid, email, photoURL ->
+                    onSuccess(displayName, uid, email, photoURL)
                 },
                 onError = { error ->
                     onError(error)

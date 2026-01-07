@@ -42,10 +42,9 @@ public class GoogleAuthCallbackHelper {
             } else if let userData = userData {
                 // Notificar éxito a Kotlin con todos los datos
                 GoogleSignInCallback.shared.onSignInSuccessWithUserData(
-                    idToken: userData.idToken,
-                    accessToken: userData.accessToken,
-                    email: userData.email,
                     displayName: userData.displayName,
+                    uid: userData.uid,
+                    email: userData.email,
                     photoURL: userData.photoURL
                 )
             } else {

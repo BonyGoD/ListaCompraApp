@@ -7,12 +7,16 @@ import dev.bonygod.listacompra.core.network.GoogleAuthHelper
 import dev.bonygod.listacompra.login.ui.components.GoogleButton
 
 @Composable
-actual fun GoogleSignin(navigateToWellcome: () -> Unit) {
+actual fun GoogleSignin(
+    onSuccess: (displayName: String, uid: String, email: String, photoUrl: String) -> Unit,
+    onError: (errorMessage: String) -> Unit
+) {
     val context = LocalContext.current
     val googleAuthHelper = GoogleAuthHelper(context, CredentialManager.create(context))
 
     GoogleButton(
-        googleAuthHelper,
-        navigateToWellcome
+        googleAuthHelper = googleAuthHelper,
+        onSuccess = onSuccess,
+        onError = onError
     )
 }

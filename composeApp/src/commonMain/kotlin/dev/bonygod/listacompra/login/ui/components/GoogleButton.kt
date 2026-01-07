@@ -30,11 +30,13 @@ import listacompra.composeapp.generated.resources.google_icon
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun GoogleButton(googleAuthHelper: GoogleAuthHelper, navigateToWellcome: () -> Unit) {
+fun GoogleButton(
+    googleAuthHelper: GoogleAuthHelper,
+    onSuccess: (displayName: String, uid: String, email: String, photoUrl: String) -> Unit,
+    onError: (errorMessage: String) -> Unit
+) {
 
-    val error = rememberSaveable { mutableStateOf("") }
     val scope = rememberCoroutineScope()
-//    val userViewModel = koinViewModel<UserViewModel>()
 
     Button(
         modifier = Modifier
@@ -46,13 +48,11 @@ fun GoogleButton(googleAuthHelper: GoogleAuthHelper, navigateToWellcome: () -> U
         onClick = {
             scope.launch {
                 googleAuthHelper.signInWithGoogle(
-                    onSuccess = { userName, userUid, tokenId, mail, photo ->
-//                        val userDb = createUserDb(userUid, userName, mail, tokenId)
-//                        userViewModel.insertUser(userDb)
-                        navigateToWellcome()
+                    onSuccess = { displayName, uid, email, photoUrl ->
+                        onSuccess(displayName, uid, email, photoUrl)
                     },
                     onError = { errorMsg ->
-                        error.value = errorMsg
+                        onError(errorMsg)
                     })
             }
         },

@@ -9,7 +9,7 @@ package dev.bonygod.listacompra.core.network
 object GoogleSignInCallback {
 
     private var onSuccessCallback: ((String) -> Unit)? = null
-    private var onSuccessWithDataCallback: ((String, String, String, String, String) -> Unit)? = null
+    private var onSuccessWithDataCallback: ((String, String, String, String) -> Unit)? = null
     private var onErrorCallback: ((String) -> Unit)? = null
 
     /**
@@ -27,7 +27,7 @@ object GoogleSignInCallback {
      * Registra los callbacks con datos completos del usuario.
      */
     fun registerWithUserData(
-        onSuccess: (idToken: String, accessToken: String, email: String, displayName: String, photoURL: String) -> Unit,
+        onSuccess: (displayName: String, uid: String, email: String, photoURL: String) -> Unit,
         onError: (error: String) -> Unit
     ) {
         onSuccessWithDataCallback = onSuccess
@@ -45,8 +45,8 @@ object GoogleSignInCallback {
     /**
      * Método que Swift debe llamar cuando el sign-in es exitoso con datos completos.
      */
-    fun onSignInSuccessWithUserData(idToken: String, accessToken: String, email: String, displayName: String, photoURL: String) {
-        onSuccessWithDataCallback?.invoke(idToken, accessToken, email, displayName, photoURL)
+    fun onSignInSuccessWithUserData(displayName: String, uid: String, email: String, photoURL: String) {
+        onSuccessWithDataCallback?.invoke(displayName, uid, email, photoURL)
         clear()
     }
 

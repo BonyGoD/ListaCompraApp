@@ -1,5 +1,5 @@
 {
-  "originHash" : "33f4ad43e5e3f8e308b9da2998bdddfb26b554ee7df8d9813daef0578631632b",
+  "originHash" : "0f7f93b17a58c4eedec385fbc0edf9904710a8f699eb567d0a24d58d7183197c",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -69,8 +69,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/googlesignin-ios",
       "state" : {
-        "revision" : "3996d908c7b3ce8a87d39c808f9a6b2a08fbe043",
-        "version" : "9.0.0"
+        "revision" : "913b4005ea26aebe1c97d54e35ad82a515924c71",
+        "version" : "9.1.0"
+      }
+    },
+    {
+      "identity" : "googlesigninkmp",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/BonyGoD/GoogleSignInKMP.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "2f1dff523d8eabe882778aa202fe2d892600ffb3"
       }
     },
     {
@@ -150,8 +159,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "e3f69fd321d0c9fcdc16fb576a0cdd956675face",
-        "version" : "1.31.0"
+        "revision" : "c169a5744230951031770e27e475ff6eefe51f9d",
+        "version" : "1.33.3"
       }
     }
   ],

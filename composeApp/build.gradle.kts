@@ -62,6 +62,8 @@ kotlin {
             implementation(libs.gitlive.firebase.auth)
             implementation(libs.gitlive.firebase.crashlytics)
             implementation(libs.gitlive.firebase.analitics)
+
+            implementation("com.github.BonyGoD.GoogleSignInKMP:googlesignin-kmp:1.0.3-SNAPSHOT-14")
         }
 
         commonTest.dependencies {

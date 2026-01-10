@@ -1,5 +1,5 @@
 {
-  "originHash" : "33f4ad43e5e3f8e308b9da2998bdddfb26b554ee7df8d9813daef0578631632b",
+  "originHash" : "dc764cd8a7f53f33cef2d969c87c57e8d1123fbe5c0ac09e1dd3aac98780cfed",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -69,8 +69,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/googlesignin-ios",
       "state" : {
-        "revision" : "3996d908c7b3ce8a87d39c808f9a6b2a08fbe043",
-        "version" : "9.0.0"
+        "revision" : "913b4005ea26aebe1c97d54e35ad82a515924c71",
+        "version" : "9.1.0"
+      }
+    },
+    {
+      "identity" : "googlesigninkmp",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/BonyGoD/GoogleSignInKMP",
+      "state" : {
+        "revision" : "7d6b8b123cabd6d3df34508734eb9ed8f4dbc32a",
+        "version" : "1.0.0"
       }
     },
     {

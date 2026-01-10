@@ -1,31 +1,26 @@
 package dev.bonygod.listacompra.home.ui.composables
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.bonygod.googlesignin.kmp.ui.GoogleSignin
 import dev.bonygod.listacompra.ScreenWrapper
 import dev.bonygod.listacompra.home.ui.composables.components.AddProductBottomSheet
 import dev.bonygod.listacompra.home.ui.composables.components.ConfirmDialog
@@ -39,7 +34,6 @@ import dev.bonygod.listacompra.home.ui.composables.preview.ListaCompraPreview
 import dev.bonygod.listacompra.home.ui.model.ListaCompraUI
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.basura
-import listacompra.composeapp.generated.resources.google_icon
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -118,23 +112,6 @@ fun HomeContent(
             },
             onClick = {
                 onEvent(ListaCompraEvent.ShowBottomSheet(true))
-            }
-        )
-        GoogleSignin(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp)
-                .border(1.dp, Color(0xFF000000), RoundedCornerShape(30.dp))
-                .clip(shape = RoundedCornerShape(30.dp))
-                .height(50.dp),
-            text = "Login with google",
-            textColor = Color.Black,
-            icon = painterResource(Res.drawable.google_icon),
-            onSuccess = { displayName, uid, email, photoUrl ->
-                // Handle successful sign-in
-            },
-            onError = { errorMessage ->
-                // Handle sign-in error
             }
         )
     }

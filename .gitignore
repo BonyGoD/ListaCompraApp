@@ -54,6 +54,11 @@ iosApp/Podfile.lock
 iosApp/*.xcworkspace
 iosApp/DerivedData/
 
+# Swift Package Manager
+Package.resolved
+iosApp/Package.resolved
+.swiftpm/
+
 # Archivos de configuración sensible iOS
 iosApp/GoogleService-Info.plist
 iosApp/Config.plist

@@ -63,7 +63,7 @@ kotlin {
             implementation(libs.gitlive.firebase.crashlytics)
             implementation(libs.gitlive.firebase.analitics)
 
-            implementation("com.github.BonyGoD.GoogleSignInKMP:googlesignin-kmp:1.0.3-SNAPSHOT-14")
+            implementation("com.github.BonyGoD.GoogleSignInKMP:googlesignin-kmp:1.0.0")
         }
 
         commonTest.dependencies {
@@ -99,8 +99,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

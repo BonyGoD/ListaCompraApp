@@ -1,0 +1,25 @@
+<resources>
+    <!-- Common -->
+    <string name="login_register_screen_email">EMAIL</string>
+    <string name="login_register_screen_password">PASSWORD</string>
+
+    <!-- Login -->
+    <string name="login_screen_title">Welcome to ListaCompra!</string>
+    <string name="login_screen_subtitle">Let's manage the food items we're missing</string>
+    <string name="login_screen_forgot_password">Forgot your password?</string>
+    <string name="login_screen_login_button">Sign In</string>
+    <string name="login_screen_or_login_with">Or sign in with</string>
+    <string name="login_screen_no_account">Don't have an account?</string>
+    <string name="login_screen_register_link">Sign Up</string>
+    <string name="login_screen_google_access">Sign In with Google</string>
+
+    <!-- Register -->
+    <string name="register_screen_title">Create your account</string>
+    <string name="register_screen_subtitle">Join ListaCompra and manage your food items</string>
+    <string name="register_screen_name">NAME</string>
+    <string name="register_screen_confirm_password">CONFIRM PASSWORD</string>
+    <string name="register_screen_register_button">Sign Up</string>
+    <string name="register_screen_or_register_with">Or sign up with</string>
+    <string name="register_screen_google_register">Sign Up with Google</string>
+
+</resources>

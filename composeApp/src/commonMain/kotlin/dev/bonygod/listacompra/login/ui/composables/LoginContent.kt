@@ -45,7 +45,7 @@ fun LoginContent() {
     Column(modifier = Modifier.fillMaxSize()) {
         Header(
             stringResource(Res.string.login_screen_title),
-            "Vamos a gestionar los alimentos que nos faltan",
+            stringResource(Res.string.login_screen_subtitle),
             100
         )
         EmailTextField(paddingTop = 50)

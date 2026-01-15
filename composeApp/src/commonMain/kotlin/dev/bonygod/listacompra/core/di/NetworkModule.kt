@@ -19,6 +19,7 @@ import dev.bonygod.listacompra.login.domain.usecase.ResetPasswordUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserGoogleLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
+import dev.bonygod.listacompra.login.ui.AuthViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
@@ -40,6 +41,7 @@ val appModule = module {
 
 val viewModelsModule = module {
     viewModelOf(::ListaCompraViewModel)
+    viewModelOf(::AuthViewModel)
 }
 
 val dataModule = module {

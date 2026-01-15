@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -14,8 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.bonygod.listacompra.login.ui.composables.interactions.LoginEvent
+import dev.bonygod.listacompra.login.ui.composables.interactions.LoginState
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.close_eye_icon
@@ -27,10 +33,13 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun PasswordTextField(repeat: String = "") {
+fun PasswordTextField(
+    state: LoginState,
+    setEvent: (LoginEvent) -> Unit
+) {
     Column {
         Text(
-            text = repeat.ifEmpty { stringResource(Res.string.login_register_screen_password) },
+            text = stringResource(Res.string.login_register_screen_password),
             fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
             fontWeight = FontWeight.ExtraBold,
             fontSize = 12.sp,
@@ -39,11 +48,16 @@ fun PasswordTextField(repeat: String = "") {
                 .padding(start = 20.dp, top = 24.dp, bottom = 10.dp)
         )
         OutlinedTextField(
-            value = "",
-            onValueChange = {  },
+            value = state.loginUI.password,
+            onValueChange = { setEvent(LoginEvent.OnPasswordChange(it)) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
             textStyle = TextStyle(fontSize = 20.sp),
             shape = RoundedCornerShape(14.dp),
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.None,
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
             leadingIcon = {
                 Icon(
                     painter = painterResource(Res.drawable.pass_icon),

@@ -13,8 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.bonygod.listacompra.login.ui.composables.interactions.LoginEvent
+import dev.bonygod.listacompra.login.ui.composables.interactions.LoginState
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.login_register_screen_email
@@ -24,7 +27,11 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun EmailTextField(paddingTop: Int) {
+fun EmailTextField(
+    paddingTop: Dp,
+    state: LoginState,
+    setEvent: (LoginEvent) -> Unit
+) {
     Column {
         Text(
             text = stringResource(Res.string.login_register_screen_email),
@@ -33,11 +40,11 @@ fun EmailTextField(paddingTop: Int) {
             fontSize = 12.sp,
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(start = 20.dp, top = paddingTop.dp, bottom = 10.dp)
+                .padding(start = 20.dp, top = paddingTop, bottom = 10.dp)
         )
         OutlinedTextField(
-            value = "",
-            onValueChange = {  },
+            value = state.loginUI.email,
+            onValueChange = { setEvent(LoginEvent.OnEmailChange(it)) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
             textStyle = TextStyle(fontSize = 20.sp),
             shape = RoundedCornerShape(14.dp),

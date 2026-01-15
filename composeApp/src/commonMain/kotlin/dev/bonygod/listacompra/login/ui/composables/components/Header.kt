@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import listacompra.composeapp.generated.resources.Inter_Italic
@@ -24,7 +25,7 @@ import org.jetbrains.compose.resources.painterResource
 fun Header(
     title: String,
     subtitle: String,
-    paddingTop: Int
+    paddingTop: Dp
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -35,7 +36,7 @@ fun Header(
             contentDescription = "App icon",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = paddingTop.dp)
+                .padding(top = paddingTop)
                 .size(100.dp)
         )
         Text(

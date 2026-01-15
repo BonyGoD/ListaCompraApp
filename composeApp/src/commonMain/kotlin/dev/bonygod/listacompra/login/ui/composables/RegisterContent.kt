@@ -1,27 +1,18 @@
 package dev.bonygod.listacompra.login.ui.composables
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,12 +32,7 @@ import dev.bonygod.listacompra.login.ui.composables.components.Header
 import dev.bonygod.listacompra.login.ui.composables.components.PasswordTextField
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
-import listacompra.composeapp.generated.resources.app_icon
-import listacompra.composeapp.generated.resources.close_eye_icon
 import listacompra.composeapp.generated.resources.google_icon
-import listacompra.composeapp.generated.resources.mail_icon
-import listacompra.composeapp.generated.resources.open_eye_icon
-import listacompra.composeapp.generated.resources.pass_icon
 import listacompra.composeapp.generated.resources.register_screen_confirm_password
 import listacompra.composeapp.generated.resources.register_screen_google_register
 import listacompra.composeapp.generated.resources.register_screen_name
@@ -67,7 +53,7 @@ fun RegisterContent() {
         Header(
             stringResource(Res.string.register_screen_title),
             stringResource(Res.string.register_screen_subtitle),
-            50
+            50.dp
         )
         Column(modifier = Modifier.verticalScroll(rememberScrollState()))
         {
@@ -93,9 +79,9 @@ fun RegisterContent() {
                     )
                 }
             )
-            EmailTextField(paddingTop = 24)
-            PasswordTextField()
-            PasswordTextField(stringResource(Res.string.register_screen_confirm_password))
+//            EmailTextField(paddingTop = 24, state = state, onEvent = onEvent)
+//            PasswordTextField(state)
+//            PasswordTextField(state, )
             Button(
                 onClick = { },
                 modifier = Modifier

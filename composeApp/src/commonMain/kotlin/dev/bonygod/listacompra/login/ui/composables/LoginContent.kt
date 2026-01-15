@@ -26,6 +26,8 @@ import dev.bonygod.listacompra.login.ui.composables.components.GoogleSpacer
 import dev.bonygod.listacompra.login.ui.composables.components.Header
 import dev.bonygod.listacompra.login.ui.composables.components.NoAccountText
 import dev.bonygod.listacompra.login.ui.composables.components.PasswordTextField
+import dev.bonygod.listacompra.login.ui.composables.interactions.LoginEvent
+import dev.bonygod.listacompra.login.ui.composables.interactions.LoginState
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.google_icon
@@ -40,27 +42,34 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+private val HEADER_PADDING_TOP = 100.dp
+private val EMAIL_FIELD_PADDING_TOP = 50.dp
+
 @Composable
-fun LoginContent() {
+fun LoginContent(
+    state: LoginState,
+    setEvent: (LoginEvent) -> Unit = {}
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         Header(
             stringResource(Res.string.login_screen_title),
             stringResource(Res.string.login_screen_subtitle),
-            100
+            HEADER_PADDING_TOP
         )
-        EmailTextField(paddingTop = 50)
-        PasswordTextField()
+        EmailTextField(EMAIL_FIELD_PADDING_TOP, state, setEvent)
+        PasswordTextField(state, setEvent)
         Text(
             text = stringResource(Res.string.login_screen_forgot_password),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 7.dp)
                 .clickable(
-                    onClick = {  }
+                    onClick = {
+                        setEvent(LoginEvent.OnResetPassword(state.loginUI.email))
+                    }
                 )
         )
         Button(
-            onClick = { },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, top = 32.dp, end = 20.dp)
@@ -76,6 +85,9 @@ fun LoginContent() {
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
                 )
+            },
+            onClick = {
+                setEvent(LoginEvent.OnSignInClick)
             }
         )
         GoogleSpacer(stringResource(Res.string.login_screen_or_login_with))
@@ -103,5 +115,5 @@ fun LoginContent() {
 @Preview(showBackground = true)
 @Composable
 fun AuthContentPreview() {
-    LoginContent()
+    //LoginContent()
 }

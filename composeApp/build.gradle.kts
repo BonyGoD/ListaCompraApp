@@ -51,6 +51,10 @@ kotlin {
             implementation(libs.kotlin.serialization)
             implementation(libs.kotlinx.datetime)
 
+            // Navigation 3
+            implementation(libs.jetbrains.material3.adaptiveNavigation3)
+            implementation(libs.jetbrains.lifecycle.viewmodelNavigation3)
+
             // Dependency Injection
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

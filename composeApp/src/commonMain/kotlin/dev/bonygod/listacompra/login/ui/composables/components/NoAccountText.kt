@@ -17,7 +17,7 @@ import listacompra.composeapp.generated.resources.login_screen_register_link
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun NoAccountText() {
+fun NoAccountText(navigateToRegister: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -26,16 +26,16 @@ fun NoAccountText() {
     ){
         Text(
             text = stringResource(Res.string.login_screen_no_account),
-            modifier = Modifier
-                .padding(bottom = 20.dp)
         )
         Text(
             text = stringResource(Res.string.login_screen_register_link),
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .padding(bottom = 20.dp, start = 5.dp)
+                .padding(start = 5.dp)
                 .clickable(
-                    onClick = {  }
+                    onClick = {
+                        navigateToRegister()
+                    }
                 )
         )
     }

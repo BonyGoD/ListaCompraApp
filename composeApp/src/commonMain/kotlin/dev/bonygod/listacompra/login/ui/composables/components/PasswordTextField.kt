@@ -18,28 +18,57 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.bonygod.listacompra.login.ui.composables.interactions.LoginEvent
-import dev.bonygod.listacompra.login.ui.composables.interactions.LoginState
+import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
+import dev.bonygod.listacompra.login.ui.composables.interactions.AuthState
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.close_eye_icon
+import listacompra.composeapp.generated.resources.lock_icon
 import listacompra.composeapp.generated.resources.login_register_screen_password
 import listacompra.composeapp.generated.resources.open_eye_icon
 import listacompra.composeapp.generated.resources.pass_icon
+import listacompra.composeapp.generated.resources.register_screen_confirm_password
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PasswordTextField(
-    state: LoginState,
-    setEvent: (LoginEvent) -> Unit
+    state: AuthState,
+    setEvent: (AuthEvent) -> Unit,
+    confirmPassword: Boolean = false
 ) {
+    val labelPasswordText = if (confirmPassword) {
+        stringResource(Res.string.register_screen_confirm_password)
+    } else {
+        stringResource(Res.string.login_register_screen_password)
+    }
+
+    val passwordValue = if (confirmPassword) {
+        state.authUI.confirmPassword
+    } else {
+        state.authUI.password
+    }
+
+    val iconPassword = if (confirmPassword) {
+        painterResource(Res.drawable.lock_icon)
+    } else {
+        painterResource(Res.drawable.pass_icon)
+    }
+
+    val eyeOpen = if (confirmPassword) {
+        state.eyeConfirmPassword
+    } else {
+        state.eyePasswordOpen
+    }
+
     Column {
         Text(
-            text = stringResource(Res.string.login_register_screen_password),
+            text = labelPasswordText,
             fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
             fontWeight = FontWeight.ExtraBold,
             fontSize = 12.sp,
@@ -48,8 +77,14 @@ fun PasswordTextField(
                 .padding(start = 20.dp, top = 24.dp, bottom = 10.dp)
         )
         OutlinedTextField(
-            value = state.loginUI.password,
-            onValueChange = { setEvent(LoginEvent.OnPasswordChange(it)) },
+            value = passwordValue,
+            onValueChange = {
+                if(!confirmPassword) {
+                    setEvent(AuthEvent.OnPasswordChange(it))
+                } else {
+                    setEvent(AuthEvent.OnConfirmPasswordChange(it))
+                }
+            },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
             textStyle = TextStyle(fontSize = 20.sp),
             shape = RoundedCornerShape(14.dp),
@@ -58,17 +93,24 @@ fun PasswordTextField(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
+            visualTransformation = if (eyeOpen) VisualTransformation.None else PasswordVisualTransformation(),
             leadingIcon = {
                 Icon(
-                    painter = painterResource(Res.drawable.pass_icon),
+                    painter = iconPassword,
                     contentDescription = "Email"
                 )
             },
             trailingIcon = {
-                IconButton(onClick = {  }) {
+                IconButton(onClick = {
+                    if(confirmPassword) {
+                        setEvent(AuthEvent.OnEyeConfirmPasswordClick)
+                    } else {
+                        setEvent(AuthEvent.OnEyePasswordClick)
+                    }
+                }) {
                     Icon(
-                        painter = if (true) painterResource(Res.drawable.close_eye_icon) else painterResource(Res.drawable.open_eye_icon),
-                        contentDescription = if (true) "Ocultar contraseña" else "Mostrar contraseña"
+                        painter = if (eyeOpen) painterResource(Res.drawable.close_eye_icon) else painterResource(Res.drawable.open_eye_icon),
+                        contentDescription = if (eyeOpen) "Ocultar contraseña" else "Mostrar contraseña"
                     )
                 }
             }

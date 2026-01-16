@@ -30,10 +30,11 @@ import dev.bonygod.listacompra.login.ui.composables.components.EmailTextField
 import dev.bonygod.listacompra.login.ui.composables.components.GoogleSpacer
 import dev.bonygod.listacompra.login.ui.composables.components.Header
 import dev.bonygod.listacompra.login.ui.composables.components.PasswordTextField
+import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
+import dev.bonygod.listacompra.login.ui.composables.interactions.AuthState
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.google_icon
-import listacompra.composeapp.generated.resources.register_screen_confirm_password
 import listacompra.composeapp.generated.resources.register_screen_google_register
 import listacompra.composeapp.generated.resources.register_screen_name
 import listacompra.composeapp.generated.resources.register_screen_or_register_with
@@ -46,14 +47,18 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+private val EMAIL_PADDING_TOP = 24.dp
+
 @Composable
-fun RegisterContent() {
+fun RegisterContent(
+    state: AuthState,
+    setEvent: (AuthEvent) -> Unit = {}
+) {
     Column(modifier = Modifier.fillMaxSize())
     {
         Header(
             stringResource(Res.string.register_screen_title),
-            stringResource(Res.string.register_screen_subtitle),
-            50.dp
+            stringResource(Res.string.register_screen_subtitle)
         )
         Column(modifier = Modifier.verticalScroll(rememberScrollState()))
         {
@@ -67,23 +72,25 @@ fun RegisterContent() {
                     .padding(start = 20.dp, top = 50.dp, bottom = 10.dp)
             )
             OutlinedTextField(
-                value = "",
-                onValueChange = { },
+                value = state.authUI.userName,
+                onValueChange = { setEvent(AuthEvent.OnUserNameChange(it)) },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                 textStyle = TextStyle(fontSize = 20.sp),
                 shape = RoundedCornerShape(14.dp),
                 leadingIcon = {
                     Icon(
                         painter = painterResource(Res.drawable.user_icon),
-                        contentDescription = "Email"
+                        contentDescription = "userName"
                     )
                 }
             )
-//            EmailTextField(paddingTop = 24, state = state, onEvent = onEvent)
-//            PasswordTextField(state)
-//            PasswordTextField(state, )
+            EmailTextField(EMAIL_PADDING_TOP, state = state, setEvent = setEvent)
+            PasswordTextField(state, setEvent)
+            PasswordTextField(state, setEvent, true)
             Button(
-                onClick = { },
+                onClick = {
+                    setEvent(AuthEvent.OnRegisterClick)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 20.dp, top = 32.dp, end = 20.dp)
@@ -116,15 +123,9 @@ fun RegisterContent() {
                     // Handle successful sign-in
                 },
                 onError = { errorMessage ->
-                    // Handle sign-in error
+                    setEvent(AuthEvent.OnGoogleSignInError(errorMessage))
                 }
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RegisterContentPreview() {
-    RegisterContent()
 }

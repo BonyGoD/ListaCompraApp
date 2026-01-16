@@ -10,23 +10,24 @@ import dev.bonygod.listacompra.login.ui.composables.LoginContent
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun LoginScreen(snackbarHostState: SnackbarHostState) {
+fun LoginScreen(snackbarHostState: SnackbarHostState, navigateToRegister:() -> Unit) {
     val viewModel: AuthViewModel = koinViewModel()
     val state = viewModel.state.collectAsState()
 
 
-    LaunchedEffect(state.value.loginError) {
-        val error = state.value.loginError
+    LaunchedEffect(state.value.authError) {
+        val error = state.value.authError
         if (error.isNotEmpty()) {
             snackbarHostState.showSnackbar(message = error)
-            viewModel.setState { setLoginError("") }
+            viewModel.setState { setAuthError("") }
         }
     }
 
     ScreenWrapper(snackbarHostState = snackbarHostState) {
         LoginContent(
             state = state.value,
-            setEvent = viewModel::onEvent
+            setEvent = viewModel::onEvent,
+            navigateToRegister
         )
     }
 }

@@ -24,8 +24,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun Header(
     title: String,
-    subtitle: String,
-    paddingTop: Dp
+    subtitle: String
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -36,7 +35,7 @@ fun Header(
             contentDescription = "App icon",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = paddingTop)
+                .padding(top = 50.dp)
                 .size(100.dp)
         )
         Text(

@@ -17,7 +17,6 @@ import dev.bonygod.listacompra.login.data.repository.UserRepository
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ResetPasswordUseCase
-import dev.bonygod.listacompra.login.domain.usecase.UserGoogleLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
 import dev.bonygod.listacompra.login.ui.AuthViewModel
@@ -66,7 +65,6 @@ val dataModule = module {
     single { AddProductoUseCase(get()) }
     single { GetUserUseCase(get()) }
     single { UserLoginUseCase(get()) }
-    single { UserGoogleLoginUseCase(get()) }
     single { LogOutUseCase(get()) }
     single { ResetPasswordUseCase(get()) }
     single { UserRegisterUseCase(get()) }

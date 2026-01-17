@@ -56,19 +56,6 @@ class UsersDataSource(
     }
 
     /**
-     * Login con Google
-     */
-    suspend fun loginWithGoogle(idToken: String): Result<FirebaseUser?> {
-        return try {
-            val credential = GoogleAuthProvider.credential(idToken, null)
-            val result = auth.signInWithCredential(credential)
-            Result.success(result.user)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    /**
      * Recuperar contraseña
      */
     suspend fun resetPassword(email: String) {

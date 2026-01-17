@@ -30,10 +30,6 @@ class UserRepository(
         }
     }
 
-    suspend fun loginWithGoogle(idToken: String) {
-        usersDS.loginWithGoogle(idToken)
-    }
-
     suspend fun resetPassword(email: String): Result<Unit> {
         return try {
             usersDS.resetPassword(email)

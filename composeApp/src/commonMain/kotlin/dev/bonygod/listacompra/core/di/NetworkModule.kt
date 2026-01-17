@@ -2,6 +2,7 @@ package dev.bonygod.listacompra.core.di
 
 import dev.bonygod.listacompra.BuildConfig
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
+import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.network.NetworkProvider
 import dev.bonygod.listacompra.home.data.datasource.ListaCompraDataSource
 import dev.bonygod.listacompra.home.data.repository.ProductosRepository
@@ -27,6 +28,7 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 val appModule = module {
+    single { Navigator() }
     single { NetworkProvider().provideFirebaseClient() }
     single { NetworkProvider().provideAnalytics() }
     single { NetworkProvider().provideAuth() }

@@ -11,13 +11,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.login_screen_no_account
 import listacompra.composeapp.generated.resources.login_screen_register_link
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun NoAccountText(navigateToRegister: () -> Unit) {
+fun NoAccountText(setEvent: (AuthEvent) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -32,11 +33,9 @@ fun NoAccountText(navigateToRegister: () -> Unit) {
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .padding(start = 5.dp)
-                .clickable(
-                    onClick = {
-                        navigateToRegister()
-                    }
-                )
+                .clickable {
+                    setEvent(AuthEvent.OnNavigateToRegister)
+                }
         )
     }
 }

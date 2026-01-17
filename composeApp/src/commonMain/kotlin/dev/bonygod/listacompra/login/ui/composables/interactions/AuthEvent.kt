@@ -12,4 +12,7 @@ sealed class AuthEvent {
     data object OnRegisterClick: AuthEvent()
     data object OnGoogleSignInSuccess: AuthEvent()
     data class OnGoogleSignInError(val errorMessage: String): AuthEvent()
+
+    // Navigation events
+    data object OnNavigateToRegister: AuthEvent()
 }

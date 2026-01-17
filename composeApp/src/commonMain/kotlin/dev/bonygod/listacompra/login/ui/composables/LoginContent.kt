@@ -49,8 +49,7 @@ private val EMAIL_FIELD_PADDING_TOP = 50.dp
 @Composable
 fun LoginContent(
     state: AuthState,
-    setEvent: (AuthEvent) -> Unit = {},
-    navigateToRegister: () -> Unit
+    setEvent: (AuthEvent) -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Header(
@@ -111,7 +110,7 @@ fun LoginContent(
                     setEvent(AuthEvent.OnGoogleSignInError(errorMessage))
                 }
             )
-            NoAccountText(navigateToRegister)
+            NoAccountText(setEvent)
         }
     }
 }

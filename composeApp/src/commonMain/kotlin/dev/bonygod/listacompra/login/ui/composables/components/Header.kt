@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import listacompra.composeapp.generated.resources.Inter_Italic
@@ -52,9 +52,11 @@ fun Header(
             fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
+            textAlign = TextAlign.Center,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 8.dp)
+                .fillMaxWidth()
+                .padding(top = 8.dp, start = 32.dp, end = 32.dp)
         )
     }
 }

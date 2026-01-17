@@ -153,10 +153,10 @@ fun HomeContent(
 @Preview
 @Composable
 fun AppAndroidPreview() {
-    ScreenWrapper {
-        HomeContent(
-            data = ListaCompraPreview.ListaCompraUI,
-            state = ListaCompraState(listaCompraUI = ListaCompraPreview.ListaCompraUI),
-        )
-    }
+//    ScreenWrapper {
+//        HomeContent(
+//            data = ListaCompraPreview.ListaCompraUI,
+//            state = ListaCompraState(listaCompraUI = ListaCompraPreview.ListaCompraUI)
+//        )
+//    }
 }

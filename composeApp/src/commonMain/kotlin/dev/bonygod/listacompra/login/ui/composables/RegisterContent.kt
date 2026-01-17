@@ -45,7 +45,6 @@ import listacompra.composeapp.generated.resources.user_icon
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val EMAIL_PADDING_TOP = 24.dp
 

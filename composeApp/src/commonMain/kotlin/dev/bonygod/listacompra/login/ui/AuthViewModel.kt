@@ -3,17 +3,24 @@ package dev.bonygod.listacompra.login.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.bonygod.listacompra.core.CustomFailures.LoginFailure
+import dev.bonygod.listacompra.core.navigation.Navigator
+import dev.bonygod.listacompra.core.navigation.Routes
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
 import dev.bonygod.listacompra.login.domain.usecase.ResetPasswordUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
+import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEffect
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthState
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
+    private val navigator: Navigator,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val userLoginUseCase: UserLoginUseCase,
     private val registerUseCase: UserRegisterUseCase
@@ -21,8 +28,18 @@ class AuthViewModel(
     private val _state = MutableStateFlow(AuthState())
     val state: StateFlow<AuthState> = _state
 
+    private val _effect = MutableSharedFlow<AuthEffect>(replay = 1)
+    val effect: SharedFlow<AuthEffect> = _effect.asSharedFlow()
+
+
     fun setState(reducer: AuthState.() -> AuthState) {
         _state.value = _state.value.reducer()
+    }
+
+    private fun setEffect(effect: AuthEffect) {
+        viewModelScope.launch {
+            _effect.emit(effect)
+        }
     }
 
     fun onEvent(event: AuthEvent) {
@@ -36,8 +53,9 @@ class AuthViewModel(
             is AuthEvent.OnResetPassword -> resetPassword(event.value)
             is AuthEvent.OnSignInClick -> logInWithEmail()
             is AuthEvent.OnRegisterClick -> registerUser()
-            is AuthEvent.OnGoogleSignInSuccess -> { /* Handle Google Sign-In success if needed */ }
-            is AuthEvent.OnGoogleSignInError -> setState { setAuthError(event.errorMessage) }
+            is AuthEvent.OnGoogleSignInSuccess -> navigator.clearAndNavigateTo(Routes.Home)
+            is AuthEvent.OnGoogleSignInError -> setEffect(AuthEffect.ShowError(event.errorMessage))
+            is AuthEvent.OnNavigateToRegister -> navigator.navigateTo(Routes.Register)
         }
     }
 
@@ -45,13 +63,12 @@ class AuthViewModel(
         viewModelScope.launch {
             registerUseCase(state.value.getUserData().toDomain()).fold(
                 onSuccess = {
-                    //Effect Navigate
+                    navigator.navigateTo(Routes.Home)
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
-                    setState { setAuthError(errorMessage) }
+                    setEffect(AuthEffect.ShowError(errorMessage))
                 }
-
             )
         }
     }
@@ -62,7 +79,7 @@ class AuthViewModel(
                 onSuccess = {  },
                 onFailure = { error ->
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
-                    setState { setAuthError(errorMessage) }
+                    setEffect(AuthEffect.ShowError(errorMessage))
                 }
             )
         }
@@ -72,10 +89,12 @@ class AuthViewModel(
         viewModelScope.launch {
             val user = state.value.getUserData()
             userLoginUseCase(user.email, user.password).fold(
-                onSuccess = {  },
+                onSuccess = {
+                    navigator.clearAndNavigateTo(Routes.Home)
+                },
                 onFailure = { error ->
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
-                    setState { setAuthError(errorMessage) }
+                    setEffect(AuthEffect.ShowError(errorMessage))
                 }
             )
         }

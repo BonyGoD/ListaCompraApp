@@ -1,7 +1,9 @@
 package dev.bonygod.listacompra.login.domain.mapper
 
 import dev.bonygod.listacompra.login.data.model.UserResponse
+import dev.bonygod.listacompra.login.domain.model.UserRegister
 import dev.bonygod.listacompra.login.domain.model.Usuario
+import dev.bonygod.listacompra.login.ui.composables.model.AuthUI
 
 fun UserResponse.toDomain(): Usuario {
     return Usuario(
@@ -10,5 +12,14 @@ fun UserResponse.toDomain(): Usuario {
         email = this.email,
         apiKey = this.apiKey,
         listas = this.listas
+    )
+}
+
+fun AuthUI.toDomain(): UserRegister {
+    return UserRegister(
+        userName = this.userName,
+        email = this.email,
+        password = this.password,
+        confirmPassword = this.confirmPassword
     )
 }

@@ -2,6 +2,7 @@ package dev.bonygod.listacompra.core.di
 
 import dev.bonygod.listacompra.BuildConfig
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
+import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.network.NetworkProvider
 import dev.bonygod.listacompra.home.data.datasource.ListaCompraDataSource
 import dev.bonygod.listacompra.home.data.repository.ProductosRepository
@@ -19,6 +20,7 @@ import dev.bonygod.listacompra.login.domain.usecase.ResetPasswordUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserGoogleLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
+import dev.bonygod.listacompra.login.ui.AuthViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
@@ -26,6 +28,7 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 val appModule = module {
+    single { Navigator() }
     single { NetworkProvider().provideFirebaseClient() }
     single { NetworkProvider().provideAnalytics() }
     single { NetworkProvider().provideAuth() }
@@ -40,6 +43,7 @@ val appModule = module {
 
 val viewModelsModule = module {
     viewModelOf(::ListaCompraViewModel)
+    viewModelOf(::AuthViewModel)
 }
 
 val dataModule = module {

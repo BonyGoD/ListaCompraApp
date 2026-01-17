@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.home.ui.screens
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import dev.bonygod.listacompra.home.ui.ListaCompraViewModel
@@ -7,7 +8,7 @@ import dev.bonygod.listacompra.home.ui.composables.HomeContent
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(snackbarHostState: SnackbarHostState) {
     val viewModel: ListaCompraViewModel = koinViewModel()
     val state = viewModel.state.collectAsState()
 

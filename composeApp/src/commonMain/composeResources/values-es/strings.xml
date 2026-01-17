@@ -1,0 +1,29 @@
+<resources>
+    --! Common -->
+    <string name="login_register_screen_email">CORREO ELECTRÓNICO</string>
+    <string name="login_register_screen_password">CONTRASEÑA</string>
+
+    --! Login -->
+    <string name="login_screen_title">Bienvenido a ListaCompra!</string>
+    <string name="login_screen_subtitle">Vamos a gestionar los alimentos que nos faltan</string>
+    <string name="login_screen_forgot_password">Olvidaste tu contraseña?</string>
+    <string name="login_screen_login_button">Acceder</string>
+    <string name="login_screen_or_login_with">O accede con</string>
+    <string name="login_screen_no_account">¿No tienes una cuenta?</string>
+    <string name="login_screen_register_link">Regístrate</string>
+    <string name="login_screen_google_access">Acceder con Google</string>
+
+
+    --! Register -->
+    <string name="register_screen_title">Crea tu cuenta</string>
+    <string name="register_screen_subtitle">Únete a ListaCompra y gestiona tus alimentos</string>
+    <string name="register_screen_name">NOMBRE</string>
+    <string name="register_screen_confirm_password">CONFIRMAR CONTRASEÑA</string>
+    <string name="register_screen_register_button">Registrarse</string>
+    <string name="register_screen_or_register_with">O regístrate con</string>
+    <string name="register_screen_google_register">Registrarse con Google</string>
+
+
+    --! Home -->
+
+</resources>

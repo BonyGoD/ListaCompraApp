@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import dev.bonygod.listacompra.home.ui.ListaCompraViewModel
 import dev.bonygod.listacompra.home.ui.composables.HomeContent
+import dev.bonygod.listacompra.home.ui.model.UserUI
+import dev.bonygod.listacompra.login.domain.model.Usuario
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

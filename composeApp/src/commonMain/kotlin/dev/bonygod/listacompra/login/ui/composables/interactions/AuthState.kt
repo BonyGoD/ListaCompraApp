@@ -28,4 +28,7 @@ data class AuthState (
     fun getUserData(): AuthUI {
         return authUI
     }
+    fun setUserData(authUI: AuthUI): AuthState {
+        return copy(authUI = authUI)
+    }
 }

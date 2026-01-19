@@ -10,7 +10,7 @@ sealed class AuthEvent {
     data class OnResetPassword(val value: String): AuthEvent()
     data object OnSignInClick: AuthEvent()
     data object OnRegisterClick: AuthEvent()
-    data object OnGoogleSignInSuccess: AuthEvent()
+    data class OnGoogleSignInSuccess(val uid: String, val displayName: String, val email: String): AuthEvent()
     data class OnGoogleSignInError(val errorMessage: String): AuthEvent()
 
     // Navigation events

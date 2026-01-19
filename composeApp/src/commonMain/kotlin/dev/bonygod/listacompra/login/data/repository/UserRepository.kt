@@ -2,6 +2,7 @@ package dev.bonygod.listacompra.login.data.repository
 
 import dev.bonygod.listacompra.core.CustomFailures.toUserFailure
 import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
+import dev.bonygod.listacompra.login.data.model.UserResponse
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
 import dev.bonygod.listacompra.login.domain.model.Usuario
 
@@ -48,6 +49,24 @@ class UserRepository(
             val userResponse = usersDS.getActualUser()
             Result.success(userResponse.toDomain())
         } catch (e: Exception) {
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun createNewListaCompra(): Result<String> {
+        return try {
+            val listaId = usersDS.createNewListaCompra()
+            Result.success(listaId)
+        } catch (e: Exception) {
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun googleRegister(uid:String, displayName:String, email: String): Result<Usuario> {
+        return try {
+            val userResponse = usersDS.userGoogleRegister(uid, displayName, email)
+            Result.success(userResponse.toDomain())
+        } catch(e: Exception) {
             Result.failure(e.toUserFailure())
         }
     }

@@ -17,6 +17,7 @@ import dev.bonygod.listacompra.login.data.repository.UserRepository
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ResetPasswordUseCase
+import dev.bonygod.listacompra.login.domain.usecase.GoogleRegisterUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
 import dev.bonygod.listacompra.login.ui.AuthViewModel
@@ -47,27 +48,16 @@ val viewModelsModule = module {
 
 val dataModule = module {
     single { GetProductosUseCase(get()) }
-    single {
-        DeleteProductoUseCase(
-            get()
-        )
-    }
-    single {
-        DeleteAllProductosUseCase(
-            get()
-        )
-    }
-    single {
-        UpdateProductoUseCase(
-            get()
-        )
-    }
+    single { DeleteProductoUseCase(get()) }
+    single { DeleteAllProductosUseCase(get()) }
+    single { UpdateProductoUseCase(get()) }
     single { AddProductoUseCase(get()) }
     single { GetUserUseCase(get()) }
     single { UserLoginUseCase(get()) }
     single { LogOutUseCase(get()) }
     single { ResetPasswordUseCase(get()) }
     single { UserRegisterUseCase(get()) }
+    single { GoogleRegisterUserUseCase(get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

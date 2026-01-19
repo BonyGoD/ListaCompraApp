@@ -6,12 +6,14 @@ import dev.bonygod.listacompra.core.CustomFailures.LoginFailure
 import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.navigation.Routes
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
+import dev.bonygod.listacompra.login.domain.usecase.GoogleRegisterUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ResetPasswordUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEffect
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthState
+import dev.bonygod.listacompra.login.ui.composables.mapper.toUI
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -23,7 +25,8 @@ class AuthViewModel(
     private val navigator: Navigator,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val userLoginUseCase: UserLoginUseCase,
-    private val registerUseCase: UserRegisterUseCase
+    private val registerUseCase: UserRegisterUseCase,
+    private val googleRegisterUserUseCase: GoogleRegisterUserUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(AuthState())
     val state: StateFlow<AuthState> = _state
@@ -53,9 +56,24 @@ class AuthViewModel(
             is AuthEvent.OnResetPassword -> resetPassword(event.value)
             is AuthEvent.OnSignInClick -> logInWithEmail()
             is AuthEvent.OnRegisterClick -> registerUser()
-            is AuthEvent.OnGoogleSignInSuccess -> navigator.clearAndNavigateTo(Routes.Home)
+            is AuthEvent.OnGoogleSignInSuccess -> createUserListAndNavigate(event.uid, event.displayName, event.email)
             is AuthEvent.OnGoogleSignInError -> setEffect(AuthEffect.ShowError(event.errorMessage))
             is AuthEvent.OnNavigateToRegister -> navigator.navigateTo(Routes.Register)
+        }
+    }
+
+    private fun createUserListAndNavigate(uid: String, displayName: String, email: String) {
+        viewModelScope.launch {
+            googleRegisterUserUseCase(uid, displayName, email).fold(
+                onSuccess = { usuario ->
+                    setState { setUserData(usuario.toUI()) }
+                    navigator.navigateTo(Routes.Home)
+                },
+                onFailure = { error ->
+                    val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
+                    setEffect(AuthEffect.ShowError(errorMessage))
+                }
+            )
         }
     }
 

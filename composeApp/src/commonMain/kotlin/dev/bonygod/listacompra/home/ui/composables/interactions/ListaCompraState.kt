@@ -2,12 +2,14 @@ package dev.bonygod.listacompra.home.ui.composables.interactions
 
 import androidx.compose.ui.text.input.TextFieldValue
 import dev.bonygod.listacompra.home.ui.model.ListaCompraUI
+import dev.bonygod.listacompra.home.ui.model.UserUI
 
 data class ListaCompraState(
     val loadingState: Boolean = false,
     val dialogState: Boolean = false,
     val error: String? = null,
     val listaCompraUI: ListaCompraUI = ListaCompraUI(),
+    val user: UserUI = UserUI(),
     val editingProductId: String? = null,
     val editingText: TextFieldValue = TextFieldValue(""),
     val showErrorAlert: Boolean = false,
@@ -19,6 +21,10 @@ data class ListaCompraState(
     val showBottomSheet: Boolean = false,
     val newProductText: TextFieldValue = TextFieldValue("")
 ) {
+
+    fun setUser(user: UserUI): ListaCompraState {
+        return copy(user = user)
+    }
     fun showLoading(show: Boolean = false): ListaCompraState {
         return copy(loadingState = show)
     }

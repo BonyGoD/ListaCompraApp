@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GetProductosUseCase(
-    private val productosRepository: ProductosRepository
+    private val productosRepo: ProductosRepository,
 ) {
-    operator fun invoke(): Flow<ListaCompraUI> {
-        return productosRepository.getProductos()
+    operator fun invoke(listaId: String): Flow<ListaCompraUI> {
+        return productosRepo.getProductos(listaId)
             .map { productos -> productos.toListaCompraUI() }
     }
 }

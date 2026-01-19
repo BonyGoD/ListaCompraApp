@@ -1,25 +1,31 @@
 <resources>
     <!-- Common -->
+    <string name="app_name">ListaCompra</string>
     <string name="login_register_screen_email">EMAIL</string>
     <string name="login_register_screen_password">PASSWORD</string>
 
     <!-- Login -->
     <string name="login_screen_title">Welcome to ListaCompra!</string>
-    <string name="login_screen_subtitle">Let's manage the food items we're missing</string>
+    <string name="login_screen_subtitle">Let’s manage the food we’re missing</string>
     <string name="login_screen_forgot_password">Forgot your password?</string>
-    <string name="login_screen_login_button">Sign In</string>
-    <string name="login_screen_or_login_with">Or sign in with</string>
-    <string name="login_screen_no_account">Don't have an account?</string>
-    <string name="login_screen_register_link">Sign Up</string>
-    <string name="login_screen_google_access">Sign In with Google</string>
+    <string name="login_screen_login_button">Login</string>
+    <string name="login_screen_or_login_with">Or log in with</string>
+    <string name="login_screen_no_account">Don’t have an account?</string>
+    <string name="login_screen_register_link">Register</string>
+    <string name="login_screen_google_access">Sign in with Google</string>
+    <string name="login_screen_dialog_title">Recovery email sent</string>
+    <string name="login_screen_dialog_subtitle">Check your inbox and spam folder.</string>
+    <string name="login_screen_dialog_button">Accept</string>
 
     <!-- Register -->
     <string name="register_screen_title">Create your account</string>
-    <string name="register_screen_subtitle">Join ListaCompra and manage your food items</string>
+    <string name="register_screen_subtitle">Join ListaCompra and manage your food</string>
     <string name="register_screen_name">NAME</string>
     <string name="register_screen_confirm_password">CONFIRM PASSWORD</string>
-    <string name="register_screen_register_button">Sign Up</string>
-    <string name="register_screen_or_register_with">Or sign up with</string>
-    <string name="register_screen_google_register">Sign Up with Google</string>
+    <string name="register_screen_register_button">Register</string>
+    <string name="register_screen_or_register_with">Or register with</string>
+    <string name="register_screen_google_register">Register with Google</string>
+
+    <!-- Home -->
 
 </resources>

@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 
 class AuthViewModel(
     private val navigator: Navigator,
@@ -34,6 +36,7 @@ class AuthViewModel(
     private val _effect = MutableSharedFlow<AuthEffect>(replay = 1)
     val effect: SharedFlow<AuthEffect> = _effect.asSharedFlow()
 
+    private var lastResetRequestTime: Long = 0L
 
     fun setState(reducer: AuthState.() -> AuthState) {
         _state.value = _state.value.reducer()
@@ -59,6 +62,8 @@ class AuthViewModel(
             is AuthEvent.OnGoogleSignInSuccess -> createUserListAndNavigate(event.uid, event.displayName, event.email)
             is AuthEvent.OnGoogleSignInError -> setEffect(AuthEffect.ShowError(event.errorMessage))
             is AuthEvent.OnNavigateToRegister -> navigator.navigateTo(Routes.Register)
+            is AuthEvent.ShowLoading -> setState { showLoading(event.show) }
+            is AuthEvent.DismissDialog -> setState { showDialog(false) }
         }
     }
 
@@ -67,7 +72,7 @@ class AuthViewModel(
             googleRegisterUserUseCase(uid, displayName, email).fold(
                 onSuccess = { usuario ->
                     setState { setUserData(usuario.toUI()) }
-                    navigator.navigateTo(Routes.Home)
+                    navigator.clearAndNavigateTo(Routes.Home)
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
@@ -92,9 +97,18 @@ class AuthViewModel(
     }
 
     private fun resetPassword(email: String) {
+        val currentTime = Clock.System.now().toEpochMilliseconds()
+        if (currentTime - lastResetRequestTime < 5.minutes.inWholeMilliseconds) {
+            setEffect(AuthEffect.ShowError("Debes esperar 5 minutos para volver a intentarlo."))
+            return
+        }
+
         viewModelScope.launch {
             resetPasswordUseCase(email).fold(
-                onSuccess = {  },
+                onSuccess = {
+                    lastResetRequestTime = Clock.System.now().toEpochMilliseconds()
+                    setState { showDialog(true) }
+                },
                 onFailure = { error ->
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
                     setEffect(AuthEffect.ShowError(errorMessage))

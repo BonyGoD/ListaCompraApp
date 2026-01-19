@@ -5,8 +5,16 @@ import dev.bonygod.listacompra.login.ui.composables.model.AuthUI
 data class AuthState (
     val authUI: AuthUI = AuthUI(),
     val eyePasswordOpen: Boolean = false,
-    val eyeConfirmPassword: Boolean = false
+    val eyeConfirmPassword: Boolean = false,
+    val isLoading: Boolean = false,
+    val showDialog: Boolean = false
 ) {
+    fun showDialog(show: Boolean = false): AuthState {
+        return copy(showDialog = show)
+    }
+    fun showLoading(show: Boolean = false): AuthState {
+        return copy(isLoading = show)
+    }
     fun updateUserName(userName: String): AuthState {
         return copy(authUI = authUI.copy(userName = userName))
     }

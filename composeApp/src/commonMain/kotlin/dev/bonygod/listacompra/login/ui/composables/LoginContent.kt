@@ -89,6 +89,7 @@ fun LoginContent(
                     )
                 },
                 onClick = {
+                    setEvent(AuthEvent.ShowLoading(true))
                     setEvent(AuthEvent.OnSignInClick)
                 }
             )
@@ -104,6 +105,7 @@ fun LoginContent(
                 textColor = Color.Black,
                 icon = painterResource(Res.drawable.google_icon),
                 onSuccess = { displayName, uid, email, photoUrl ->
+                    setEvent(AuthEvent.ShowLoading(true))
                     setEvent(AuthEvent.OnGoogleSignInSuccess(uid, displayName, email))
                 },
                 onError = { errorMessage ->

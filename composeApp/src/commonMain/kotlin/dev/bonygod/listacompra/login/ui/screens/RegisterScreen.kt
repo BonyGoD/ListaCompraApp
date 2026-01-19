@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import dev.bonygod.listacompra.ScreenWrapper
+import dev.bonygod.listacompra.common.FullScreenLoading
 import dev.bonygod.listacompra.login.ui.AuthViewModel
 import dev.bonygod.listacompra.login.ui.composables.RegisterContent
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEffect
@@ -21,6 +22,9 @@ fun RegisterScreen(snackbarHostState: SnackbarHostState) {
                 is AuthEffect.ShowError -> {
                     snackbarHostState.showSnackbar(message = effect.message)
                 }
+                is AuthEffect.DismissDialog -> {
+                    state.value.showDialog(false)
+                }
                 is AuthEffect.NavigateTo -> {
                     // Navigation is handled directly in the ViewModel via the navigator
                 }
@@ -28,10 +32,14 @@ fun RegisterScreen(snackbarHostState: SnackbarHostState) {
         }
     }
 
-    ScreenWrapper(snackbarHostState = snackbarHostState) {
-        RegisterContent(
-            state = state.value,
-            setEvent = viewModel::onEvent
-        )
+    if (state.value.isLoading) {
+        FullScreenLoading()
+    } else {
+        ScreenWrapper(snackbarHostState = snackbarHostState) {
+            RegisterContent(
+                state = state.value,
+                setEvent = viewModel::onEvent
+            )
+        }
     }
 }

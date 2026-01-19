@@ -88,6 +88,7 @@ fun RegisterContent(
             PasswordTextField(state, setEvent, true)
             Button(
                 onClick = {
+                    setEvent(AuthEvent.ShowLoading(true))
                     setEvent(AuthEvent.OnRegisterClick)
                 },
                 modifier = Modifier
@@ -119,6 +120,7 @@ fun RegisterContent(
                 textColor = Color.Black,
                 icon = painterResource(Res.drawable.google_icon),
                 onSuccess = { displayName, uid, email, photoUrl ->
+                    setEvent(AuthEvent.ShowLoading(true))
                     setEvent(AuthEvent.OnGoogleSignInSuccess(uid, displayName, email))
                 },
                 onError = { errorMessage ->

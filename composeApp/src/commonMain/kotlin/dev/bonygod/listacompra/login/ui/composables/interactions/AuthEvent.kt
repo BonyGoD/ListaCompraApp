@@ -15,4 +15,5 @@ sealed class AuthEvent {
     data object OnNavigateToRegister: AuthEvent()
     data class ShowLoading(val show: Boolean): AuthEvent()
     data object DismissDialog: AuthEvent()
+    data object OnNavigateToForgotPassword: AuthEvent()
 }

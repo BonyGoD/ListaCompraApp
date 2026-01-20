@@ -21,7 +21,7 @@ data class AuthState (
     fun updateLoginEmail(email: String): AuthState {
         return copy(authUI = authUI.copy(email = email))
     }
-    fun updateLogimPassword(password: String): AuthState {
+    fun updateLoginPassword(password: String): AuthState {
         return copy(authUI = authUI.copy(password = password))
     }
     fun updateRegisterConfirmPassword(confirmPassword: String): AuthState {

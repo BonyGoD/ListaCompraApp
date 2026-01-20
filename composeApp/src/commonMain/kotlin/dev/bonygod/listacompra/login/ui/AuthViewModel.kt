@@ -52,7 +52,7 @@ class AuthViewModel(
         when (event) {
             is AuthEvent.OnUserNameChange -> setState { updateUserName(event.value) }
             is AuthEvent.OnEmailChange -> setState { updateLoginEmail(event.value) }
-            is AuthEvent.OnPasswordChange -> setState { updateLogimPassword(event.value) }
+            is AuthEvent.OnPasswordChange -> setState { updateLoginPassword(event.value) }
             is AuthEvent.OnConfirmPasswordChange -> setState { updateRegisterConfirmPassword(event.value) }
             is AuthEvent.OnEyePasswordClick -> setState { updateEyePassword() }
             is AuthEvent.OnEyeConfirmPasswordClick -> setState { updateEyeConfirmPassword() }
@@ -64,6 +64,7 @@ class AuthViewModel(
             is AuthEvent.OnNavigateToRegister -> navigator.navigateTo(Routes.Register)
             is AuthEvent.ShowLoading -> setState { showLoading(event.show) }
             is AuthEvent.DismissDialog -> setState { showDialog(false) }
+            is AuthEvent.OnNavigateToForgotPassword -> navigator.navigateTo(Routes.ForgotPassword)
         }
     }
 
@@ -107,6 +108,7 @@ class AuthViewModel(
             resetPasswordUseCase(email).fold(
                 onSuccess = {
                     lastResetRequestTime = Clock.System.now().toEpochMilliseconds()
+                    setState { updateLoginEmail("") }
                     setState { showDialog(true) }
                 },
                 onFailure = { error ->

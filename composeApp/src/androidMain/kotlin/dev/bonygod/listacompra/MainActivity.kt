@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
         )
         super.onCreate(savedInstanceState)
         Firebase.initialize(this)
+        initPlatform(this)
         setContent {
             App()
         }

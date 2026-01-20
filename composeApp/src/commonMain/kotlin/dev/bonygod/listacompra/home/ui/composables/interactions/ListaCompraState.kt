@@ -1,5 +1,8 @@
 package dev.bonygod.listacompra.home.ui.composables.interactions
 
+import androidx.compose.foundation.gestures.DraggableState
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.ui.text.input.TextFieldValue
 import dev.bonygod.listacompra.home.ui.model.ListaCompraUI
 import dev.bonygod.listacompra.home.ui.model.UserUI
@@ -19,9 +22,13 @@ data class ListaCompraState(
     val successAlertTitle: String = "",
     val successAlertMessage: String = "",
     val showBottomSheet: Boolean = false,
-    val newProductText: TextFieldValue = TextFieldValue("")
+    val newProductText: TextFieldValue = TextFieldValue(""),
+    val showMenu: Boolean = false,
+    val drawerState: DrawerState = DrawerState(initialValue = DrawerValue.Closed)
 ) {
-
+    fun showMenu(): ListaCompraState {
+        return copy(showMenu = true)
+    }
     fun setUser(user: UserUI): ListaCompraState {
         return copy(user = user)
     }

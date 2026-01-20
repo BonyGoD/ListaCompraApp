@@ -73,6 +73,7 @@ class AuthViewModel(
             googleRegisterUserUseCase(uid, displayName, email).fold(
                 onSuccess = { usuario ->
                     setState { setUserData(usuario.toUI()) }
+                    setState { showLoading(false) }
                     navigator.clearAndNavigateTo(Routes.Home)
                 },
                 onFailure = { error ->
@@ -124,6 +125,7 @@ class AuthViewModel(
             val user = state.value.getUserData()
             userLoginUseCase(user.email, user.password).fold(
                 onSuccess = {
+                    setState { showLoading(false) }
                     navigator.clearAndNavigateTo(Routes.Home)
                 },
                 onFailure = { error ->

@@ -5,10 +5,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import dev.bonygod.listacompra.core.navigation.NavigationWrapper
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-@Preview
 fun App() {
     val snackbarHostState = remember { SnackbarHostState() }
     MaterialTheme {

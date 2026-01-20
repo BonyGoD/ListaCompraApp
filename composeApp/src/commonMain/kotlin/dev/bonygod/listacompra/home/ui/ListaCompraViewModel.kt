@@ -4,6 +4,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
+import dev.bonygod.listacompra.core.navigation.Navigator
+import dev.bonygod.listacompra.core.navigation.Routes
 import dev.bonygod.listacompra.home.domain.usecase.AddProductoUseCase
 import dev.bonygod.listacompra.home.domain.usecase.DeleteAllProductosUseCase
 import dev.bonygod.listacompra.home.domain.usecase.DeleteProductoUseCase
@@ -14,18 +16,21 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.home.ui.composables.preview.ListaCompraPreview
 import dev.bonygod.listacompra.home.ui.mapper.toUI
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
+import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ListaCompraViewModel(
+    private val navigator: Navigator,
     private val getProductosUseCase: GetProductosUseCase,
     private val deleteProductoUseCase: DeleteProductoUseCase,
     private val deleteAllProductosUseCase: DeleteAllProductosUseCase,
     private val updateProductoUseCase: UpdateProductoUseCase,
     private val addProductoUseCase: AddProductoUseCase,
     private val analyticsService: AnalyticsService,
-    private val getUserUseCase: GetUserUseCase
+    private val getUserUseCase: GetUserUseCase,
+    private val logoutUseCase: LogOutUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(ListaCompraState())
     val state: StateFlow<ListaCompraState> = _state
@@ -93,6 +98,15 @@ class ListaCompraViewModel(
             is ListaCompraEvent.ShowBottomSheet -> setState { showBottomSheet(event.show) }
             is ListaCompraEvent.UpdateNewProductText -> setState { updateNewProductText(event.text) }
             is ListaCompraEvent.AddProducto -> addProducto()
+            is ListaCompraEvent.OnMenuClick -> setState { showMenu() }
+            is ListaCompraEvent.OnLogoutClick -> logOut()
+        }
+    }
+
+    private fun logOut() {
+        viewModelScope.launch {
+            logoutUseCase()
+            navigator.clearAndNavigateTo(Routes.Login)
         }
     }
 

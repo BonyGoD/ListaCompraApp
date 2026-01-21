@@ -20,7 +20,6 @@ import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
-import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEffect
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -77,6 +76,11 @@ class ListaCompraViewModel(
                 e.printStackTrace()
             }
         }
+        viewModelScope.launch {
+            getNotificationsUseCase().collect { notifications ->
+                setState { updateNotifications(notifications) }
+            }
+        }
     }
 
     fun createInitialState() {
@@ -122,8 +126,10 @@ class ListaCompraViewModel(
             is ListaCompraEvent.DismissCustomDialog -> setState { showDialog(false) }
             is ListaCompraEvent.ShareList -> shareList(event.email)
             is ListaCompraEvent.OnShareTextFieldChange -> setState { updateShareTextField(event.text) }
+            is ListaCompraEvent.OnNotificationClick -> setState { updateShowNotificationDialog(true) }
         }
     }
+
     private fun shareList(email: String) {
         val user = state.value.user
         viewModelScope.launch {

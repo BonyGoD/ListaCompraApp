@@ -25,4 +25,5 @@ sealed class ListaCompraEvent {
     data class ShareList(val email: String) : ListaCompraEvent()
     data object DismissCustomDialog: ListaCompraEvent()
     data class OnShareTextFieldChange(val text: TextFieldValue): ListaCompraEvent()
+    data object OnNotificationClick: ListaCompraEvent()
 }

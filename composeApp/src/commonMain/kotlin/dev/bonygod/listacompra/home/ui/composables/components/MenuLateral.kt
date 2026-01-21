@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.home.ui.composables.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,8 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.logout
+import listacompra.composeapp.generated.resources.notification_blank
+import listacompra.composeapp.generated.resources.notification_with_noti
 import listacompra.composeapp.generated.resources.share_list
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -32,8 +35,21 @@ fun MenuLateral(
     state: ListaCompraState,
     setEvent: (ListaCompraEvent) -> Unit
 ) {
-    val platform = getPlatform()
+    val notificationIcon = if (state.notifications.isNotEmpty()) {
+        painterResource(Res.drawable.notification_with_noti)
+    } else {
+        painterResource(Res.drawable.notification_blank)
+    }
     Column(modifier = Modifier.padding(16.dp)) {
+        Icon(
+            painter = notificationIcon,
+            tint = if(state.notifications.isEmpty()) Color.Black else Color.Red,
+            contentDescription = "Icono menú",
+            modifier = Modifier.align(Alignment.End)
+                .clickable{
+                    setEvent(ListaCompraEvent.OnNotificationClick)
+                }
+        )
         Text(
             modifier = Modifier.padding(bottom = 2.dp, top = 50.dp),
             fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
@@ -98,4 +114,10 @@ fun MenuLateral(
             fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MenuLateralPreview() {
+    MenuLateral(state = ListaCompraState(), setEvent = {})
 }

@@ -6,6 +6,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.ui.text.input.TextFieldValue
 import dev.bonygod.listacompra.home.ui.model.ListaCompraUI
 import dev.bonygod.listacompra.home.ui.model.UserUI
+import dev.bonygod.listacompra.login.ui.composables.model.NotificationsUI
 
 data class ListaCompraState(
     val loadingState: Boolean = false,
@@ -26,8 +27,16 @@ data class ListaCompraState(
     val showMenu: Boolean = false,
     val drawerState: DrawerState = DrawerState(initialValue = DrawerValue.Closed),
     val customDialog: Boolean = false,
-    val shareTextField: TextFieldValue = TextFieldValue("")
+    val shareTextField: TextFieldValue = TextFieldValue(""),
+    val notifications: List<NotificationsUI> = emptyList(),
+    val showNotificationDialog: Boolean = false
 ) {
+    fun updateShowNotificationDialog(show: Boolean): ListaCompraState {
+        return copy(showNotificationDialog = show)
+    }
+    fun updateNotifications(notifications: List<NotificationsUI>): ListaCompraState {
+        return copy(notifications = notifications)
+    }
     fun updateShareTextField(text: TextFieldValue): ListaCompraState {
         return copy(shareTextField = text)
     }

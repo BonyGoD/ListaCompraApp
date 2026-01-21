@@ -49,7 +49,11 @@ fun HomeContent(
         TopAppBar(
             title = { Text(text = "Lista de la compra") },
             navigationIcon = {
-                IconButton(onClick = { onEvent(ListaCompraEvent.OnMenuClick) }) {
+                IconButton(
+                    onClick = {
+                        onEvent(ListaCompraEvent.OnMenuClick)
+                    }
+                ) {
                     Icon(
                         painter = painterResource(Res.drawable.menu_hamburguesa),
                         contentDescription = "Abrir menú"

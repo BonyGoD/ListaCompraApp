@@ -67,7 +67,11 @@ class UserRepository(
     }
 
     fun getNotifications(): Flow<Notifications?> {
-        return usersDS.getNotifications()
+        return try {
+            usersDS.getNotifications()
+        } catch (e: Exception) {
+            throw e.toUserFailure()
+        }
     }
 
     suspend fun shareListaCompra(nombre: String, listaId: String, email: String): Result<Unit> {

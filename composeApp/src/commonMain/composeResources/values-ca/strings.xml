@@ -26,5 +26,7 @@
     <string name="register_screen_google_register">Registrar-se amb Google</string>
 
     <!-- Home -->
-
+    <string name="home_notification_dialog_title">Comparteix la teva llista de la compra</string>
+    <string name="home_notification_dialog_subtitle">Introdueix el correu electrònic de la persona amb qui vols compartir la teva llista</string>
+    <string name="home_notification_dialog_button">Comparteix</string>
 </resources>

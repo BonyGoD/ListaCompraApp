@@ -47,10 +47,10 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ShareListaCompraDialog(
+fun NotificationsDialog(
     state: ListaCompraState,
-    setEvent: (ListaCompraEvent) -> Unit = {}
-) {
+    setEvent: (ListaCompraEvent) -> Unit
+){
     Dialog(
         onDismissRequest = { setEvent(ListaCompraEvent.DismissCustomDialog) },
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
@@ -92,24 +92,6 @@ fun ShareListaCompraDialog(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 Spacer(modifier = Modifier.weight(0.7f))
-                OutlinedTextField(
-                    value = state.shareTextField,
-                    onValueChange = { setEvent(ListaCompraEvent.OnShareTextFieldChange(it)) },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                    textStyle = TextStyle(fontSize = 20.sp),
-                    shape = RoundedCornerShape(14.dp),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.None,
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Done
-                    ),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(Res.drawable.mail_icon),
-                            contentDescription = "Email"
-                        )
-                    }
-                )
                 Button(
                     onClick = {
                         setEvent(ListaCompraEvent.ShareList(state.shareTextField.text))

@@ -27,5 +27,8 @@
     <string name="register_screen_google_register">Register with Google</string>
 
     <!-- Home -->
+    <string name="home_notification_dialog_title">Share your shopping list</string>
+    <string name="home_notification_dialog_subtitle">Enter the email address of the person you want to share your list with</string>
+    <string name="home_notification_dialog_button">Share</string>
 
 </resources>

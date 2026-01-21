@@ -22,9 +22,11 @@ fun RegisterScreen(snackbarHostState: SnackbarHostState) {
                 is AuthEffect.ShowError -> {
                     snackbarHostState.showSnackbar(message = effect.message)
                 }
+
                 is AuthEffect.DismissDialog -> {
                     state.value.showDialog(false)
                 }
+
                 is AuthEffect.NavigateTo -> {
                     // Navigation is handled directly in the ViewModel via the navigator
                 }

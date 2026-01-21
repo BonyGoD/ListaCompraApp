@@ -1,10 +1,7 @@
 package dev.bonygod.listacompra.login.data.repository
 
 import dev.bonygod.listacompra.core.CustomFailures.toUserFailure
-import dev.bonygod.listacompra.home.domain.model.Producto
 import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
-import dev.bonygod.listacompra.login.data.model.NotificationsReponse
-import dev.bonygod.listacompra.login.data.model.UserResponse
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
 import dev.bonygod.listacompra.login.domain.model.Notifications
 import dev.bonygod.listacompra.login.domain.model.Usuario
@@ -57,11 +54,11 @@ class UserRepository(
         }
     }
 
-    suspend fun googleRegister(uid:String, displayName:String, email: String): Result<Usuario> {
+    suspend fun googleRegister(uid: String, displayName: String, email: String): Result<Usuario> {
         return try {
             val userResponse = usersDS.userGoogleRegister(uid, displayName, email)
             Result.success(userResponse.toDomain())
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             Result.failure(e.toUserFailure())
         }
     }

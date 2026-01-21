@@ -79,7 +79,7 @@ fun PasswordTextField(
         OutlinedTextField(
             value = passwordValue,
             onValueChange = {
-                if(!confirmPassword) {
+                if (!confirmPassword) {
                     setEvent(AuthEvent.OnPasswordChange(it))
                 } else {
                     setEvent(AuthEvent.OnConfirmPasswordChange(it))
@@ -102,14 +102,16 @@ fun PasswordTextField(
             },
             trailingIcon = {
                 IconButton(onClick = {
-                    if(confirmPassword) {
+                    if (confirmPassword) {
                         setEvent(AuthEvent.OnEyeConfirmPasswordClick)
                     } else {
                         setEvent(AuthEvent.OnEyePasswordClick)
                     }
                 }) {
                     Icon(
-                        painter = if (eyeOpen) painterResource(Res.drawable.close_eye_icon) else painterResource(Res.drawable.open_eye_icon),
+                        painter = if (eyeOpen) painterResource(Res.drawable.close_eye_icon) else painterResource(
+                            Res.drawable.open_eye_icon
+                        ),
                         contentDescription = if (eyeOpen) "Ocultar contraseña" else "Mostrar contraseña"
                     )
                 }

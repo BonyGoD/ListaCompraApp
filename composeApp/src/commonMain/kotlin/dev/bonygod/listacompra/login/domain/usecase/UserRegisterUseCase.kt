@@ -6,7 +6,7 @@ import dev.bonygod.listacompra.login.domain.model.UserRegister
 import dev.bonygod.listacompra.login.domain.model.Usuario
 import dev.bonygod.listacompra.util.isValidEmail
 
-class UserRegisterUseCase (
+class UserRegisterUseCase(
     private val userRepo: UserRepository
 ) {
     suspend operator fun invoke(userData: UserRegister): Result<Usuario> {
@@ -16,7 +16,7 @@ class UserRegisterUseCase (
         if (userData.password.isEmpty() || userData.confirmPassword.isEmpty()) {
             return Result.failure(LoginFailure.BlankPassword())
         }
-        if(!userData.email.isValidEmail()) {
+        if (!userData.email.isValidEmail()) {
             return Result.failure(LoginFailure.IncorrectEmail())
         }
         if (userData.password != userData.confirmPassword) {

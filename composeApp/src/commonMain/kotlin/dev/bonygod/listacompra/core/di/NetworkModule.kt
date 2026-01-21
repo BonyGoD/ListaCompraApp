@@ -17,9 +17,9 @@ import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
 import dev.bonygod.listacompra.login.data.repository.UserRepository
 import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
+import dev.bonygod.listacompra.login.domain.usecase.GoogleRegisterUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ResetPasswordUseCase
-import dev.bonygod.listacompra.login.domain.usecase.GoogleRegisterUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase

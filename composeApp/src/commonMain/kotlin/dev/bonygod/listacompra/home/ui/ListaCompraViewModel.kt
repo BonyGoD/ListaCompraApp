@@ -15,7 +15,6 @@ import dev.bonygod.listacompra.home.domain.usecase.UpdateProductoUseCase
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEffect
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
-import dev.bonygod.listacompra.home.ui.composables.preview.ListaCompraPreview
 import dev.bonygod.listacompra.home.ui.mapper.toUI
 import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
@@ -60,6 +59,7 @@ class ListaCompraViewModel(
             _effect.emit(effect)
         }
     }
+
     fun stopNotificationsListener() {
         notificationsJob?.cancel()
         productosJob?.cancel()
@@ -83,10 +83,12 @@ class ListaCompraViewModel(
                     },
                     onFailure = { error ->
                         val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
-                        setState { showErrorAlert(
-                            "Error al obtener el Usuario",
-                            message = errorMessage
-                        ) }
+                        setState {
+                            showErrorAlert(
+                                "Error al obtener el Usuario",
+                                message = errorMessage
+                            )
+                        }
                     }
                 )
             } catch (e: Exception) {
@@ -110,18 +112,21 @@ class ListaCompraViewModel(
                 borrarTodosLosProductos()
                 setState { showDialog(false) }
             }
+
             is ListaCompraEvent.CancelDialog -> setState { showDialog(false) }
             is ListaCompraEvent.UpdateProducto -> updateProducto(
                 event.productoId,
                 event.nombre,
                 event.isImportant
             )
+
             is ListaCompraEvent.StartEditingProduct -> setState {
                 startEditingProduct(
                     event.productId,
                     event.currentName
                 )
             }
+
             is ListaCompraEvent.UpdateEditingText -> setState { updateEditingText(event.text) }
             is ListaCompraEvent.SaveEditedProduct -> saveEditedProduct()
             is ListaCompraEvent.CancelEditing -> setState { cancelEditing() }
@@ -146,14 +151,21 @@ class ListaCompraViewModel(
             shareListaCompraUseCase(user.nombre, user.listaId, email).fold(
                 onSuccess = {
                     setState { showCustomDialog(false) }
-                    setState { showSuccessAlert("Lista compartida", "La lista ha sido compartida con éxito.") }
+                    setState {
+                        showSuccessAlert(
+                            "Lista compartida",
+                            "La lista ha sido compartida con éxito."
+                        )
+                    }
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
-                    setState { showErrorAlert(
-                        "Error al compartir",
-                        message = "No se pudo compartir la lista"
-                    ) }
+                    setState {
+                        showErrorAlert(
+                            "Error al compartir",
+                            message = errorMessage
+                        )
+                    }
                 }
             )
         }

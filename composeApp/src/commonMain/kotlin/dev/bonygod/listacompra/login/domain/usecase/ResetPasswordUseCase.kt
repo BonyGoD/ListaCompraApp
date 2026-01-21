@@ -8,7 +8,7 @@ class ResetPasswordUseCase(
     private val userRepo: UserRepository
 ) {
     suspend operator fun invoke(email: String): Result<Unit> {
-        if(!email.isValidEmail()) {
+        if (!email.isValidEmail()) {
             return Result.failure(LoginFailure.IncorrectEmail())
         }
         return userRepo.resetPassword(email)

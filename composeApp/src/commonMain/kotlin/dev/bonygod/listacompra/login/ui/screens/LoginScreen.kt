@@ -28,9 +28,11 @@ fun LoginScreen(snackbarHostState: SnackbarHostState) {
                 is AuthEffect.ShowError -> {
                     snackbarHostState.showSnackbar(message = effect.message)
                 }
+
                 is AuthEffect.DismissDialog -> {
                     viewModel.onEvent(AuthEvent.DismissDialog)
                 }
+
                 is AuthEffect.NavigateTo -> {
                 }
             }

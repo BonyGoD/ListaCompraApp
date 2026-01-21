@@ -30,9 +30,11 @@ fun HomeScreen(snackbarHostState: SnackbarHostState) {
                 is ListaCompraEffect.ShowError -> {
                     snackbarHostState.showSnackbar(message = effect.message)
                 }
+
                 is ListaCompraEffect.DismissDialog -> {
                     viewModel.onEvent(ListaCompraEvent.DismissCustomDialog)
                 }
+
                 is ListaCompraEffect.NavigateTo -> {
                     // Navigation is handled directly in the ViewModel via the navigator
                 }
@@ -40,7 +42,7 @@ fun HomeScreen(snackbarHostState: SnackbarHostState) {
         }
     }
 
-    if(state.value.customDialog){
+    if (state.value.customDialog) {
         ShareListaCompraDialog(
             state = state.value,
             setEvent = viewModel::onEvent
@@ -65,7 +67,7 @@ fun HomeScreen(snackbarHostState: SnackbarHostState) {
                 data = state.value.listaCompraUI,
                 state = state.value,
                 onEvent = {
-                    when(it) {
+                    when (it) {
                         ListaCompraEvent.OnMenuClick -> scope.launch { state.value.drawerState.open() }
                         else -> viewModel.onEvent(it)
                     }

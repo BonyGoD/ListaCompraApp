@@ -11,12 +11,15 @@ fun Exception.toUserFailure(): LoginFailure {
         errorMessage.contains(
             "The supplied auth credential is incorrect, malformed or has expired."
         ) -> LoginFailure.UserNotFound()
+
         errorMessage.contains(
             "Password should be at least 6 characters"
         ) -> LoginFailure.IncorrectPassword()
+
         errorMessage.contains(
             "The email address is already in use by another account."
         ) -> LoginFailure.EmailInUse()
+
         else -> LoginFailure.UnknownError()
     }
 }

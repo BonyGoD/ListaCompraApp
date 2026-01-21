@@ -1,6 +1,5 @@
 package dev.bonygod.listacompra.home.ui.composables.interactions
 
-import androidx.compose.foundation.gestures.DraggableState
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.ui.text.input.TextFieldValue
@@ -33,21 +32,27 @@ data class ListaCompraState(
     fun updateShowNotificationDialog(show: Boolean): ListaCompraState {
         return copy(showNotificationDialog = show)
     }
+
     fun updateNotifications(notifications: List<NotificationsUI>): ListaCompraState {
         return copy(notifications = notifications)
     }
+
     fun updateShareTextField(text: TextFieldValue): ListaCompraState {
         return copy(shareTextField = text)
     }
+
     fun showCustomDialog(show: Boolean): ListaCompraState {
         return copy(customDialog = show)
     }
+
     fun showMenu(): ListaCompraState {
         return copy(showMenu = true)
     }
+
     fun setUser(user: UserUI): ListaCompraState {
         return copy(user = user)
     }
+
     fun showDialog(show: Boolean = false): ListaCompraState {
         return copy(dialogState = show)
     }

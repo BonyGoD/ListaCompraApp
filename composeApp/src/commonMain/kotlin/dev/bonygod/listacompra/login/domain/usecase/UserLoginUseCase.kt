@@ -9,7 +9,7 @@ class UserLoginUseCase(
     private val userRepo: UserRepository
 ) {
     suspend operator fun invoke(email: String, password: String): Result<Usuario> {
-        if(!email.isValidEmail()) {
+        if (!email.isValidEmail()) {
             return Result.failure(LoginFailure.IncorrectEmail())
         }
         return userRepo.loginWithEmail(email, password)

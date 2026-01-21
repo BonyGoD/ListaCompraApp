@@ -39,7 +39,7 @@ private val EMAIL_FIELD_PADDING_TOP = 50.dp
 fun ForgotPasswordContent(
     state: AuthState,
     setEvent: (AuthEvent) -> Unit = {}
-){
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         Header(
             stringResource(Res.string.login_screen_title),

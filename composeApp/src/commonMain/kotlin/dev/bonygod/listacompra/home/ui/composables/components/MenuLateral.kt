@@ -1,6 +1,5 @@
 package dev.bonygod.listacompra.home.ui.composables.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,10 +42,10 @@ fun MenuLateral(
     Column(modifier = Modifier.padding(16.dp)) {
         Icon(
             painter = notificationIcon,
-            tint = if(state.notifications.isEmpty()) Color.Black else Color.Red,
+            tint = if (state.notifications.isEmpty()) Color.Black else Color.Red,
             contentDescription = "Icono menú",
             modifier = Modifier.align(Alignment.End)
-                .clickable{
+                .clickable {
                     setEvent(ListaCompraEvent.OnNotificationClick)
                 }
         )

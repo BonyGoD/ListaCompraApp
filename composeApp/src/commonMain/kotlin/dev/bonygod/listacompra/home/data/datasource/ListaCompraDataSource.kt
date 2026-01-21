@@ -9,13 +9,13 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
-import kotlin.collections.emptyList
 
 class ListaCompraDataSource(
     private val firebase: FirebaseFirestore
 ) {
     fun getProductos(listaId: String) = flow {
-        val productosCollection = firebase.collection("lista-compra").document(listaId).collection("productos")
+        val productosCollection =
+            firebase.collection("lista-compra").document(listaId).collection("productos")
         productosCollection.snapshots.collect { querySnapshot ->
             val productos = querySnapshot.documents.map { documentSnapshot ->
                 val fechaTimestamp = documentSnapshot.get("fecha") as? Timestamp
@@ -33,7 +33,8 @@ class ListaCompraDataSource(
     }
 
     suspend fun updateProducto(listaId: String, id: String, nombre: String, isImportant: Boolean) {
-        val productosCollection = firebase.collection("lista-compra").document(listaId).collection("productos")
+        val productosCollection =
+            firebase.collection("lista-compra").document(listaId).collection("productos")
         productosCollection.document(id).set(
             data = mapOf(
                 "producto" to nombre,
@@ -44,13 +45,15 @@ class ListaCompraDataSource(
     }
 
     suspend fun deleteProductos(listaId: String, id: String) {
-        val productosCollection = firebase.collection("lista-compra").document(listaId).collection("productos")
+        val productosCollection =
+            firebase.collection("lista-compra").document(listaId).collection("productos")
         productosCollection.document(id).delete()
     }
 
     suspend fun deleteAllProductos(listaId: String) {
         try {
-            val productosCollection = firebase.collection("lista-compra").document(listaId).collection("productos")
+            val productosCollection =
+                firebase.collection("lista-compra").document(listaId).collection("productos")
             val querySnapshot = productosCollection.get()
 
             coroutineScope {
@@ -65,8 +68,9 @@ class ListaCompraDataSource(
 
     suspend fun addProducto(listaId: String, producto: String) {
         try {
-            if(listaId.isNotEmpty()) {
-                val productosCollection = firebase.collection("lista-compra").document(listaId).collection("productos")
+            if (listaId.isNotEmpty()) {
+                val productosCollection =
+                    firebase.collection("lista-compra").document(listaId).collection("productos")
                 productosCollection.add(
                     data = mapOf(
                         "producto" to producto,

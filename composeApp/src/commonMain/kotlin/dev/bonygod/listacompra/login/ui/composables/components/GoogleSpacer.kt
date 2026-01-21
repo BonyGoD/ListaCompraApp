@@ -18,7 +18,7 @@ fun GoogleSpacer(text: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 30.dp)
-    ){
+    ) {
         Spacer(
             modifier = Modifier.weight(1f).height(1.dp).background(Color.Gray)
         )

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GetNotificationsUseCase(
-private val userRepo: UserRepository
+    private val userRepo: UserRepository
 ) {
     operator fun invoke(): Flow<List<NotificationsUI>> {
         return userRepo.getNotifications()

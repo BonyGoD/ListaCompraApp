@@ -24,7 +24,7 @@ fun NoAccountText(setEvent: (AuthEvent) -> Unit) {
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Text(
             text = stringResource(Res.string.login_screen_no_account),
         )

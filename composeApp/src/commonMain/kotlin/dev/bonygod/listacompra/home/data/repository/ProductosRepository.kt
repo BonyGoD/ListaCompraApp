@@ -16,10 +16,10 @@ class ProductosRepository(
     }
 
     suspend fun deleteProducto(listaId: String, id: String) {
-        listaCompraDS.deleteProductos(listaId,id)
+        listaCompraDS.deleteProductos(listaId, id)
     }
 
-    suspend fun deleteAllProductos(listaId: String, ) {
+    suspend fun deleteAllProductos(listaId: String) {
         listaCompraDS.deleteAllProductos(listaId)
     }
 

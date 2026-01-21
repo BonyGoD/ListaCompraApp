@@ -61,7 +61,12 @@ class AuthViewModel(
             is AuthEvent.OnResetPassword -> resetPassword(event.value)
             is AuthEvent.OnSignInClick -> logInWithEmail()
             is AuthEvent.OnRegisterClick -> registerUser()
-            is AuthEvent.OnGoogleSignInSuccess -> createUserListAndNavigate(event.uid, event.displayName, event.email)
+            is AuthEvent.OnGoogleSignInSuccess -> createUserListAndNavigate(
+                event.uid,
+                event.displayName,
+                event.email
+            )
+
             is AuthEvent.OnGoogleSignInError -> setEffect(AuthEffect.ShowError(event.errorMessage))
             is AuthEvent.OnNavigateToRegister -> navigator.navigateTo(Routes.Register)
             is AuthEvent.ShowLoading -> sharedState.showLoading(true)

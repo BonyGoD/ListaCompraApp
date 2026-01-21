@@ -48,7 +48,10 @@ fun MenuLateral(
             text = state.user.email
         )
         Row(
-            modifier = Modifier.padding(start = 10.dp, top = 50.dp),
+            modifier = Modifier.padding(start = 10.dp, top = 50.dp)
+                .clickable {
+                    setEvent(ListaCompraEvent.OnShareListClick)
+                },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {

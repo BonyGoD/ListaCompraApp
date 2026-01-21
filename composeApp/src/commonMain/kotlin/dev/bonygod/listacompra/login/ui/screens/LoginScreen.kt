@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import dev.bonygod.listacompra.ScreenWrapper
-import dev.bonygod.listacompra.common.CustomDialog
 import dev.bonygod.listacompra.common.FullScreenLoading
 import dev.bonygod.listacompra.login.ui.AuthViewModel
 import dev.bonygod.listacompra.login.ui.composables.LoginContent

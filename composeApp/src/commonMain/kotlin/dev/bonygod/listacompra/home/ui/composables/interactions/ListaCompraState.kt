@@ -24,8 +24,16 @@ data class ListaCompraState(
     val showBottomSheet: Boolean = false,
     val newProductText: TextFieldValue = TextFieldValue(""),
     val showMenu: Boolean = false,
-    val drawerState: DrawerState = DrawerState(initialValue = DrawerValue.Closed)
+    val drawerState: DrawerState = DrawerState(initialValue = DrawerValue.Closed),
+    val customDialog: Boolean = false,
+    val shareTextField: TextFieldValue = TextFieldValue("")
 ) {
+    fun updateShareTextField(text: TextFieldValue): ListaCompraState {
+        return copy(shareTextField = text)
+    }
+    fun showCustomDialog(show: Boolean): ListaCompraState {
+        return copy(customDialog = show)
+    }
     fun showMenu(): ListaCompraState {
         return copy(showMenu = true)
     }

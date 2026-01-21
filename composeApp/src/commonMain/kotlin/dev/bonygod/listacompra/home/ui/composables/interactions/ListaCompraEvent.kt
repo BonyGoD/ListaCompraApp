@@ -1,6 +1,7 @@
 package dev.bonygod.listacompra.home.ui.composables.interactions
 
 import androidx.compose.ui.text.input.TextFieldValue
+import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
 
 sealed class ListaCompraEvent {
     data class BorrarProducto(val productId: String) : ListaCompraEvent()
@@ -20,4 +21,8 @@ sealed class ListaCompraEvent {
     data object AddProducto : ListaCompraEvent()
     data object OnMenuClick: ListaCompraEvent()
     data object OnLogoutClick: ListaCompraEvent()
+    data object OnShareListClick: ListaCompraEvent()
+    data class ShareList(val email: String) : ListaCompraEvent()
+    data object DismissCustomDialog: ListaCompraEvent()
+    data class OnShareTextFieldChange(val text: TextFieldValue): ListaCompraEvent()
 }

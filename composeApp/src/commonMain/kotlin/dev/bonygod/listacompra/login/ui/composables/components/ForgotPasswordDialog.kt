@@ -1,4 +1,4 @@
-package dev.bonygod.listacompra.common
+package dev.bonygod.listacompra.login.ui.composables.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
-import dev.bonygod.listacompra.login.ui.composables.interactions.AuthState
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.app_icon
@@ -37,7 +36,9 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun CustomDialog(setEvent: (AuthEvent) -> Unit = {}) {
+fun ForgotPasswordDialog(
+    setEvent: (AuthEvent) -> Unit = {}
+) {
     Dialog(
         onDismissRequest = { setEvent(AuthEvent.DismissDialog) },
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)

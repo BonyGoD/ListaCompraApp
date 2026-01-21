@@ -11,14 +11,21 @@ import dev.bonygod.listacompra.home.domain.usecase.DeleteAllProductosUseCase
 import dev.bonygod.listacompra.home.domain.usecase.DeleteProductoUseCase
 import dev.bonygod.listacompra.home.domain.usecase.GetProductosUseCase
 import dev.bonygod.listacompra.home.domain.usecase.UpdateProductoUseCase
+import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEffect
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.home.ui.composables.preview.ListaCompraPreview
 import dev.bonygod.listacompra.home.ui.mapper.toUI
+import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
+import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
+import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEffect
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class ListaCompraViewModel(
@@ -30,13 +37,24 @@ class ListaCompraViewModel(
     private val addProductoUseCase: AddProductoUseCase,
     private val analyticsService: AnalyticsService,
     private val getUserUseCase: GetUserUseCase,
-    private val logoutUseCase: LogOutUseCase
+    private val logoutUseCase: LogOutUseCase,
+    private val getNotificationsUseCase: GetNotificationsUseCase,
+    private val shareListaCompraUseCase: ShareListaCompraUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(ListaCompraState())
     val state: StateFlow<ListaCompraState> = _state
 
+    private val _effect = MutableSharedFlow<ListaCompraEffect>(replay = 1)
+    val effect: SharedFlow<ListaCompraEffect> = _effect.asSharedFlow()
+
     fun setState(reducer: ListaCompraState.() -> ListaCompraState) {
         _state.value = _state.value.reducer()
+    }
+
+    private fun setEffect(effect: ListaCompraEffect) {
+        viewModelScope.launch {
+            _effect.emit(effect)
+        }
     }
 
     init {
@@ -100,6 +118,28 @@ class ListaCompraViewModel(
             is ListaCompraEvent.AddProducto -> addProducto()
             is ListaCompraEvent.OnMenuClick -> setState { showMenu() }
             is ListaCompraEvent.OnLogoutClick -> logOut()
+            is ListaCompraEvent.OnShareListClick -> setState { showCustomDialog(true) }
+            is ListaCompraEvent.DismissCustomDialog -> setState { showDialog(false) }
+            is ListaCompraEvent.ShareList -> shareList(event.email)
+            is ListaCompraEvent.OnShareTextFieldChange -> setState { updateShareTextField(event.text) }
+        }
+    }
+    private fun shareList(email: String) {
+        val user = state.value.user
+        viewModelScope.launch {
+            shareListaCompraUseCase(user.nombre, user.listaId, email).fold(
+                onSuccess = {
+                    setState { showCustomDialog(false) }
+                    setState { showSuccessAlert("Lista compartida", "La lista ha sido compartida con éxito.") }
+                },
+                onFailure = { error ->
+                    val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
+                    setState { showErrorAlert(
+                        "Error al compartir",
+                        message = "No se pudo compartir la lista"
+                    ) }
+                }
+            )
         }
     }
 

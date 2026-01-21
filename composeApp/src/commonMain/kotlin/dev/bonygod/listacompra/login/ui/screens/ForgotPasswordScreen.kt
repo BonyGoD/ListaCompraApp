@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import dev.bonygod.listacompra.ScreenWrapper
-import dev.bonygod.listacompra.common.CustomDialog
+import dev.bonygod.listacompra.login.ui.composables.components.ForgotPasswordDialog
 import dev.bonygod.listacompra.login.ui.AuthViewModel
 import dev.bonygod.listacompra.login.ui.composables.ForgotPasswordContent
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEffect
@@ -36,7 +36,7 @@ fun ForgotPasswordScreen(snackbarHostState: SnackbarHostState) {
     }
 
     if(state.value.showDialog){
-        CustomDialog(viewModel::onEvent)
+        ForgotPasswordDialog(viewModel::onEvent)
     }
 
     ScreenWrapper(snackbarHostState = snackbarHostState) {

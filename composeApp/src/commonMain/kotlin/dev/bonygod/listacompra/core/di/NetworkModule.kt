@@ -14,10 +14,12 @@ import dev.bonygod.listacompra.home.domain.usecase.UpdateProductoUseCase
 import dev.bonygod.listacompra.home.ui.ListaCompraViewModel
 import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
 import dev.bonygod.listacompra.login.data.repository.UserRepository
+import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ResetPasswordUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GoogleRegisterUserUseCase
+import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
 import dev.bonygod.listacompra.login.ui.AuthViewModel
@@ -58,6 +60,8 @@ val dataModule = module {
     single { ResetPasswordUseCase(get()) }
     single { UserRegisterUseCase(get()) }
     single { GoogleRegisterUserUseCase(get()) }
+    single { GetNotificationsUseCase(get()) }
+    single { ShareListaCompraUseCase(get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

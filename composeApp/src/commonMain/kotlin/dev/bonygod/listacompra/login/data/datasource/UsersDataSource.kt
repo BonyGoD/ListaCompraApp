@@ -1,9 +1,15 @@
 package dev.bonygod.listacompra.login.data.datasource
 
+import dev.bonygod.listacompra.login.data.model.NotificationsReponse
 import dev.bonygod.listacompra.login.data.model.UserResponse
+import dev.bonygod.listacompra.login.domain.mapper.toDomain
+import dev.bonygod.listacompra.login.domain.model.Notifications
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.Timestamp
+import dev.gitlive.firebase.firestore.where
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class UsersDataSource(
     private val auth: FirebaseAuth,
@@ -40,8 +46,8 @@ class UsersDataSource(
             .document(userUID)
             .get()
         val lista = userDoc.get("listas") as List<String>
-        if(userUID.isNotEmpty() && lista.isNotEmpty()) {
-            return  UserResponse(
+        if (userUID.isNotEmpty() && lista.isNotEmpty()) {
+            return UserResponse(
                 uid = userUID,
                 nombre = userDoc.get("nombre") as? String ?: "",
                 email = userDoc.get("email") as? String ?: "",
@@ -121,6 +127,7 @@ class UsersDataSource(
             listas = (userDoc.get("listas") as? List<String>) ?: emptyList()
         )
     }
+
     /**
      * Crear nueva lista al registrar un usuario
      */
@@ -129,13 +136,50 @@ class UsersDataSource(
             val docRef = firebase.collection("lista-compra")
                 .add(
                     mapOf(
-                        "createdAt" to Timestamp.now()
+                        "createdAt" to Timestamp.now(),
+                        "owner" to auth.currentUser?.uid
                     )
                 )
             return docRef.id
         } catch (e: Exception) {
-            val error = e.message
+            throw Exception("Error al crear lista: ${e.message}", e)
         }
-        return "docRef.id"
+    }
+
+    /**
+     * Obtener notificaciones del usuario
+     */
+    fun getNotifications(): Flow<Notifications> {
+        val userEmail = auth.currentUser?.email.orEmpty()
+
+        return firebase
+            .collection("notifications")
+            .where { "email".equalTo(userEmail) }
+            .snapshots
+            .map { querySnapshot ->
+                val notificationsList = querySnapshot.documents.map { doc ->
+                    doc.data<NotificationsReponse>().toDomain()
+                }
+                Notifications(notificationsList)
+            }
+    }
+
+    /**
+     * Mandar notificación para compartir lista a un usuario
+     */
+    suspend fun shareListaCompra(nombre: String, listaId: String, email: String) {
+        try {
+            // Crear la notificación en la colección notifications
+            firebase.collection("notifications")
+                .add(
+                    mapOf(
+                        "nombre" to nombre,
+                        "email" to email,
+                        "listaId" to listaId
+                    )
+                )
+        } catch (e: Exception) {
+            throw Exception("Error al compartir la lista: ${e.message}", e)
+        }
     }
 }

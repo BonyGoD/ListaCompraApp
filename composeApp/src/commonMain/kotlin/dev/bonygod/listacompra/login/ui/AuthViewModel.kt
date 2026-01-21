@@ -2,6 +2,7 @@ package dev.bonygod.listacompra.login.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.bonygod.listacompra.common.ui.state.SharedState
 import dev.bonygod.listacompra.core.CustomFailures.LoginFailure
 import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.navigation.Routes
@@ -25,6 +26,7 @@ import kotlin.time.Duration.Companion.minutes
 
 class AuthViewModel(
     private val navigator: Navigator,
+    private val sharedState: SharedState,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val userLoginUseCase: UserLoginUseCase,
     private val registerUseCase: UserRegisterUseCase,
@@ -62,7 +64,7 @@ class AuthViewModel(
             is AuthEvent.OnGoogleSignInSuccess -> createUserListAndNavigate(event.uid, event.displayName, event.email)
             is AuthEvent.OnGoogleSignInError -> setEffect(AuthEffect.ShowError(event.errorMessage))
             is AuthEvent.OnNavigateToRegister -> navigator.navigateTo(Routes.Register)
-            is AuthEvent.ShowLoading -> setState { showLoading(event.show) }
+            is AuthEvent.ShowLoading -> sharedState.showLoading(true)
             is AuthEvent.DismissDialog -> setState { showDialog(false) }
             is AuthEvent.OnNavigateToForgotPassword -> navigator.navigateTo(Routes.ForgotPassword)
         }
@@ -73,7 +75,6 @@ class AuthViewModel(
             googleRegisterUserUseCase(uid, displayName, email).fold(
                 onSuccess = { usuario ->
                     setState { setUserData(usuario.toUI()) }
-                    setState { showLoading(false) }
                     navigator.clearAndNavigateTo(Routes.Home)
                 },
                 onFailure = { error ->
@@ -125,7 +126,6 @@ class AuthViewModel(
             val user = state.value.getUserData()
             userLoginUseCase(user.email, user.password).fold(
                 onSuccess = {
-                    setState { showLoading(false) }
                     navigator.clearAndNavigateTo(Routes.Home)
                 },
                 onFailure = { error ->

@@ -1,4 +1,4 @@
-package dev.bonygod.listacompra.common
+package dev.bonygod.listacompra.common.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

@@ -3,6 +3,7 @@ package dev.bonygod.listacompra.home.ui
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.bonygod.listacompra.common.ui.state.SharedState
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.navigation.Routes
@@ -20,6 +21,7 @@ import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -29,6 +31,7 @@ import kotlinx.coroutines.launch
 
 class ListaCompraViewModel(
     private val navigator: Navigator,
+    private val sharedState: SharedState,
     private val getProductosUseCase: GetProductosUseCase,
     private val deleteProductoUseCase: DeleteProductoUseCase,
     private val deleteAllProductosUseCase: DeleteAllProductosUseCase,
@@ -40,6 +43,8 @@ class ListaCompraViewModel(
     private val getNotificationsUseCase: GetNotificationsUseCase,
     private val shareListaCompraUseCase: ShareListaCompraUseCase
 ) : ViewModel() {
+    private var notificationsJob: Job? = null
+    private var productosJob: Job? = null
     private val _state = MutableStateFlow(ListaCompraState())
     val state: StateFlow<ListaCompraState> = _state
 
@@ -55,10 +60,17 @@ class ListaCompraViewModel(
             _effect.emit(effect)
         }
     }
+    fun stopNotificationsListener() {
+        notificationsJob?.cancel()
+        productosJob?.cancel()
+        notificationsJob = null
+        productosJob = null
+    }
 
     init {
         analyticsService.logScreenView("lista_compra_screen")
-        viewModelScope.launch {
+        productosJob?.cancel()
+        productosJob = viewModelScope.launch {
             try {
                 getUserUseCase().fold(
                     onSuccess = { usuario ->
@@ -67,27 +79,25 @@ class ListaCompraViewModel(
                         getProductosUseCase(usuario.listas[0]).collect { listaCompraUI ->
                             setState { getListaCompraUI(listaCompraUI) }
                         }
+                        sharedState.showLoading(false)
                     },
-                    onFailure = {
-
+                    onFailure = { error ->
+                        val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
+                        setState { showErrorAlert(
+                            "Error al obtener el Usuario",
+                            message = errorMessage
+                        ) }
                     }
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
-        viewModelScope.launch {
+        notificationsJob?.cancel()
+        notificationsJob = viewModelScope.launch {
             getNotificationsUseCase().collect { notifications ->
                 setState { updateNotifications(notifications) }
             }
-        }
-    }
-
-    fun createInitialState() {
-        setState {
-            ListaCompraState(
-                listaCompraUI = ListaCompraPreview.ListaCompraUI
-            )
         }
     }
 
@@ -152,6 +162,8 @@ class ListaCompraViewModel(
     private fun logOut() {
         viewModelScope.launch {
             logoutUseCase()
+            sharedState.showLoading(false)
+            stopNotificationsListener()
             navigator.clearAndNavigateTo(Routes.Login)
         }
     }
@@ -241,7 +253,6 @@ class ListaCompraViewModel(
     }
 
     private fun borrarProducto(id: String) {
-        setState { showLoading(true) }
         viewModelScope.launch {
             try {
                 val listaId = state.value.user.listaId
@@ -252,10 +263,8 @@ class ListaCompraViewModel(
                     analyticsService.logProductoDeleted(producto.nombre)
                 }
                 setState { removeProducto(id) }
-                setState { showLoading(false) }
             } catch (e: Exception) {
                 e.printStackTrace()
-                setState { showLoading(false) }
                 setState {
                     showErrorAlert(
                         "Error al eliminar",
@@ -274,10 +283,8 @@ class ListaCompraViewModel(
                 deleteAllProductosUseCase.invoke(listaId)
                 analyticsService.logListaCleared(totalProductos)
                 setState { clearAllProductos() }
-                setState { showLoading(false) }
             } catch (e: Exception) {
                 e.printStackTrace()
-                setState { showLoading(false) }
                 setState {
                     showErrorAlert(
                         "Error al eliminar lista",

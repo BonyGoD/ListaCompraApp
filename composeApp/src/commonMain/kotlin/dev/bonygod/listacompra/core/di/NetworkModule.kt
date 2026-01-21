@@ -1,6 +1,7 @@
 package dev.bonygod.listacompra.core.di
 
 import dev.bonygod.listacompra.BuildConfig
+import dev.bonygod.listacompra.common.ui.state.SharedState
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.network.NetworkProvider
@@ -62,6 +63,7 @@ val dataModule = module {
     single { GoogleRegisterUserUseCase(get()) }
     single { GetNotificationsUseCase(get()) }
     single { ShareListaCompraUseCase(get()) }
+    single { SharedState() }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

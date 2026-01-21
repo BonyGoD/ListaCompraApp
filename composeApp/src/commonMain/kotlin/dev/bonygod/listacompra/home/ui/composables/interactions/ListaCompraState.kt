@@ -9,7 +9,6 @@ import dev.bonygod.listacompra.home.ui.model.UserUI
 import dev.bonygod.listacompra.login.ui.composables.model.NotificationsUI
 
 data class ListaCompraState(
-    val loadingState: Boolean = false,
     val dialogState: Boolean = false,
     val error: String? = null,
     val listaCompraUI: ListaCompraUI = ListaCompraUI(),
@@ -49,10 +48,6 @@ data class ListaCompraState(
     fun setUser(user: UserUI): ListaCompraState {
         return copy(user = user)
     }
-    fun showLoading(show: Boolean = false): ListaCompraState {
-        return copy(loadingState = show)
-    }
-
     fun showDialog(show: Boolean = false): ListaCompraState {
         return copy(dialogState = show)
     }

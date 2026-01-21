@@ -13,7 +13,7 @@ sealed class AuthEvent {
     data class OnGoogleSignInSuccess(val uid: String, val displayName: String, val email: String): AuthEvent()
     data class OnGoogleSignInError(val errorMessage: String): AuthEvent()
     data object OnNavigateToRegister: AuthEvent()
-    data class ShowLoading(val show: Boolean): AuthEvent()
+    data object ShowLoading: AuthEvent()
     data object DismissDialog: AuthEvent()
     data object OnNavigateToForgotPassword: AuthEvent()
 }

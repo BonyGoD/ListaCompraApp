@@ -7,7 +7,7 @@ import dev.bonygod.listacompra.login.domain.model.Notifications
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.Timestamp
-import dev.gitlive.firebase.firestore.where
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -151,7 +151,6 @@ class UsersDataSource(
      */
     fun getNotifications(): Flow<Notifications> {
         val userEmail = auth.currentUser?.email.orEmpty()
-
         return firebase
             .collection("notifications")
             .where { "email".equalTo(userEmail) }

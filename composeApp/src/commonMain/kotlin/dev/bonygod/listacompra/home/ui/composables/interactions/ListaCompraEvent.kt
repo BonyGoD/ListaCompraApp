@@ -23,6 +23,7 @@ sealed class ListaCompraEvent {
     data object HideErrorAlert : ListaCompraEvent()
     data object HideSuccessAlert : ListaCompraEvent()
     data class ShowBottomSheet(val show: Boolean) : ListaCompraEvent()
+    data class ShowNotificationsBottomSheet(val show: Boolean) : ListaCompraEvent()
     data class UpdateNewProductText(val text: TextFieldValue) : ListaCompraEvent()
     data object AddProducto : ListaCompraEvent()
     data object OnMenuClick : ListaCompraEvent()
@@ -31,5 +32,5 @@ sealed class ListaCompraEvent {
     data class ShareList(val email: String) : ListaCompraEvent()
     data object DismissCustomDialog : ListaCompraEvent()
     data class OnShareTextFieldChange(val text: TextFieldValue) : ListaCompraEvent()
-    data object OnNotificationClick : ListaCompraEvent()
+    data class OnAcceptSharedList(val listaId: String) : ListaCompraEvent()
 }

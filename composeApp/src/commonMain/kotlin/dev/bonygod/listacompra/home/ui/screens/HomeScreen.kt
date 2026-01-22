@@ -19,10 +19,15 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreen(snackbarHostState: SnackbarHostState) {
+fun HomeScreen(snackbarHostState: SnackbarHostState, userId: String) {
     val viewModel: ListaCompraViewModel = koinViewModel()
     val state = viewModel.state.collectAsState()
     val scope = rememberCoroutineScope()
+
+    // Llama a reloadUserData cada vez que cambia el userId
+    LaunchedEffect(userId) {
+        viewModel.loadUserData()
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -55,7 +60,8 @@ fun HomeScreen(snackbarHostState: SnackbarHostState) {
             ModalDrawerSheet {
                 MenuLateral(
                     state = state.value,
-                    setEvent = viewModel::onEvent
+                    setEvent = viewModel::onEvent,
+                    onCloseDrawer = { scope.launch { state.value.drawerState.close() } }
                 )
             }
         }

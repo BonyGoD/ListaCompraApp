@@ -180,4 +180,23 @@ class UsersDataSource(
             throw Exception("Error al compartir la lista: ${e.message}", e)
         }
     }
+
+    suspend fun addSharedList(listaId: String): UserResponse {
+        val uid = auth.currentUser?.uid.orEmpty()
+        firebase.collection("usuarios")
+            .document(uid)
+            .set(
+                data = mapOf(
+                    "listas" to listOf(listaId)
+                ),
+                merge = true
+            )
+        return UserResponse(
+            uid = uid,
+            nombre =  auth.currentUser?.displayName.orEmpty(),
+            email = auth.currentUser?.email.orEmpty(),
+            apiKey = "",
+            listas = listOf(listaId)
+        )
+    }
 }

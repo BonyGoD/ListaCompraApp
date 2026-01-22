@@ -32,7 +32,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun MenuLateral(
     state: ListaCompraState,
-    setEvent: (ListaCompraEvent) -> Unit
+    setEvent: (ListaCompraEvent) -> Unit,
+    onCloseDrawer: () -> Unit = {}
 ) {
     val notificationIcon = if (state.notifications.isNotEmpty()) {
         painterResource(Res.drawable.notification_with_noti)
@@ -46,7 +47,8 @@ fun MenuLateral(
             contentDescription = "Icono menú",
             modifier = Modifier.align(Alignment.End)
                 .clickable {
-                    setEvent(ListaCompraEvent.OnNotificationClick)
+                    setEvent(ListaCompraEvent.ShowNotificationsBottomSheet(true))
+                    onCloseDrawer()
                 }
         )
         Text(
@@ -66,6 +68,7 @@ fun MenuLateral(
             modifier = Modifier.padding(start = 10.dp, top = 50.dp)
                 .clickable {
                     setEvent(ListaCompraEvent.OnShareListClick)
+                    onCloseDrawer()
                 },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
@@ -87,6 +90,7 @@ fun MenuLateral(
             modifier = Modifier.padding(start = 10.dp, top = 30.dp)
                 .clickable {
                     setEvent(ListaCompraEvent.OnLogoutClick)
+                    onCloseDrawer()
                 },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,

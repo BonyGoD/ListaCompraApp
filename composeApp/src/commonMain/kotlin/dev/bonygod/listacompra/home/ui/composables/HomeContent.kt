@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import dev.bonygod.listacompra.home.ui.composables.components.AddProductBottomSheet
 import dev.bonygod.listacompra.home.ui.composables.components.ConfirmDialog
 import dev.bonygod.listacompra.home.ui.composables.components.ErrorAlert
+import dev.bonygod.listacompra.home.ui.composables.components.ShowNotificationsBottomSheet
 import dev.bonygod.listacompra.home.ui.composables.components.SuccessAlert
 import dev.bonygod.listacompra.home.ui.composables.components.TextComponent
 import dev.bonygod.listacompra.home.ui.composables.components.TextFieldComponent
@@ -150,6 +151,13 @@ fun HomeContent(
             state = state,
             onEvent = onEvent,
             onDismiss = { onEvent(ListaCompraEvent.ShowBottomSheet(false)) }
+        )
+    }
+    if (state.showNotifications) {
+        ShowNotificationsBottomSheet(
+            state = state,
+            onEvent = onEvent,
+            onDismiss = { onEvent(ListaCompraEvent.ShowNotificationsBottomSheet(false)) }
         )
     }
 }

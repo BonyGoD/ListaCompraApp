@@ -79,4 +79,13 @@ class UserRepository(
             Result.failure(e.toUserFailure())
         }
     }
+
+    suspend fun addSharedList(listaId: String): Result<Usuario> {
+        return try {
+            val userResponse = usersDS.addSharedList(listaId)
+            Result.success(userResponse.toDomain())
+        } catch (e: Exception) {
+            Result.failure(e.toUserFailure())
+        }
+    }
 }

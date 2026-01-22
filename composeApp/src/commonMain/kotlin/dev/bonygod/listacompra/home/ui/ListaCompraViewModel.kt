@@ -16,6 +16,7 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEffec
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.home.ui.mapper.toUI
+import dev.bonygod.listacompra.login.domain.usecase.AddSharedListUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
@@ -40,7 +41,8 @@ class ListaCompraViewModel(
     private val getUserUseCase: GetUserUseCase,
     private val logoutUseCase: LogOutUseCase,
     private val getNotificationsUseCase: GetNotificationsUseCase,
-    private val shareListaCompraUseCase: ShareListaCompraUseCase
+    private val shareListaCompraUseCase: ShareListaCompraUseCase,
+    private val addSharedListUseCase: AddSharedListUseCase
 ) : ViewModel() {
     private var notificationsJob: Job? = null
     private var productosJob: Job? = null
@@ -67,9 +69,10 @@ class ListaCompraViewModel(
         productosJob = null
     }
 
-    init {
-        analyticsService.logScreenView("lista_compra_screen")
-        productosJob?.cancel()
+    fun loadUserData() {
+        // Cancela los listeners activos
+        stopNotificationsListener()
+        // Reinicia los listeners y recarga los datos del usuario y productos
         productosJob = viewModelScope.launch {
             try {
                 getUserUseCase().fold(
@@ -95,7 +98,6 @@ class ListaCompraViewModel(
                 e.printStackTrace()
             }
         }
-        notificationsJob?.cancel()
         notificationsJob = viewModelScope.launch {
             getNotificationsUseCase().collect { notifications ->
                 setState { updateNotifications(notifications) }
@@ -141,7 +143,30 @@ class ListaCompraViewModel(
             is ListaCompraEvent.DismissCustomDialog -> setState { showDialog(false) }
             is ListaCompraEvent.ShareList -> shareList(event.email)
             is ListaCompraEvent.OnShareTextFieldChange -> setState { updateShareTextField(event.text) }
-            is ListaCompraEvent.OnNotificationClick -> setState { updateShowNotificationDialog(true) }
+            is ListaCompraEvent.ShowNotificationsBottomSheet -> setState { showNotificationBottomSheet(event.show) }
+            is ListaCompraEvent.OnAcceptSharedList -> acceptSharedList(event.listaId)
+        }
+    }
+
+    private fun acceptSharedList(listaId: String) {
+        viewModelScope.launch {
+            addSharedListUseCase(listaId).fold(
+                onSuccess = { user ->
+                    setState { showNotificationBottomSheet(false) }
+                    getProductosUseCase(user.listas[0]).collect { listaCompraUI ->
+                        setState { getListaCompraUI(listaCompraUI) }
+                    }
+                },
+                onFailure = { error ->
+                    val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
+                    setState {
+                        showErrorAlert(
+                            "Error al aceptar la invitacion",
+                            message = errorMessage
+                        )
+                    }
+                }
+            )
         }
     }
 
@@ -176,6 +201,7 @@ class ListaCompraViewModel(
             logoutUseCase()
             sharedState.showLoading(false)
             stopNotificationsListener()
+            setState { ListaCompraState() }
             navigator.clearAndNavigateTo(Routes.Login)
         }
     }

@@ -80,7 +80,7 @@ class AuthViewModel(
             googleRegisterUserUseCase(uid, displayName, email).fold(
                 onSuccess = { usuario ->
                     setState { setUserData(usuario.toUI()) }
-                    navigator.clearAndNavigateTo(Routes.Home)
+                    navigator.clearAndNavigateTo(Routes.Home(usuario.uid))
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
@@ -93,8 +93,8 @@ class AuthViewModel(
     private fun registerUser() {
         viewModelScope.launch {
             registerUseCase(state.value.getUserData().toDomain()).fold(
-                onSuccess = {
-                    navigator.navigateTo(Routes.Home)
+                onSuccess = { usuario ->
+                    navigator.navigateTo(Routes.Home(usuario.uid))
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
@@ -130,8 +130,8 @@ class AuthViewModel(
         viewModelScope.launch {
             val user = state.value.getUserData()
             userLoginUseCase(user.email, user.password).fold(
-                onSuccess = {
-                    navigator.clearAndNavigateTo(Routes.Home)
+                onSuccess = { usuario ->
+                    navigator.clearAndNavigateTo(Routes.Home(usuario.uid))
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"

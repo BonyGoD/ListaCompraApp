@@ -31,8 +31,9 @@ fun NavigationWrapper(snackbarHostState: SnackbarHostState) {
             entry<Routes.Register> {
                 RegisterScreen(snackbarHostState = snackbarHostState)
             }
-            entry<Routes.Home> {
-                HomeScreen(snackbarHostState = snackbarHostState)
+            entry<Routes.Home> { entry ->
+                val userId = entry.userId
+                HomeScreen(snackbarHostState = snackbarHostState, userId)
             }
         },
         transitionSpec = {

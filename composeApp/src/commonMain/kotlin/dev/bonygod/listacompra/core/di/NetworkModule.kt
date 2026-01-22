@@ -15,6 +15,7 @@ import dev.bonygod.listacompra.home.domain.usecase.UpdateProductoUseCase
 import dev.bonygod.listacompra.home.ui.ListaCompraViewModel
 import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
 import dev.bonygod.listacompra.login.data.repository.UserRepository
+import dev.bonygod.listacompra.login.domain.usecase.AddSharedListUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GoogleRegisterUserUseCase
@@ -63,6 +64,7 @@ val dataModule = module {
     single { GoogleRegisterUserUseCase(get()) }
     single { GetNotificationsUseCase(get()) }
     single { ShareListaCompraUseCase(get()) }
+    single { AddSharedListUseCase(get()) }
     single { SharedState() }
 }
 

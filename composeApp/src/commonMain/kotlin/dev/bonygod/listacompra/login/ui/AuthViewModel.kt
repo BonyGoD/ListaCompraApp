@@ -69,7 +69,6 @@ class AuthViewModel(
 
             is AuthEvent.OnGoogleSignInError -> setEffect(AuthEffect.ShowError(event.errorMessage))
             is AuthEvent.OnNavigateToRegister -> navigator.navigateTo(Routes.Register)
-            is AuthEvent.ShowLoading -> sharedState.showLoading(true)
             is AuthEvent.DismissDialog -> setState { showDialog(false) }
             is AuthEvent.OnNavigateToForgotPassword -> navigator.navigateTo(Routes.ForgotPassword)
         }
@@ -77,12 +76,14 @@ class AuthViewModel(
 
     private fun createUserListAndNavigate(uid: String, displayName: String, email: String) {
         viewModelScope.launch {
+            sharedState.showLoading(true)
             googleRegisterUserUseCase(uid, displayName, email).fold(
                 onSuccess = { usuario ->
                     setState { setUserData(usuario.toUI()) }
                     navigator.clearAndNavigateTo(Routes.Home(usuario.uid))
                 },
                 onFailure = { error ->
+                    sharedState.showLoading(false)
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
                     setEffect(AuthEffect.ShowError(errorMessage))
                 }
@@ -92,11 +93,13 @@ class AuthViewModel(
 
     private fun registerUser() {
         viewModelScope.launch {
+            sharedState.showLoading(true)
             registerUseCase(state.value.getUserData().toDomain()).fold(
                 onSuccess = { usuario ->
                     navigator.navigateTo(Routes.Home(usuario.uid))
                 },
                 onFailure = { error ->
+                    sharedState.showLoading(false)
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
                     setEffect(AuthEffect.ShowError(errorMessage))
                 }
@@ -116,7 +119,6 @@ class AuthViewModel(
                 onSuccess = {
                     lastResetRequestTime = Clock.System.now().toEpochMilliseconds()
                     setState { updateLoginEmail("") }
-                    setState { showDialog(true) }
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
@@ -128,12 +130,14 @@ class AuthViewModel(
 
     private fun logInWithEmail() {
         viewModelScope.launch {
+            sharedState.showLoading(true)
             val user = state.value.getUserData()
             userLoginUseCase(user.email, user.password).fold(
                 onSuccess = { usuario ->
                     navigator.clearAndNavigateTo(Routes.Home(usuario.uid))
                 },
                 onFailure = { error ->
+                    sharedState.showLoading(false)
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"
                     setEffect(AuthEffect.ShowError(errorMessage))
                 }

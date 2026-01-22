@@ -88,4 +88,12 @@ class UserRepository(
             Result.failure(e.toUserFailure())
         }
     }
+
+    suspend fun deleteNotification(listaId: String) {
+        return try {
+            usersDS.deleteNotification(listaId)
+        } catch (e: Exception) {
+            throw e.toUserFailure()
+        }
+    }
 }

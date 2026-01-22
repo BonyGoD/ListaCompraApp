@@ -12,6 +12,9 @@ class UserLoginUseCase(
         if (!email.isValidEmail()) {
             return Result.failure(LoginFailure.IncorrectEmail())
         }
+        if (password.isEmpty()) {
+            return Result.failure(LoginFailure.BlankPassword())
+        }
         return userRepo.loginWithEmail(email, password)
     }
 }

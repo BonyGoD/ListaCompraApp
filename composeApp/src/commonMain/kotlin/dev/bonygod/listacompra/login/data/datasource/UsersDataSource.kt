@@ -193,10 +193,26 @@ class UsersDataSource(
             )
         return UserResponse(
             uid = uid,
-            nombre =  auth.currentUser?.displayName.orEmpty(),
+            nombre = auth.currentUser?.displayName.orEmpty(),
             email = auth.currentUser?.email.orEmpty(),
             apiKey = "",
             listas = listOf(listaId)
         )
+    }
+
+    suspend fun deleteNotification(listaId: String) {
+        val userEmail = auth.currentUser?.email.orEmpty()
+        firebase
+            .collection("notifications")
+            .where {
+                "email".equalTo(userEmail)
+                "listaId".equalTo(listaId)
+            }
+            .get()
+            .documents
+            .forEach { doc ->
+                doc.reference.delete()
+            }
+
     }
 }

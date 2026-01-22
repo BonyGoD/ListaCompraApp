@@ -93,7 +93,7 @@ fun ShowNotificationsBottomSheet(
                                 Text("Aceptar")
                             }
                             Button(
-                                onClick = { onEvent(ListaCompraEvent.AddProducto) },
+                                onClick = { onEvent(ListaCompraEvent.OnCancelSharedList(state.notifications[item].listaId)) },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.Gray
                                 ),

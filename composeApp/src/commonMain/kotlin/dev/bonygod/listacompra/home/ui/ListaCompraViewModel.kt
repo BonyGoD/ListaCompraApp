@@ -17,6 +17,7 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.home.ui.mapper.toUI
 import dev.bonygod.listacompra.login.domain.usecase.AddSharedListUseCase
+import dev.bonygod.listacompra.login.domain.usecase.DeleteNotificationUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
@@ -42,7 +43,8 @@ class ListaCompraViewModel(
     private val logoutUseCase: LogOutUseCase,
     private val getNotificationsUseCase: GetNotificationsUseCase,
     private val shareListaCompraUseCase: ShareListaCompraUseCase,
-    private val addSharedListUseCase: AddSharedListUseCase
+    private val addSharedListUseCase: AddSharedListUseCase,
+    private val deleteNotificationUseCase: DeleteNotificationUseCase
 ) : ViewModel() {
     private var notificationsJob: Job? = null
     private var productosJob: Job? = null
@@ -145,6 +147,14 @@ class ListaCompraViewModel(
             is ListaCompraEvent.OnShareTextFieldChange -> setState { updateShareTextField(event.text) }
             is ListaCompraEvent.ShowNotificationsBottomSheet -> setState { showNotificationBottomSheet(event.show) }
             is ListaCompraEvent.OnAcceptSharedList -> acceptSharedList(event.listaId)
+            is ListaCompraEvent.OnCancelSharedList -> cancelSharedList(event.listaId)
+        }
+    }
+
+    private fun cancelSharedList(listaId: String) {
+        viewModelScope.launch {
+            deleteNotificationUseCase(listaId)
+            setState { showNotificationBottomSheet(false) }
         }
     }
 
@@ -152,6 +162,7 @@ class ListaCompraViewModel(
         viewModelScope.launch {
             addSharedListUseCase(listaId).fold(
                 onSuccess = { user ->
+                    deleteNotificationUseCase(listaId)
                     setState { showNotificationBottomSheet(false) }
                     getProductosUseCase(user.listas[0]).collect { listaCompraUI ->
                         setState { getListaCompraUI(listaCompraUI) }

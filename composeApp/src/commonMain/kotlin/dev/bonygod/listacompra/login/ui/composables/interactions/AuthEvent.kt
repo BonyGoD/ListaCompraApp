@@ -15,7 +15,6 @@ sealed class AuthEvent {
 
     data class OnGoogleSignInError(val errorMessage: String) : AuthEvent()
     data object OnNavigateToRegister : AuthEvent()
-    data object ShowLoading : AuthEvent()
     data object DismissDialog : AuthEvent()
     data object OnNavigateToForgotPassword : AuthEvent()
 }

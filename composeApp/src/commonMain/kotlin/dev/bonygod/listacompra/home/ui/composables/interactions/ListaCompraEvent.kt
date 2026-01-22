@@ -33,4 +33,5 @@ sealed class ListaCompraEvent {
     data object DismissCustomDialog : ListaCompraEvent()
     data class OnShareTextFieldChange(val text: TextFieldValue) : ListaCompraEvent()
     data class OnAcceptSharedList(val listaId: String) : ListaCompraEvent()
+    data class OnCancelSharedList(val listaId: String) : ListaCompraEvent()
 }

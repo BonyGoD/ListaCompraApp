@@ -54,7 +54,7 @@ fun RegisterContent(
     state: AuthState,
     setEvent: (AuthEvent) -> Unit = {}
 ) {
-    Column(modifier = Modifier.fillMaxSize())
+    Column(modifier = Modifier.fillMaxSize().padding(top = 40.dp, bottom = 10.dp))
     {
         Header(
             stringResource(Res.string.register_screen_title),

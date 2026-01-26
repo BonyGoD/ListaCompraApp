@@ -119,6 +119,7 @@ class AuthViewModel(
                 onSuccess = {
                     lastResetRequestTime = Clock.System.now().toEpochMilliseconds()
                     setState { updateLoginEmail("") }
+                    setState { showDialog(true) }
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? LoginFailure)?.message ?: "Error desconocido"

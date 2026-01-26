@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
+import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.app_icon
@@ -80,7 +81,7 @@ fun ForgotPasswordDialog(
                 Button(
                     onClick = { setEvent(AuthEvent.DismissDialog) },
                     modifier = Modifier.padding(bottom = 20.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3A86C2))
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
                 ) {
                     Text(text = stringResource(Res.string.login_screen_dialog_button))
                 }

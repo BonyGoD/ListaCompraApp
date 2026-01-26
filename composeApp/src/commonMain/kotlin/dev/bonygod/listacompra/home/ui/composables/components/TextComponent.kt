@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.model.ProductoUI
 import listacompra.composeapp.generated.resources.Res
@@ -36,16 +38,15 @@ fun TextComponent(
 ) {
     val backgroundColor = when {
         producto.isImportant -> Color(0xFFFFB3BA)
-        else -> Color.Transparent
+        else -> Color.White
     }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .background(backgroundColor, RoundedCornerShape(12.dp))
-            .border(1.dp, Color.Gray, RoundedCornerShape(12.dp))
-            .clip(RoundedCornerShape(12.dp))
+            .height(70.dp)
+            .border(1.dp, PrimaryBlue, RoundedCornerShape(18.dp))
+            .background(backgroundColor, RoundedCornerShape(18.dp))
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
@@ -68,18 +69,20 @@ fun TextComponent(
             fontSize = 20.sp
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Image(
+        Icon(
             painter = painterResource(Res.drawable.edit_icon),
+            tint = PrimaryBlue,
             contentDescription = "Icono editar",
             modifier = Modifier
                 .size(20.dp)
                 .clickable {
                     onEvent(ListaCompraEvent.StartEditingProduct(producto.id, producto.nombre))
-                }
+                },
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Image(
+        Spacer(modifier = Modifier.width(16.dp))
+        Icon(
             painter = painterResource(Res.drawable.basura_black),
+            tint = PrimaryBlue,
             contentDescription = "Icono borrar",
             modifier = Modifier
                 .size(20.dp)

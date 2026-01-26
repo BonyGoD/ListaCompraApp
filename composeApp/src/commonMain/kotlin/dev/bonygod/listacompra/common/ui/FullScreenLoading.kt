@@ -7,8 +7,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -20,7 +20,7 @@ fun FullScreenLoading() {
         CircularProgressIndicator(
             modifier = Modifier
                 .size(75.dp),
-            color = Color(0xFF3A86C2)
+            color = PrimaryBlue
         )
     }
 }

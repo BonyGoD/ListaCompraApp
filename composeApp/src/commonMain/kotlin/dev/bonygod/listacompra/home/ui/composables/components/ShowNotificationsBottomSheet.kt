@@ -16,11 +16,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -29,6 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
+import dev.bonygod.listacompra.login.ui.composables.model.NotificationsUI
+import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
+import dev.bonygod.listacompra.common.ui.theme.SecondaryBlue
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.Font
@@ -59,9 +60,9 @@ fun ShowNotificationsBottomSheet(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(15.dp)
-                        .border(1.dp, Color(0xFF3A86C2), RoundedCornerShape(15.dp))
-                        .background(Color(0XFFFE8F2FA), RoundedCornerShape(15.dp))
+                        .padding(10.dp)
+                        .border(1.dp, PrimaryBlue, RoundedCornerShape(15.dp))
+                        .background(SecondaryBlue, RoundedCornerShape(15.dp))
                         .padding(10.dp)
                 ) {
                     Column {
@@ -87,7 +88,7 @@ fun ShowNotificationsBottomSheet(
                             Button(
                                 onClick = { onEvent(ListaCompraEvent.OnAcceptSharedList(state.notifications[item].listaId)) },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF3A86C2)
+                                    containerColor = PrimaryBlue
                                 )
                             ) {
                                 Text("Aceptar")
@@ -114,7 +115,21 @@ fun ShowNotificationsBottomSheet(
 @Preview(showBackground = true)
 fun ShowNotificationsBottomSheetPreview() {
     ShowNotificationsBottomSheet(
-        state = ListaCompraState(),
+        state = ListaCompraState(
+            notifications = listOf(
+                NotificationsUI(
+                    nombre = "Juan",
+                    email = "juan@email.com",
+                    listaId = "lista123"
+                ),
+                NotificationsUI(
+                    nombre = "Ana",
+                    email = "ana@email.com",
+                    listaId = "lista456"
+                )
+            )
+            // ...otros campos de ListaCompraState si son obligatorios, inicialízalos aquí...
+        ),
         onEvent = {},
         onDismiss = {}
     )

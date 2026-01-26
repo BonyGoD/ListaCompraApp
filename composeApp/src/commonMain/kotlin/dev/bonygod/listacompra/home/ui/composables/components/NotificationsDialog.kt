@@ -28,6 +28,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
+import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.app_icon
@@ -49,7 +50,7 @@ fun NotificationsDialog(
     ) {
         Card(
             colors = CardDefaults.cardColors(containerColor = Color.White),
-            modifier = Modifier.border(2.dp, Color(0xFF3A86C2), RoundedCornerShape(14.dp))
+            modifier = Modifier.border(2.dp, PrimaryBlue, RoundedCornerShape(14.dp))
         ) {
             Column(
                 modifier = Modifier
@@ -90,7 +91,7 @@ fun NotificationsDialog(
                         setEvent(ListaCompraEvent.DismissCustomDialog)
                     },
                     modifier = Modifier.padding(bottom = 20.dp, top = 20.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3A86C2))
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
                 ) {
                     Text(text = stringResource(Res.string.home_notification_dialog_button))
                 }

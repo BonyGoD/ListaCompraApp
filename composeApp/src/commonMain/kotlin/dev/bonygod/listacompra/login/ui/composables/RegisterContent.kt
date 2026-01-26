@@ -32,6 +32,7 @@ import dev.bonygod.listacompra.login.ui.composables.components.Header
 import dev.bonygod.listacompra.login.ui.composables.components.PasswordTextField
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthState
+import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.google_icon
@@ -97,7 +98,7 @@ fun RegisterContent(
                 enabled = true,
                 border = BorderStroke(1.dp, Color.Black),
                 shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3A86C2)),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
                 content = {
                     Text(
                         text = stringResource(Res.string.register_screen_register_button),

@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.home.ui.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -47,7 +48,7 @@ fun HomeContent(
     state: ListaCompraState,
     onEvent: (ListaCompraEvent) -> Unit = {}
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(SecondaryBlue)) {
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(containerColor = SecondaryBlue),
             title = { Text(text = "Lista de la compra") },

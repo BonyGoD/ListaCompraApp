@@ -48,7 +48,8 @@ import GoogleMobileAds
     @objc private func handleLoadBannerRequest(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
               let adUnitId = userInfo["adUnitId"] as? String,
-              let bannerId = userInfo["bannerId"] as? String else {
+              let bannerId = userInfo["bannerId"] as? String,
+              let containerView = userInfo["containerView"] as? UIView else {
             return
         }
 
@@ -72,15 +73,10 @@ import GoogleMobileAds
                 }
             )
 
-            // Agregar el banner a la ventana principal
-            if let window = UIApplication.shared.windows.first {
-                // Buscar el contenedor con el tag correspondiente
-                if let containerView = window.viewWithTag(bannerId.hashValue) {
-                    bannerView.frame = containerView.bounds
-                    bannerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                    containerView.addSubview(bannerView)
-                }
-            }
+            // Configurar el frame y agregar directamente al containerView
+            bannerView.frame = containerView.bounds
+            bannerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            containerView.addSubview(bannerView)
         }
     }
 

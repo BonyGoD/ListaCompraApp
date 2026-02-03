@@ -21,68 +21,75 @@ actual fun BannerAd(
     onAdLoaded: () -> Unit,
     onAdFailedToLoad: (String) -> Unit
 ) {
-    // Usar NotificationCenter para comunicarse con Swift, igual que con Interstitial
-    val bannerId = remember { "banner_${adUnitId.hashCode()}" }
-
-    DisposableEffect(Unit) {
-        // Solicitar la creación del banner via NotificationCenter
-        val userInfo: Map<Any?, *> = mapOf(
-            "adUnitId" to adUnitId,
-            "bannerId" to bannerId
-        )
-
-        NSNotificationCenter.defaultCenter.postNotificationName(
-            "AdMobLoadBannerRequested",
-            `object` = null,
-            userInfo = userInfo
-        )
-
-        // Escuchar resultado
-        var loadedObserver: Any? = null
-        var failedObserver: Any? = null
-
-        loadedObserver = NSNotificationCenter.defaultCenter.addObserverForName(
-            name = "AdMobBannerLoaded",
-            `object` = null,
-            queue = NSOperationQueue.mainQueue,
-            usingBlock = { notification: NSNotification? ->
-                val id = notification?.userInfo?.get("bannerId") as? String
-                if (id == bannerId) {
-                    onAdLoaded()
-                }
-            }
-        )
-
-        failedObserver = NSNotificationCenter.defaultCenter.addObserverForName(
-            name = "AdMobBannerLoadFailed",
-            `object` = null,
-            queue = NSOperationQueue.mainQueue,
-            usingBlock = { notification: NSNotification? ->
-                val id = notification?.userInfo?.get("bannerId") as? String
-                if (id == bannerId) {
-                    val error = notification?.userInfo?.get("error") as? String ?: "Unknown error"
-                    onAdFailedToLoad(error)
-                }
-            }
-        )
-
-        onDispose {
-            loadedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
-            failedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
-        }
-    }
-
-    // Mostrar el banner usando UIKitView
     UIKitView(
         modifier = modifier,
         factory = {
-            // Crear un UIView que contendrá el banner
-            // El banner real se agregará desde Swift cuando esté listo
-            val containerView = UIView()
-            containerView.setTag(bannerId.hashCode().toLong())
-            containerView
+            // Crear el AdMobBannerView directamente
+            // Swift lo expone como una clase accesible desde Kotlin
+            createAdMobBannerView(adUnitId, onAdLoaded, onAdFailedToLoad)
         }
     )
+}
+
+// Función que crea el banner usando la clase Swift
+@OptIn(ExperimentalForeignApi::class)
+private fun createAdMobBannerView(
+    adUnitId: String,
+    onAdLoaded: () -> Unit,
+    onAdFailedToLoad: (String) -> Unit
+): UIView {
+    // Enviar notificación para crear el banner de forma síncrona
+    val bannerId = "banner_${adUnitId.hashCode()}"
+    val containerView = UIView()
+    containerView.setTag(bannerId.hashCode().toLong())
+
+    // Configurar observers antes de enviar la solicitud
+    var loadedObserver: Any? = null
+    var failedObserver: Any? = null
+
+    loadedObserver = NSNotificationCenter.defaultCenter.addObserverForName(
+        name = "AdMobBannerLoaded",
+        `object` = null,
+        queue = NSOperationQueue.mainQueue,
+        usingBlock = { notification: NSNotification? ->
+            val id = notification?.userInfo?.get("bannerId") as? String
+            if (id == bannerId) {
+                onAdLoaded()
+                loadedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
+                failedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
+            }
+        }
+    )
+
+    failedObserver = NSNotificationCenter.defaultCenter.addObserverForName(
+        name = "AdMobBannerLoadFailed",
+        `object` = null,
+        queue = NSOperationQueue.mainQueue,
+        usingBlock = { notification: NSNotification? ->
+            val id = notification?.userInfo?.get("bannerId") as? String
+            if (id == bannerId) {
+                val error = notification?.userInfo?.get("error") as? String ?: "Unknown error"
+                onAdFailedToLoad(error)
+                loadedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
+                failedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
+            }
+        }
+    )
+
+    // Enviar solicitud para crear el banner
+    val userInfo: Map<Any?, *> = mapOf(
+        "adUnitId" to adUnitId,
+        "bannerId" to bannerId,
+        "containerView" to containerView
+    )
+
+    NSNotificationCenter.defaultCenter.postNotificationName(
+        "AdMobLoadBannerRequested",
+        `object` = null,
+        userInfo = userInfo
+    )
+
+    return containerView
 }
 
 @OptIn(ExperimentalForeignApi::class)

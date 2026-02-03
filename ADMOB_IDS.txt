@@ -1,0 +1,85 @@
+# 📝 Configuración de IDs de AdMob
+
+## Instrucciones:
+1. Completa este archivo con tus IDs reales de AdMob
+2. Guárdalo
+3. Avísame y los configuraré automáticamente en el proyecto
+
+---
+
+## 🤖 ANDROID
+
+### Application ID (desde AdMob Console → App settings)
+```
+ANDROID_APP_ID=ca-app-pub-2928743687688400~3223390984 ✅ CONFIGURADO
+```
+
+### Ad Unit IDs (desde AdMob Console → Ad units)
+```
+ANDROID_BANNER_ID=ca-app-pub-2928743687688400/8348451504 ✅ CONFIGURADO
+ANDROID_INTERSTITIAL_ID=ca-app-pub-2928743687688400/7035369836 ✅ CONFIGURADO
+```
+
+---
+
+## 🍎 iOS
+
+### Application ID (desde AdMob Console → App settings)
+```
+IOS_APP_ID=ca-app-pub-2928743687688400~6979529512 ✅ CONFIGURADO
+```
+
+### Ad Unit IDs (desde AdMob Console → Ad units)
+```
+IOS_BANNER_ID=ca-app-pub-2928743687688400/9677118694 ✅ CONFIGURADO
+IOS_INTERSTITIAL_ID=ca-app-pub-2928743687688400/6923689197 ✅ CONFIGURADO
+```
+
+---
+
+## ✅ TODOS LOS IDs CONFIGURADOS
+
+### Archivos actualizados:
+- ✅ AndroidManifest.xml → Application ID
+- ✅ Info.plist → Application ID
+- ✅ AdConstants.kt → Todos los Ad Unit IDs (con switch de producción/testing)
+
+### Modo actual: PRODUCCIÓN (USE_TEST_ADS = false)
+Los anuncios mostrarán tus IDs reales de AdMob.
+
+Para volver a modo de prueba durante desarrollo, cambia en AdConstants.kt:
+```kotlin
+private const val USE_TEST_ADS = true
+```
+
+---
+
+## 📍 Dónde encontrar estos IDs:
+
+1. **Ve a**: https://apps.admob.com/
+2. **Selecciona tu app** (Android o iOS)
+3. **Application ID**:
+   - Click en "App settings" (⚙️)
+   - Verás "ID de la aplicación" → Cópialo
+4. **Ad Unit IDs**:
+   - Click en "Ad units"
+   - Verás la lista de tus ad units
+   - Cada uno tiene un "ID de bloque de anuncios" → Cópialo
+
+---
+
+## ⚠️ IMPORTANTE:
+
+- Los **Application IDs** terminan con `~YYYYYYYYYY` (tienen ~)
+- Los **Ad Unit IDs** terminan con `/YYYYYYYYYY` (tienen /)
+- NO uses los IDs de prueba, usa TUS IDs reales
+
+---
+
+## ✅ Una vez completado:
+
+Pega tus IDs aquí y avísame. Yo me encargaré de:
+- ✅ Configurar AndroidManifest.xml
+- ✅ Configurar Info.plist
+- ✅ Actualizar AdConstants.kt
+- ✅ Verificar que todo compile correctamente

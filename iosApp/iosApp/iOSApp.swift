@@ -2,14 +2,22 @@ import SwiftUI
 import Firebase
 import GoogleSignIn
 import GoogleSignInKMPSwift
+import GoogleMobileAds
+import AdMobKMPSwift
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         FirebaseApp.configure()
 
-        // Inicializar el helper para escuchar las notificaciones de Kotlin
+        // Inicializar el helper para escuchar las notificaciones de Kotlin (GoogleSignIn)
         _ = GoogleAuthCallbackHelper.shared
+
+        // Inicializar Google Mobile Ads SDK
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
+
+        // Inicializar el helper para escuchar las notificaciones de Kotlin (AdMob)
+        _ = AdMobCallbackHelper.shared
 
         return true
     }

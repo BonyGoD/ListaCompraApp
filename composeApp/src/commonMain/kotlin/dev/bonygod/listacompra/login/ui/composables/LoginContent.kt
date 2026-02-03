@@ -24,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.googlesignin.kmp.ui.GoogleSignin
+import dev.bonygod.listacompra.ads.AdConstants
+import dev.bonygod.listacompra.ads.ui.BannerAd
 import dev.bonygod.listacompra.login.ui.composables.components.EmailTextField
 import dev.bonygod.listacompra.login.ui.composables.components.GoogleSpacer
 import dev.bonygod.listacompra.login.ui.composables.components.Header
@@ -114,6 +116,10 @@ fun LoginContent(
                 }
             )
             NoAccountText(setEvent)
+            BannerAd(
+                modifier = Modifier.fillMaxWidth(),
+                adUnitId = AdConstants.BANNER_AD_UNIT_ID_ANDROID
+            )
         }
     }
 }

@@ -65,6 +65,10 @@
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-2928743687688400~6979529512</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Esta app usa anuncios personalizados para ofrecerte una mejor experiencia</string>
 </dict>
 </plist>
 

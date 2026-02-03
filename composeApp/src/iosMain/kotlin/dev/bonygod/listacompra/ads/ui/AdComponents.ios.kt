@@ -41,8 +41,6 @@ private fun createAdMobBannerView(
     onAdLoaded: () -> Unit,
     onAdFailedToLoad: (String) -> Unit
 ): UIView {
-    println("🟢 [AdMob-Kotlin] createAdMobBannerView called with adUnitId: $adUnitId")
-
     // Enviar notificación para crear el banner de forma síncrona
     val bannerId = "banner_${adUnitId.hashCode()}"
     val containerView = UIView()
@@ -50,12 +48,8 @@ private fun createAdMobBannerView(
 
     // IMPORTANTE: Configurar un frame inicial para que el banner sea visible
     // El tamaño estándar de un banner de AdMob es 320x50
-    val screenWidth = platform.UIKit.UIScreen.mainScreen.bounds.useContents { this.size.width }
-    containerView.setFrame(platform.CoreGraphics.CGRectMake(0.0, 0.0, screenWidth, 50.0))
-
-    println("🟢 [AdMob-Kotlin] Container created with bannerId: $bannerId, tag: ${bannerId.hashCode()}")
-    println("🟢 [AdMob-Kotlin] Container frame: ${containerView.frame}")
-
+    val screenWidth = UIScreen.mainScreen.bounds.useContents { this.size.width }
+    containerView.setFrame(CGRectMake(0.0, 0.0, screenWidth, 50.0))
 
     // Configurar observers antes de enviar la solicitud
     var loadedObserver: Any? = null
@@ -67,9 +61,7 @@ private fun createAdMobBannerView(
         queue = NSOperationQueue.mainQueue,
         usingBlock = { notification: NSNotification? ->
             val id = notification?.userInfo?.get("bannerId") as? String
-            println("🟢 [AdMob-Kotlin] Received AdMobBannerLoaded for bannerId: $id")
             if (id == bannerId) {
-                println("✅ [AdMob-Kotlin] Banner loaded callback!")
                 onAdLoaded()
                 loadedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
                 failedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
@@ -83,18 +75,14 @@ private fun createAdMobBannerView(
         queue = NSOperationQueue.mainQueue,
         usingBlock = { notification: NSNotification? ->
             val id = notification?.userInfo?.get("bannerId") as? String
-            println("🟢 [AdMob-Kotlin] Received AdMobBannerLoadFailed for bannerId: $id")
             if (id == bannerId) {
                 val error = notification?.userInfo?.get("error") as? String ?: "Unknown error"
-                println("❌ [AdMob-Kotlin] Banner failed: $error")
                 onAdFailedToLoad(error)
                 loadedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
                 failedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
             }
         }
     )
-
-    println("🟢 [AdMob-Kotlin] Observers configured")
 
     // Enviar solicitud para crear el banner
     val userInfo: Map<Any?, *> = mapOf(
@@ -103,17 +91,12 @@ private fun createAdMobBannerView(
         "containerView" to containerView
     )
 
-    println("🟢 [AdMob-Kotlin] Posting AdMobLoadBannerRequested notification...")
-    println("🟢 [AdMob-Kotlin] userInfo keys: ${userInfo.keys}")
-    println("🟢 [AdMob-Kotlin] containerView in userInfo: ${userInfo["containerView"]}")
-
     NSNotificationCenter.defaultCenter.postNotificationName(
         "AdMobLoadBannerRequested",
         `object` = null,
         userInfo = userInfo
     )
 
-    println("✅ [AdMob-Kotlin] Notification posted, returning containerView")
 
     return containerView
 }

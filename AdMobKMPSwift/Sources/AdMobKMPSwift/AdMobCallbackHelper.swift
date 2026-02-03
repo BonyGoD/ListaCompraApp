@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import UIKit
+import GoogleMobileAds
 
 /// Helper singleton para escuchar notificaciones desde Kotlin
 @objc public class AdMobCallbackHelper: NSObject {
@@ -45,17 +47,41 @@ import Foundation
 
     @objc private func handleLoadBannerRequest(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
-              let adUnitId = userInfo["adUnitId"] as? String else {
+              let adUnitId = userInfo["adUnitId"] as? String,
+              let bannerId = userInfo["bannerId"] as? String else {
             return
         }
 
-        // Notificar que el banner está listo para cargarse
-        // (La carga real se hace en el UIView de Compose)
-        NotificationCenter.default.post(
-            name: NSNotification.Name("AdMobBannerReadyToLoad"),
-            object: nil,
-            userInfo: ["adUnitId": adUnitId]
-        )
+        // Cargar el banner usando AdMobBannerView
+        DispatchQueue.main.async {
+            let bannerView = AdMobBannerView(
+                adUnitId: adUnitId,
+                onAdLoaded: {
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("AdMobBannerLoaded"),
+                        object: nil,
+                        userInfo: ["bannerId": bannerId]
+                    )
+                },
+                onAdFailed: { error in
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("AdMobBannerLoadFailed"),
+                        object: nil,
+                        userInfo: ["bannerId": bannerId, "error": error]
+                    )
+                }
+            )
+
+            // Agregar el banner a la ventana principal
+            if let window = UIApplication.shared.windows.first {
+                // Buscar el contenedor con el tag correspondiente
+                if let containerView = window.viewWithTag(bannerId.hashValue) {
+                    bannerView.frame = containerView.bounds
+                    bannerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                    containerView.addSubview(bannerView)
+                }
+            }
+        }
     }
 
     @objc private func handleLoadInterstitialRequest(_ notification: Notification) {

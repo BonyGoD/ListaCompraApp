@@ -1,7 +1,10 @@
 package dev.bonygod.listacompra.ads
 
+import dev.bonygod.listacompra.BuildConfig
+
 object AdConstants {
     // IDs de prueba de AdMob (para desarrollo/testing)
+    // Estos son públicos de Google, no hay problema en dejarlos en el código
     const val TEST_BANNER_AD_UNIT_ID_ANDROID = "ca-app-pub-3940256099942544/6300978111"
     const val TEST_INTERSTITIAL_AD_UNIT_ID_ANDROID = "ca-app-pub-3940256099942544/1033173712"
     const val TEST_REWARDED_AD_UNIT_ID_ANDROID = "ca-app-pub-3940256099942544/5224354917"
@@ -10,12 +13,13 @@ object AdConstants {
     const val TEST_INTERSTITIAL_AD_UNIT_ID_IOS = "ca-app-pub-3940256099942544/4411468910"
     const val TEST_REWARDED_AD_UNIT_ID_IOS = "ca-app-pub-3940256099942544/1712485313"
 
-    // IDs de producción (ListaCompra App)
-    const val PROD_BANNER_AD_UNIT_ID_ANDROID = "ca-app-pub-2928743687688400/8348451504"
-    const val PROD_INTERSTITIAL_AD_UNIT_ID_ANDROID = "ca-app-pub-2928743687688400/7035369836"
+    // IDs de producción (ListaCompra App) - Desde BuildConfig (local.properties)
+    // NO se suben al repositorio gracias a .gitignore
+    private val PROD_BANNER_AD_UNIT_ID_ANDROID = BuildConfig.ADMOB_ANDROID_BANNER
+    private val PROD_INTERSTITIAL_AD_UNIT_ID_ANDROID = BuildConfig.ADMOB_ANDROID_INTERSTITIAL
 
-    const val PROD_BANNER_AD_UNIT_ID_IOS = "ca-app-pub-2928743687688400/9677118694"
-    const val PROD_INTERSTITIAL_AD_UNIT_ID_IOS = "ca-app-pub-2928743687688400/6923689197"
+    private val PROD_BANNER_AD_UNIT_ID_IOS = BuildConfig.ADMOB_IOS_BANNER
+    private val PROD_INTERSTITIAL_AD_UNIT_ID_IOS = BuildConfig.ADMOB_IOS_INTERSTITIAL
 
     // Modo de operación: true = usar IDs de prueba, false = usar IDs de producción
     private const val USE_TEST_ADS = true  // Cambiar a false cuando publiques

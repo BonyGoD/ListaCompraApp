@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import dev.bonygod.googlesignin.kmp.ui.GoogleSignin
 import dev.bonygod.listacompra.ads.AdConstants
 import dev.bonygod.listacompra.ads.ui.BannerAd
+import dev.bonygod.listacompra.ads.ui.InterstitialAdTrigger
 import dev.bonygod.listacompra.login.ui.composables.components.EmailTextField
 import dev.bonygod.listacompra.login.ui.composables.components.GoogleSpacer
 import dev.bonygod.listacompra.login.ui.composables.components.Header
@@ -120,6 +121,16 @@ fun LoginContent(
                 modifier = Modifier.fillMaxWidth(),
                 adUnitId = AdConstants.BANNER_AD_UNIT_ID_ANDROID
             )
+
+// Interstitial al eliminar una lista
+            InterstitialAdTrigger(
+                adUnitId = AdConstants.INTERSTITIAL_AD_UNIT_ID_ANDROID,
+                onAdDismissed = { /* navegar */ }
+            ) { showAd ->
+                Button(onClick = { showAd() }) {
+                    Text("Eliminar")
+                }
+            }
         }
     }
 }

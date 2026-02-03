@@ -12,10 +12,10 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
-        <!-- AdMob App ID -->
+        <!-- AdMob App ID (viene de BuildConfig/local.properties) -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-2928743687688400~3223390984"/>
+            android:value="${admobAndroidAppId}"/>
 
         <activity
             android:exported="true"

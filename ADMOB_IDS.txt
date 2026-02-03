@@ -7,50 +7,98 @@
 
 ---
 
-## 🤖 ANDROID
+## 🔒 SEGURIDAD: IDs Protegidos
 
-### Application ID (desde AdMob Console → App settings)
-```
-ANDROID_APP_ID=ca-app-pub-2928743687688400~3223390984 ✅ CONFIGURADO
+✅ **Los IDs de producción YA NO están en el código**
+✅ **Están en `local.properties` (archivo que NO se sube a Git)**
+
+---
+
+## 📁 Configuración en local.properties
+
+Los IDs de producción están configurados en `local.properties`:
+
+```properties
+# AdMob IDs (Producción) - REEMPLAZAR CON TUS NUEVOS IDs
+ADMOB_ANDROID_BANNER=ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY
+ADMOB_ANDROID_INTERSTITIAL=ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY
+ADMOB_IOS_BANNER=ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY
+ADMOB_IOS_INTERSTITIAL=ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY
 ```
 
-### Ad Unit IDs (desde AdMob Console → Ad units)
-```
-ANDROID_BANNER_ID=ca-app-pub-2928743687688400/8348451504 ✅ CONFIGURADO
-ANDROID_INTERSTITIAL_ID=ca-app-pub-2928743687688400/7035369836 ✅ CONFIGURADO
+⚠️ **IMPORTANTE**: `local.properties` está en `.gitignore` y NO se sube al repositorio.
+
+---
+
+## ⚠️ IDs Anteriores Comprometidos
+
+Los IDs que empezaban con `ca-app-pub-2928743687688400` fueron eliminados de AdMob
+por haber sido expuestos públicamente en GitHub.
+
+**Ver archivo `NUEVOS_IDS_ADMOB.md` para instrucciones de configuración.**
+
+---
+
+## 👥 Para otros desarrolladores del equipo
+
+Si clonas el repositorio, necesitas crear tu propio `local.properties` con estas líneas:
+
+1. Crea el archivo `local.properties` en la raíz del proyecto
+2. Agrega las propiedades de AdMob (solicítales los IDs al propietario)
+3. El archivo debe verse así:
+
+```properties
+sdk.dir=TU_RUTA_DEL_SDK
+FIREBASE_PROJECT_ID=...
+FIREBASE_APP_ID=...
+FIREBASE_API_KEY=...
+CLIENT_ID=...
+
+# AdMob IDs (solicita estos IDs al propietario del proyecto)
+ADMOB_ANDROID_BANNER=ca-app-pub-...
+ADMOB_ANDROID_INTERSTITIAL=ca-app-pub-...
+ADMOB_IOS_BANNER=ca-app-pub-...
+ADMOB_IOS_INTERSTITIAL=ca-app-pub-...
 ```
 
 ---
 
-## 🍎 iOS
+## ✅ Archivos Actualizados (Seguridad)
 
-### Application ID (desde AdMob Console → App settings)
-```
-IOS_APP_ID=ca-app-pub-2928743687688400~6979529512 ✅ CONFIGURADO
-```
-
-### Ad Unit IDs (desde AdMob Console → Ad units)
-```
-IOS_BANNER_ID=ca-app-pub-2928743687688400/9677118694 ✅ CONFIGURADO
-IOS_INTERSTITIAL_ID=ca-app-pub-2928743687688400/6923689197 ✅ CONFIGURADO
-```
+- ✅ `local.properties` → IDs de producción (NO se sube a Git)
+- ✅ `build.gradle.kts` → Lee desde local.properties y genera BuildConfig
+- ✅ `AdConstants.kt` → Usa BuildConfig en lugar de hardcodear
+- ✅ `.gitignore` → Ya incluye local.properties
 
 ---
 
-## ✅ TODOS LOS IDs CONFIGURADOS
+## 🔍 Verificar Seguridad
 
-### Archivos actualizados:
-- ✅ AndroidManifest.xml → Application ID
-- ✅ Info.plist → Application ID
-- ✅ AdConstants.kt → Todos los Ad Unit IDs (con switch de producción/testing)
+Para verificar que los IDs NO se subirán a Git:
 
-### Modo actual: PRODUCCIÓN (USE_TEST_ADS = false)
-Los anuncios mostrarán tus IDs reales de AdMob.
+```bash
+git status
+```
 
-Para volver a modo de prueba durante desarrollo, cambia en AdConstants.kt:
+`local.properties` NO debe aparecer en la lista de archivos modificados.
+
+---
+
+## 🎯 Modo de Operación
+
+### Actualmente: **PRUEBA** (IDs de Google)
 ```kotlin
+// En AdConstants.kt
 private const val USE_TEST_ADS = true
 ```
+
+### Para producción:
+```kotlin
+private const val USE_TEST_ADS = false
+```
+
+Cuando cambies a `false`, usará los IDs de `local.properties`.
+
 
 ---
 

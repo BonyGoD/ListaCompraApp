@@ -90,3 +90,7 @@ iosApp/fastlane/test_output/
 iosApp/.DS_Store
 iosApp/**/.DS_Store
 project.pbxproj
+
+# AdMob Config generado (contiene IDs sensibles)
+iosApp/AdMobConfig.xcconfig
+

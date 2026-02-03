@@ -19,7 +19,7 @@ actual class AdManager {
 
     actual fun loadInterstitial(callback: AdCallback?) {
         // Solicitar carga del intersticial via NotificationCenter
-        val userInfo = mapOf(
+        val userInfo: Map<Any?, *> = mapOf<Any?, Any?>(
             "adUnitId" to AdConstants.INTERSTITIAL_AD_UNIT_ID_IOS
         )
 

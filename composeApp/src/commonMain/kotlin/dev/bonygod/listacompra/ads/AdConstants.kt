@@ -31,3 +31,8 @@ object AdConstants {
     val BANNER_AD_UNIT_ID_IOS = if (USE_TEST_ADS) TEST_BANNER_AD_UNIT_ID_IOS else PROD_BANNER_AD_UNIT_ID_IOS
     val INTERSTITIAL_AD_UNIT_ID_IOS = if (USE_TEST_ADS) TEST_INTERSTITIAL_AD_UNIT_ID_IOS else PROD_INTERSTITIAL_AD_UNIT_ID_IOS
 }
+
+// Funciones expect/actual para obtener el Ad Unit ID correcto según la plataforma
+expect fun AdConstants.getBannerAdUnitId(): String
+expect fun AdConstants.getInterstitialAdUnitId(): String
+

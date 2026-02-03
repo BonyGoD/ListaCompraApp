@@ -62,7 +62,7 @@ actual fun InterstitialAdTrigger(
             isLoading = true
 
             // Solicitar carga via NotificationCenter
-            val userInfo = mapOf("adUnitId" to adUnitId)
+            val userInfo: Map<Any?, *> = mapOf<Any?, Any?>("adUnitId" to adUnitId)
             NSNotificationCenter.defaultCenter.postNotificationName(
                 "AdMobLoadInterstitialRequested",
                 `object` = null,

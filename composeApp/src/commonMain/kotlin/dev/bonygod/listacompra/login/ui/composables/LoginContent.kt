@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.googlesignin.kmp.ui.GoogleSignin
 import dev.bonygod.listacompra.ads.AdConstants
+import dev.bonygod.listacompra.ads.getBannerAdUnitId
+import dev.bonygod.listacompra.ads.getInterstitialAdUnitId
 import dev.bonygod.listacompra.ads.ui.BannerAd
 import dev.bonygod.listacompra.ads.ui.InterstitialAdTrigger
 import dev.bonygod.listacompra.login.ui.composables.components.EmailTextField
@@ -119,12 +121,12 @@ fun LoginContent(
             NoAccountText(setEvent)
             BannerAd(
                 modifier = Modifier.fillMaxWidth(),
-                adUnitId = AdConstants.BANNER_AD_UNIT_ID_ANDROID
+                adUnitId = AdConstants.getBannerAdUnitId()
             )
 
 // Interstitial al eliminar una lista
             InterstitialAdTrigger(
-                adUnitId = AdConstants.INTERSTITIAL_AD_UNIT_ID_ANDROID,
+                adUnitId = AdConstants.getInterstitialAdUnitId(),
                 onAdDismissed = { /* navegar */ }
             ) { showAd ->
                 Button(onClick = { showAd() }) {

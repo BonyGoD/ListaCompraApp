@@ -12,7 +12,7 @@ import UIKit
 /// Bridge para manejar Interstitial Ads
 @objc public class AdMobInterstitialBridge: NSObject {
 
-    private static var interstitialAd: GADInterstitialAd?
+    public static var interstitialAd: InterstitialAd?
 
     /// Carga un anuncio intersticial
     @objc public static func load(
@@ -20,10 +20,10 @@ import UIKit
         completion: @escaping (Bool, String?) -> Void
     ) {
         DispatchQueue.main.async {
-            let request = GADRequest()
+            let request = Request()
 
-            GADInterstitialAd.load(
-                withAdUnitID: adUnitId,
+            InterstitialAd.load(
+                with: adUnitId,
                 request: request
             ) { ad, error in
                 if let error = error {
@@ -64,7 +64,11 @@ import UIKit
                 .OBJC_ASSOCIATION_RETAIN_NONATOMIC
             )
 
-            interstitialAd.present(fromRootViewController: rootViewController)
+            do {
+                try interstitialAd.present(from: rootViewController)
+            } catch {
+                completion("failed", error.localizedDescription)
+            }
         }
     }
 
@@ -75,7 +79,7 @@ import UIKit
 }
 
 // MARK: - Delegate
-private class InterstitialAdDelegate: NSObject, GADFullScreenContentDelegate {
+private class InterstitialAdDelegate: NSObject, FullScreenContentDelegate {
 
     private let completion: (String, String?) -> Void
 
@@ -84,16 +88,16 @@ private class InterstitialAdDelegate: NSObject, GADFullScreenContentDelegate {
         super.init()
     }
 
-    func adDidPresentFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+    func adDidPresent(fullScreenContentAd ad: FullScreenPresentingAd) {
         completion("shown", nil)
     }
 
-    func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+    func adDidDismiss(fullScreenContentAd ad: FullScreenPresentingAd) {
         AdMobInterstitialBridge.interstitialAd = nil
         completion("dismissed", nil)
     }
 
-    func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+    func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
         AdMobInterstitialBridge.interstitialAd = nil
         completion("failed", error.localizedDescription)
     }

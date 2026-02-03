@@ -9,10 +9,10 @@ import Foundation
 import GoogleMobileAds
 import UIKit
 
-/// UIView wrapper para GADBannerView
+/// UIView wrapper para BannerView
 @objc public class AdMobBannerView: UIView {
 
-    private var bannerView: GADBannerView?
+    private var bannerView: BannerView?
     private let adUnitId: String
     private let onAdLoaded: () -> Void
     private let onAdFailed: (String) -> Void
@@ -34,7 +34,7 @@ import UIKit
     }
 
     private func setupBanner() {
-        let bannerView = GADBannerView(adSize: GADAdSizeBanner)
+        let bannerView = BannerView(adSize: AdSizeBanner)
         bannerView.adUnitID = adUnitId
         bannerView.rootViewController = UIApplication.shared.windows.first?.rootViewController
         bannerView.delegate = self
@@ -43,7 +43,7 @@ import UIKit
         addSubview(bannerView)
 
         // Load ad
-        let request = GADRequest()
+        let request = Request()
         bannerView.load(request)
     }
 
@@ -53,14 +53,14 @@ import UIKit
     }
 }
 
-// MARK: - GADBannerViewDelegate
-extension AdMobBannerView: GADBannerViewDelegate {
+// MARK: - BannerViewDelegate
+extension AdMobBannerView: BannerViewDelegate {
 
-    public func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
+    public func bannerViewDidReceive(_ bannerView: BannerView) {
         onAdLoaded()
     }
 
-    public func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
+    public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWith error: Error) {
         onAdFailed(error.localizedDescription)
     }
 }

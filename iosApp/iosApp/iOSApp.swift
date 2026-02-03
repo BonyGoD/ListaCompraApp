@@ -14,7 +14,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ = GoogleAuthCallbackHelper.shared
 
         // Inicializar Google Mobile Ads SDK
-        GADMobileAds.sharedInstance().start(completionHandler: nil)
+        MobileAds.shared.start()
 
         // Inicializar el helper para escuchar las notificaciones de Kotlin (AdMob)
         _ = AdMobCallbackHelper.shared

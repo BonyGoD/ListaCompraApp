@@ -22,6 +22,7 @@ import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
+import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEffect
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 
 class ListaCompraViewModel(
     private val navigator: Navigator,
@@ -48,6 +51,7 @@ class ListaCompraViewModel(
 ) : ViewModel() {
     private var notificationsJob: Job? = null
     private var productosJob: Job? = null
+    private var lastResetRequestTime: Long = 0L
     private val _state = MutableStateFlow(ListaCompraState())
     val state: StateFlow<ListaCompraState> = _state
 
@@ -182,6 +186,11 @@ class ListaCompraViewModel(
     }
 
     private fun shareList(email: String) {
+        val currentTime = Clock.System.now().toEpochMilliseconds()
+        if (currentTime - lastResetRequestTime < 5.minutes.inWholeMilliseconds) {
+            setEffect(ListaCompraEffect.ShowError("Debes esperar 5 minutos para volver a intentarlo."))
+            return
+        }
         val user = state.value.user
         viewModelScope.launch {
             shareListaCompraUseCase(user.nombre, user.listaId, email).fold(

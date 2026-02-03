@@ -23,7 +23,7 @@ let package = Package(
             dependencies: [
                 .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads")
             ],
-            path: "AdMobKMPSwift/Sources/AdMobKMPSwift"
+            path: "Sources/AdMobKMPSwift"
         )
     ]
 )

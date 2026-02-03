@@ -4,10 +4,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.useContents
+import platform.CoreGraphics.CGRectMake
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSNotification
 import platform.Foundation.NSOperationQueue
 import platform.UIKit.UIView
+import platform.UIKit.UIScreen
 import platform.darwin.NSObject
 
 // Nota: AdMobBannerView debe ser importado desde el framework Swift
@@ -45,7 +48,14 @@ private fun createAdMobBannerView(
     val containerView = UIView()
     containerView.setTag(bannerId.hashCode().toLong())
 
+    // IMPORTANTE: Configurar un frame inicial para que el banner sea visible
+    // El tamaño estándar de un banner de AdMob es 320x50
+    val screenWidth = platform.UIKit.UIScreen.mainScreen.bounds.useContents { this.size.width }
+    containerView.setFrame(platform.CoreGraphics.CGRectMake(0.0, 0.0, screenWidth, 50.0))
+
     println("🟢 [AdMob-Kotlin] Container created with bannerId: $bannerId, tag: ${bannerId.hashCode()}")
+    println("🟢 [AdMob-Kotlin] Container frame: ${containerView.frame}")
+
 
     // Configurar observers antes de enviar la solicitud
     var loadedObserver: Any? = null

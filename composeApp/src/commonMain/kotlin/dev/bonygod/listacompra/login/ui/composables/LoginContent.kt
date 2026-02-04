@@ -124,24 +124,24 @@ fun LoginContent(
                 modifier = Modifier.fillMaxWidth(),
                 adUnitId = AdConstants.getBannerAdUnitId(),
                 onAdLoaded = {
-                    println("✅ Banner cargado exitosamente")
+                    // Banner cargado exitosamente
                 },
                 onAdFailedToLoad = { error ->
-                    println("❌ Error al cargar banner: $error")
+                    // Error al cargar banner
                 }
             )
 
             InterstitialAdTrigger(
                 adUnitId = AdConstants.getInterstitialAdUnitId(), // o _IOS
                 onAdShown = {
-                    println("📺 Anuncio mostrado")
+                    // Anuncio mostrado
                 },
                 onAdDismissed = {
-                    println("👋 Usuario cerró el anuncio")
+                    // Usuario cerró el anuncio
                     // Continuar con la lógica de tu app
                 },
                 onAdFailedToShow = { error ->
-                    println("❌ Error: $error")
+                    // Error al mostrar anuncio
                 }
             ) { showAd ->
                 // Tu UI que disparará el anuncio

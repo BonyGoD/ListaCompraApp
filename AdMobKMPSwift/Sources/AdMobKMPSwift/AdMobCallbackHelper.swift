@@ -103,18 +103,25 @@ import GoogleMobileAds
     }
 
     @objc private func handleLoadInterstitialRequest(_ notification: Notification) {
+        print("🔵 [AdMob-Swift] handleLoadInterstitialRequest called")
+
         guard let userInfo = notification.userInfo,
               let adUnitId = userInfo["adUnitId"] as? String else {
+            print("❌ [AdMob-Swift] Missing adUnitId in notification")
             return
         }
 
+        print("🔵 [AdMob-Swift] Loading interstitial with adUnitId: \(adUnitId)")
+
         AdMobInterstitialBridge.load(adUnitId: adUnitId) { success, error in
             if success {
+                print("✅ [AdMob-Swift] Interstitial loaded successfully")
                 NotificationCenter.default.post(
                     name: NSNotification.Name("AdMobInterstitialLoaded"),
                     object: nil
                 )
             } else {
+                print("❌ [AdMob-Swift] Interstitial load failed: \(error ?? "Unknown error")")
                 NotificationCenter.default.post(
                     name: NSNotification.Name("AdMobInterstitialLoadFailed"),
                     object: nil,
@@ -125,19 +132,26 @@ import GoogleMobileAds
     }
 
     @objc private func handleShowInterstitialRequest(_ notification: Notification) {
+        print("🔵 [AdMob-Swift] handleShowInterstitialRequest called")
+
         AdMobInterstitialBridge.show { event, error in
+            print("🔵 [AdMob-Swift] Interstitial event: \(event)")
+
             switch event {
             case "shown":
+                print("✅ [AdMob-Swift] Interstitial shown")
                 NotificationCenter.default.post(
                     name: NSNotification.Name("AdMobInterstitialShown"),
                     object: nil
                 )
             case "dismissed":
+                print("✅ [AdMob-Swift] Interstitial dismissed")
                 NotificationCenter.default.post(
                     name: NSNotification.Name("AdMobInterstitialDismissed"),
                     object: nil
                 )
             case "failed":
+                print("❌ [AdMob-Swift] Interstitial show failed: \(error ?? "Unknown error")")
                 NotificationCenter.default.post(
                     name: NSNotification.Name("AdMobInterstitialShowFailed"),
                     object: nil,

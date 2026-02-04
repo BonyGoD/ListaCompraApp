@@ -129,6 +129,7 @@ actual fun InterstitialAdTrigger(
     // Función para cargar el anuncio
     val loadAd = {
         if (!isLoading) {
+            println("🟡 [AdMob-Kotlin] Loading interstitial with adUnitId: $adUnitId")
             isLoading = true
 
             // Solicitar carga via NotificationCenter
@@ -138,6 +139,7 @@ actual fun InterstitialAdTrigger(
                 `object` = null,
                 userInfo = userInfo
             )
+            println("🟡 [AdMob-Kotlin] Interstitial load request sent")
 
             // Escuchar resultado
             var successObserver: Any? = null
@@ -148,6 +150,7 @@ actual fun InterstitialAdTrigger(
                 `object` = null,
                 queue = NSOperationQueue.mainQueue,
                 usingBlock = { _: NSNotification? ->
+                    println("✅ [AdMob-Kotlin] Interstitial loaded successfully")
                     isLoading = false
                     isReady = true
                     successObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
@@ -160,9 +163,10 @@ actual fun InterstitialAdTrigger(
                 `object` = null,
                 queue = NSOperationQueue.mainQueue,
                 usingBlock = { notification: NSNotification? ->
+                    val error = notification?.userInfo?.get("error") as? String ?: "Unknown error"
+                    println("❌ [AdMob-Kotlin] Interstitial load failed: $error")
                     isLoading = false
                     isReady = false
-                    val error = notification?.userInfo?.get("error") as? String ?: "Unknown error"
                     onAdFailedToShow(error)
                     successObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
                     failObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
@@ -178,7 +182,11 @@ actual fun InterstitialAdTrigger(
 
     // Función para mostrar el anuncio
     val showAd = {
+        println("🟡 [AdMob-Kotlin] showAd called. isReady: $isReady")
+
         if (isReady) {
+            println("🟡 [AdMob-Kotlin] Requesting to show interstitial")
+
             // Solicitar mostrar el anuncio
             NSNotificationCenter.defaultCenter.postNotificationName(
                 "AdMobShowInterstitialRequested",
@@ -195,6 +203,7 @@ actual fun InterstitialAdTrigger(
                 `object` = null,
                 queue = NSOperationQueue.mainQueue,
                 usingBlock = { _: NSNotification? ->
+                    println("✅ [AdMob-Kotlin] Interstitial shown callback received")
                     onAdShown()
                 }
             )
@@ -204,6 +213,7 @@ actual fun InterstitialAdTrigger(
                 `object` = null,
                 queue = NSOperationQueue.mainQueue,
                 usingBlock = { _: NSNotification? ->
+                    println("✅ [AdMob-Kotlin] Interstitial dismissed callback received")
                     isReady = false
                     onAdDismissed()
                     // Precargar el siguiente
@@ -219,8 +229,9 @@ actual fun InterstitialAdTrigger(
                 `object` = null,
                 queue = NSOperationQueue.mainQueue,
                 usingBlock = { notification: NSNotification? ->
-                    isReady = false
                     val error = notification?.userInfo?.get("error") as? String ?: "Unknown error"
+                    println("❌ [AdMob-Kotlin] Interstitial show failed: $error")
+                    isReady = false
                     onAdFailedToShow(error)
                     loadAd()
                     shownObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
@@ -229,6 +240,7 @@ actual fun InterstitialAdTrigger(
                 }
             )
         } else {
+            println("❌ [AdMob-Kotlin] Cannot show interstitial - ad not ready")
             onAdFailedToShow("Ad not ready")
         }
     }

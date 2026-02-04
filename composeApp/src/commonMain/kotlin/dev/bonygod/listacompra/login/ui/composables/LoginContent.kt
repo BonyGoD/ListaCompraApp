@@ -119,20 +119,6 @@ fun LoginContent(
                 }
             )
             NoAccountText(setEvent)
-            BannerAd(
-                modifier = Modifier.fillMaxWidth(),
-                adUnitId = AdConstants.getBannerAdUnitId()
-            )
-
-// Interstitial al eliminar una lista
-            InterstitialAdTrigger(
-                adUnitId = AdConstants.getInterstitialAdUnitId(),
-                onAdDismissed = { /* navegar */ }
-            ) { showAd ->
-                Button(onClick = { showAd() }) {
-                    Text("Eliminar")
-                }
-            }
         }
     }
 }

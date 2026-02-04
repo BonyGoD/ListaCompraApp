@@ -103,7 +103,10 @@ import GoogleMobileAds
     }
 
     @objc private func handleShowInterstitialRequest(_ notification: Notification) {
+        print("🟡 [AdMobCallbackHelper] handleShowInterstitialRequest called")
+
         AdMobInterstitialBridge.show { event, error in
+            print("🟡 [AdMobCallbackHelper] Show result: event=\(event), error=\(error ?? "nil")")
             switch event {
             case "shown":
                 NotificationCenter.default.post(

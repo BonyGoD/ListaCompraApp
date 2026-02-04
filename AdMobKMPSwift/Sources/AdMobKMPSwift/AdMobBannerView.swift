@@ -57,10 +57,13 @@ import UIKit
 extension AdMobBannerView: BannerViewDelegate {
 
     public func bannerViewDidReceive(_ bannerView: BannerView) {
+        print("✅ [AdMobBannerView] Banner ad loaded successfully!")
+        print("✅ [AdMobBannerView] BannerView frame: \(bannerView.frame)")
         onAdLoaded()
     }
 
     public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWith error: Error) {
+        print("❌ [AdMobBannerView] Banner ad failed to load: \(error.localizedDescription)")
         onAdFailed(error.localizedDescription)
     }
 }

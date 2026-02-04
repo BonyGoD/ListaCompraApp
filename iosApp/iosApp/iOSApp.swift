@@ -8,16 +8,24 @@ import AdMobKMPSwift
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        print("🔵 [AppDelegate] didFinishLaunchingWithOptions called")
+
         FirebaseApp.configure()
+        print("✅ [AppDelegate] Firebase configured")
 
         // Inicializar el helper para escuchar las notificaciones de Kotlin (GoogleSignIn)
         _ = GoogleAuthCallbackHelper.shared
+        print("✅ [AppDelegate] GoogleAuthCallbackHelper initialized")
 
         // Inicializar Google Mobile Ads SDK
-        MobileAds.shared.start()
+        print("🔵 [AppDelegate] Starting Google Mobile Ads...")
+        MobileAds.shared.start { status in
+            print("✅ [AppDelegate] Google Mobile Ads started with status: \(status)")
+        }
 
         // Inicializar el helper para escuchar las notificaciones de Kotlin (AdMob)
         _ = AdMobCallbackHelper.shared
+        print("✅ [AppDelegate] AdMobCallbackHelper initialized")
 
         return true
     }

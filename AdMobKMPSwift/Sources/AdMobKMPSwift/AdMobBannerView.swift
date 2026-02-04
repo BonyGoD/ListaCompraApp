@@ -40,6 +40,9 @@ import UIKit
         bannerView.delegate = self
 
         self.bannerView = bannerView
+
+        // Establecer el frame del banner antes de agregarlo
+        bannerView.frame = CGRect(x: 0, y: 0, width: 320, height: 50)
         addSubview(bannerView)
 
         // Load ad
@@ -49,7 +52,13 @@ import UIKit
 
     public override func layoutSubviews() {
         super.layoutSubviews()
+        // Actualizar el frame del banner para que coincida con el bounds del contenedor
         bannerView?.frame = bounds
+    }
+
+    // Tamaño intrínseco para que Compose/UIKit sepa el tamaño del banner
+    public override var intrinsicContentSize: CGSize {
+        return CGSize(width: 320, height: 50)
     }
 }
 

@@ -87,12 +87,18 @@ import GoogleMobileAds
 
             print("🔵 [AdMob-Swift] AdMobBannerView created: \(bannerView)")
 
-            // Configurar el frame y agregar directamente al containerView
-            bannerView.frame = containerView.bounds
+            // Configurar el frame del banner para que coincida con el containerView
+            // IMPORTANTE: El frame debe establecerse DESPUÉS de crear el banner
+            let width = containerView.bounds.width
+            let height: CGFloat = 50 // Altura estándar del banner de AdMob
+            bannerView.frame = CGRect(x: 0, y: 0, width: width, height: height)
             bannerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+            print("🔵 [AdMob-Swift] Banner frame set to: \(bannerView.frame)")
             print("🔵 [AdMob-Swift] Adding banner to containerView...")
             containerView.addSubview(bannerView)
             print("✅ [AdMob-Swift] Banner added to containerView. Subviews count: \(containerView.subviews.count)")
+            print("🔵 [AdMob-Swift] Final banner frame: \(bannerView.frame)")
         }
     }
 

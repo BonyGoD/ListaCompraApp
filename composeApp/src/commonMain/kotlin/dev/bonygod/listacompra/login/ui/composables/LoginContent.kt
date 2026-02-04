@@ -119,6 +119,41 @@ fun LoginContent(
                 }
             )
             NoAccountText(setEvent)
+
+            // Banner de prueba
+            BannerAd(
+                modifier = Modifier.fillMaxWidth(),
+                adUnitId = AdConstants.getBannerAdUnitId(),
+                onAdLoaded = {
+                    println("✅ Banner cargado exitosamente")
+                },
+                onAdFailedToLoad = { error ->
+                    println("❌ Error al cargar banner: $error")
+                }
+            )
+
+            // Intersticial de prueba
+            InterstitialAdTrigger(
+                adUnitId = AdConstants.getInterstitialAdUnitId(),
+                onAdShown = {
+                    println("📺 Anuncio mostrado")
+                },
+                onAdDismissed = {
+                    println("👋 Usuario cerró el anuncio")
+                },
+                onAdFailedToShow = { error ->
+                    println("❌ Error al mostrar intersticial: $error")
+                }
+            ) { showAd ->
+                Button(
+                    onClick = { showAd() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text("Ver Anuncio Intersticial")
+                }
+            }
         }
     }
 }

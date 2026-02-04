@@ -119,6 +119,32 @@ fun LoginContent(
                 }
             )
             NoAccountText(setEvent)
+
+            BannerAd(
+                modifier = Modifier.fillMaxWidth(),
+                adUnitId = AdConstants.getBannerAdUnitId()
+            )
+
+            InterstitialAdTrigger(
+                adUnitId = AdConstants.getInterstitialAdUnitId(), // o _IOS
+                onAdShown = {
+                    println("📺 Anuncio mostrado")
+                },
+                onAdDismissed = {
+                    println("👋 Usuario cerró el anuncio")
+                    // Continuar con la lógica de tu app
+                },
+                onAdFailedToShow = { error ->
+                    println("❌ Error: $error")
+                }
+            ) { showAd ->
+                // Tu UI que disparará el anuncio
+                Button(
+                    onClick = { showAd() }
+                ) {
+                    Text("Ver anuncio y continuar")
+                }
+            }
         }
     }
 }

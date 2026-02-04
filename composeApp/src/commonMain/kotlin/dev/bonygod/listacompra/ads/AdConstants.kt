@@ -7,11 +7,9 @@ object AdConstants {
     // Estos son públicos de Google, no hay problema en dejarlos en el código
     const val TEST_BANNER_AD_UNIT_ID_ANDROID = "ca-app-pub-3940256099942544/6300978111"
     const val TEST_INTERSTITIAL_AD_UNIT_ID_ANDROID = "ca-app-pub-3940256099942544/1033173712"
-    const val TEST_REWARDED_AD_UNIT_ID_ANDROID = "ca-app-pub-3940256099942544/5224354917"
 
     const val TEST_BANNER_AD_UNIT_ID_IOS = "ca-app-pub-3940256099942544/2934735716"
     const val TEST_INTERSTITIAL_AD_UNIT_ID_IOS = "ca-app-pub-3940256099942544/4411468910"
-    const val TEST_REWARDED_AD_UNIT_ID_IOS = "ca-app-pub-3940256099942544/1712485313"
 
     // IDs de producción (ListaCompra App) - Desde BuildConfig (local.properties)
     // NO se suben al repositorio gracias a .gitignore
@@ -35,4 +33,3 @@ object AdConstants {
 // Funciones expect/actual para obtener el Ad Unit ID correcto según la plataforma
 expect fun AdConstants.getBannerAdUnitId(): String
 expect fun AdConstants.getInterstitialAdUnitId(): String
-

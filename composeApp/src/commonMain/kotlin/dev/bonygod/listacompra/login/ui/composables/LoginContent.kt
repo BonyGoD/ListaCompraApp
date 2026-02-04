@@ -122,7 +122,13 @@ fun LoginContent(
 
             BannerAd(
                 modifier = Modifier.fillMaxWidth(),
-                adUnitId = AdConstants.getBannerAdUnitId()
+                adUnitId = AdConstants.getBannerAdUnitId(),
+                onAdLoaded = {
+                    println("✅ Banner cargado exitosamente")
+                },
+                onAdFailedToLoad = { error ->
+                    println("❌ Error al cargar banner: $error")
+                }
             )
 
             InterstitialAdTrigger(

@@ -46,18 +46,29 @@ import GoogleMobileAds
     }
 
     @objc private func handleLoadBannerRequest(_ notification: Notification) {
+        print("🔵 [AdMob-Swift] handleLoadBannerRequest called")
+        print("🔵 [AdMob-Swift] userInfo keys: \(notification.userInfo?.keys ?? [])")
+
         guard let userInfo = notification.userInfo,
               let adUnitId = userInfo["adUnitId"] as? String,
               let bannerId = userInfo["bannerId"] as? String,
               let containerView = userInfo["containerView"] as? UIView else {
+            print("❌ [AdMob-Swift] Missing required parameters in notification")
             return
         }
 
+        print("🔵 [AdMob-Swift] adUnitId: \(adUnitId)")
+        print("🔵 [AdMob-Swift] bannerId: \(bannerId)")
+        print("✅ [AdMob-Swift] containerView found: \(containerView)")
+        print("🔵 [AdMob-Swift] containerView bounds: \(containerView.bounds)")
+
         // Cargar el banner usando AdMobBannerView
         DispatchQueue.main.async {
+            print("🔵 [AdMob-Swift] Creating AdMobBannerView on main thread...")
             let bannerView = AdMobBannerView(
                 adUnitId: adUnitId,
                 onAdLoaded: {
+                    print("✅ [AdMob-Swift] Banner loaded successfully!")
                     NotificationCenter.default.post(
                         name: NSNotification.Name("AdMobBannerLoaded"),
                         object: nil,
@@ -65,6 +76,7 @@ import GoogleMobileAds
                     )
                 },
                 onAdFailed: { error in
+                    print("❌ [AdMob-Swift] Banner load failed: \(error)")
                     NotificationCenter.default.post(
                         name: NSNotification.Name("AdMobBannerLoadFailed"),
                         object: nil,
@@ -73,10 +85,14 @@ import GoogleMobileAds
                 }
             )
 
+            print("🔵 [AdMob-Swift] AdMobBannerView created: \(bannerView)")
+
             // Configurar el frame y agregar directamente al containerView
             bannerView.frame = containerView.bounds
             bannerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            print("🔵 [AdMob-Swift] Adding banner to containerView...")
             containerView.addSubview(bannerView)
+            print("✅ [AdMob-Swift] Banner added to containerView. Subviews count: \(containerView.subviews.count)")
         }
     }
 

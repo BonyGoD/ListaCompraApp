@@ -85,7 +85,7 @@ class AuthViewModel(
                 onSuccess = { usuario ->
                     setState { setUserData(usuario.toUI()) }
                     sharedState.showLoading(false)
-                    setEffect(AuthEffect.ShowInterstitialAndNavigate(usuario.uid))
+                    navigator.clearAndNavigateTo(Routes.AdLoading(usuario.uid))
                 },
                 onFailure = { error ->
                     sharedState.showLoading(false)
@@ -102,7 +102,7 @@ class AuthViewModel(
             registerUseCase(state.value.getUserData().toDomain()).fold(
                 onSuccess = { usuario ->
                     sharedState.showLoading(false)
-                    setEffect(AuthEffect.ShowInterstitialAndNavigate(usuario.uid))
+                    navigator.clearAndNavigateTo(Routes.AdLoading(usuario.uid))
                 },
                 onFailure = { error ->
                     sharedState.showLoading(false)
@@ -142,7 +142,7 @@ class AuthViewModel(
             userLoginUseCase(user.email, user.password).fold(
                 onSuccess = { usuario ->
                     sharedState.showLoading(false)
-                    setEffect(AuthEffect.ShowInterstitialAndNavigate(usuario.uid))
+                    navigator.clearAndNavigateTo(Routes.AdLoading(usuario.uid))
                 },
                 onFailure = { error ->
                     sharedState.showLoading(false)

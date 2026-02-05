@@ -1,18 +1,9 @@
 package dev.bonygod.listacompra.login.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import dev.bonygod.listacompra.ScreenWrapper
 import dev.bonygod.listacompra.common.ui.FullScreenLoading
 import dev.bonygod.listacompra.login.ui.AuthViewModel
@@ -25,27 +16,20 @@ fun RegisterScreen(snackbarHostState: SnackbarHostState) {
     val viewModel: AuthViewModel = koinViewModel()
     val state = viewModel.state.collectAsState()
 
-    var shouldShowInterstitial by remember { mutableStateOf(false) }
-    var pendingUserId by remember { mutableStateOf<String?>(null) }
-
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is AuthEffect.ShowError -> {
                     snackbarHostState.showSnackbar(message = effect.message)
                 }
-
                 is AuthEffect.DismissDialog -> {
                     state.value.showDialog(false)
                 }
-
                 is AuthEffect.NavigateTo -> {
                     // Navigation is handled directly in the ViewModel via the navigator
                 }
-
                 is AuthEffect.ShowInterstitialAndNavigate -> {
-                    pendingUserId = effect.userId
-                    shouldShowInterstitial = true
+                    // Ya no se usa, la navegación se hace directamente en el ViewModel
                 }
             }
         }
@@ -53,33 +37,6 @@ fun RegisterScreen(snackbarHostState: SnackbarHostState) {
 
     if (state.value.isLoading) {
         FullScreenLoading()
-    } else if (shouldShowInterstitial && pendingUserId != null) {
-        // Mostrar el intersticial precargado
-        showPreloadedInterstitial(
-            onAdShown = {
-                // Anuncio mostrado
-            },
-            onAdDismissed = {
-                pendingUserId?.let { userId ->
-                    viewModel.navigateToHome(userId)
-                    shouldShowInterstitial = false
-                }
-            },
-            onAdFailedToShow = { _ ->
-                pendingUserId?.let { userId ->
-                    viewModel.navigateToHome(userId)
-                    shouldShowInterstitial = false
-                }
-            }
-        )
-
-        // Mostrar loading mientras se muestra el intersticial
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
     } else {
         ScreenWrapper(snackbarHostState = snackbarHostState) {
             RegisterContent(
@@ -89,3 +46,4 @@ fun RegisterScreen(snackbarHostState: SnackbarHostState) {
         }
     }
 }
+

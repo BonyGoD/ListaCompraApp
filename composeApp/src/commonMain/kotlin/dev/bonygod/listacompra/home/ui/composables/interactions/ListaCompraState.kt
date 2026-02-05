@@ -72,7 +72,13 @@ data class ListaCompraState(
     }
 
     fun startEditingProduct(productId: String, currentName: String): ListaCompraState {
-        return copy(editingProductId = productId, editingText = TextFieldValue(currentName))
+        return copy(
+            editingProductId = productId,
+            editingText = TextFieldValue(
+                text = currentName,
+                selection = androidx.compose.ui.text.TextRange(currentName.length)
+            )
+        )
     }
 
     fun updateEditingText(text: TextFieldValue): ListaCompraState {

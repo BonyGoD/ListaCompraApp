@@ -14,9 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.bonygod.listacompra.ScreenWrapper
-import dev.bonygod.listacompra.ads.AdConstants
-import dev.bonygod.listacompra.ads.getInterstitialAdUnitId
-import dev.bonygod.listacompra.ads.ui.InterstitialAdTrigger
 import dev.bonygod.listacompra.common.ui.FullScreenLoading
 import dev.bonygod.listacompra.login.ui.AuthViewModel
 import dev.bonygod.listacompra.login.ui.composables.RegisterContent
@@ -30,7 +27,6 @@ fun RegisterScreen(snackbarHostState: SnackbarHostState) {
 
     var shouldShowInterstitial by remember { mutableStateOf(false) }
     var pendingUserId by remember { mutableStateOf<String?>(null) }
-    var adReadyToShow by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -50,7 +46,6 @@ fun RegisterScreen(snackbarHostState: SnackbarHostState) {
                 is AuthEffect.ShowInterstitialAndNavigate -> {
                     pendingUserId = effect.userId
                     shouldShowInterstitial = true
-                    adReadyToShow = false
                 }
             }
         }
@@ -58,51 +53,39 @@ fun RegisterScreen(snackbarHostState: SnackbarHostState) {
 
     if (state.value.isLoading) {
         FullScreenLoading()
+    } else if (shouldShowInterstitial && pendingUserId != null) {
+        // Mostrar el intersticial precargado
+        showPreloadedInterstitial(
+            onAdShown = {
+                // Anuncio mostrado
+            },
+            onAdDismissed = {
+                pendingUserId?.let { userId ->
+                    viewModel.navigateToHome(userId)
+                    shouldShowInterstitial = false
+                }
+            },
+            onAdFailedToShow = { _ ->
+                pendingUserId?.let { userId ->
+                    viewModel.navigateToHome(userId)
+                    shouldShowInterstitial = false
+                }
+            }
+        )
+
+        // Mostrar loading mientras se muestra el intersticial
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
     } else {
         ScreenWrapper(snackbarHostState = snackbarHostState) {
-            if (shouldShowInterstitial && pendingUserId != null) {
-                InterstitialAdTrigger(
-                    adUnitId = AdConstants.getInterstitialAdUnitId(),
-                    onAdShown = {
-                        // Anuncio mostrado
-                    },
-                    onAdDismissed = {
-                        // Navegar después de cerrar el anuncio
-                        pendingUserId?.let { userId ->
-                            viewModel.navigateToHome(userId)
-                        }
-                    },
-                    onAdFailedToShow = { _ ->
-                        // Si falla, navegar directamente
-                        pendingUserId?.let { userId ->
-                            viewModel.navigateToHome(userId)
-                        }
-                    }
-                ) { showAd ->
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-
-                    // Mostrar el anuncio cuando esté listo
-                    LaunchedEffect(adReadyToShow) {
-                        if (adReadyToShow) {
-                            showAd()
-                        } else {
-                            // Esperar 3 segundos para que el anuncio cargue
-                            kotlinx.coroutines.delay(3000)
-                            adReadyToShow = true
-                        }
-                    }
-                }
-            } else {
-                RegisterContent(
-                    state = state.value,
-                    setEvent = viewModel::onEvent
-                )
-            }
+            RegisterContent(
+                state = state.value,
+                setEvent = viewModel::onEvent
+            )
         }
     }
 }

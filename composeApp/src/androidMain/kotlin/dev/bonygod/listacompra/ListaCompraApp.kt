@@ -2,6 +2,9 @@ package dev.bonygod.listacompra
 
 import android.app.Application
 import com.google.android.gms.ads.MobileAds
+import dev.bonygod.listacompra.ads.AdConstants
+import dev.bonygod.listacompra.ads.AdPreloader
+import dev.bonygod.listacompra.ads.getInterstitialAdUnitId
 import dev.bonygod.listacompra.core.di.appModule
 import dev.bonygod.listacompra.core.di.dataModule
 import dev.bonygod.listacompra.core.di.initKoin
@@ -18,7 +21,10 @@ class ListaCompraApp: Application() {
         initPlatform(this)
 
         // Inicializar AdMob
-        MobileAds.initialize(this) {}
+        MobileAds.initialize(this) {
+            // Precargar el intersticial después de inicializar AdMob
+            AdPreloader.preloadAd(this, AdConstants.getInterstitialAdUnitId())
+        }
 
         initKoin {
             androidLogger(Level.DEBUG)

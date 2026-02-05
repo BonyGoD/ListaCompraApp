@@ -23,6 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.bonygod.listacompra.ads.AdConstants
+import dev.bonygod.listacompra.ads.getBannerAdUnitId
+import dev.bonygod.listacompra.ads.ui.BannerAd
 import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
 import dev.bonygod.listacompra.common.ui.theme.SecondaryBlue
 import dev.bonygod.listacompra.home.ui.composables.components.AddProductBottomSheet
@@ -118,6 +121,13 @@ fun HomeContent(
             onClick = {
                 onEvent(ListaCompraEvent.ShowBottomSheet(true))
             }
+        )
+
+        BannerAd(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 4.dp),
+            adUnitId = AdConstants.getBannerAdUnitId()
         )
     }
 

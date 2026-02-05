@@ -11,9 +11,7 @@ class AnalyticsService(private val analytics: FirebaseAnalytics) {
             } else {
                 analytics.logEvent(eventName)
             }
-            println("Analytics: Event logged - $eventName with params: $params")
         } catch (e: Exception) {
-            println("Analytics: Error logging event $eventName - ${e.message}")
             e.printStackTrace()
         }
     }
@@ -21,9 +19,7 @@ class AnalyticsService(private val analytics: FirebaseAnalytics) {
     fun setUserId(userId: String) {
         try {
             analytics.setUserId(userId)
-            println("Analytics: User ID set - $userId")
         } catch (e: Exception) {
-            println("Analytics: Error setting user ID - ${e.message}")
             e.printStackTrace()
         }
     }
@@ -31,9 +27,7 @@ class AnalyticsService(private val analytics: FirebaseAnalytics) {
     fun setUserProperty(name: String, value: String) {
         try {
             analytics.setUserProperty(name, value)
-            println("Analytics: User property set - $name: $value")
         } catch (e: Exception) {
-            println("Analytics: Error setting user property - ${e.message}")
             e.printStackTrace()
         }
     }

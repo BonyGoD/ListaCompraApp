@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.google.services.firebase)
@@ -14,6 +16,16 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 3
         versionName = "2.0.0"
+
+        // Leer AdMob App ID desde local.properties (mismo patrón que composeApp)
+        val properties = Properties()
+        val localPropertiesFile = project.rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(localPropertiesFile.reader())
+        }
+        val admobAppId = properties.getProperty("ADMOB_ANDROID_APP_ID") ?: "ca-app-pub-3940256099942544~3347511713"
+
+        manifestPlaceholders["admobAndroidAppId"] = admobAppId
     }
 
     packaging {

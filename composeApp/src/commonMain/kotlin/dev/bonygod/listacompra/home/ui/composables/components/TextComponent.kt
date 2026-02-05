@@ -47,7 +47,7 @@ fun TextComponent(
             .height(70.dp)
             .border(1.dp, PrimaryBlue, RoundedCornerShape(18.dp))
             .background(backgroundColor, RoundedCornerShape(18.dp))
-            .pointerInput(Unit) {
+            .pointerInput(producto.id, producto.isImportant) {
                 detectTapGestures(
                     onLongPress = {
                         onEvent(

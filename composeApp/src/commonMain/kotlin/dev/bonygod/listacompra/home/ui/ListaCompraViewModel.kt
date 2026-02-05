@@ -226,7 +226,7 @@ class ListaCompraViewModel(
         }
     }
 
-    private fun updateProducto(id: String, nombre: String, isImportant: Boolean = false) {
+    private fun updateProducto(id: String, nombre: String, isImportant: Boolean) {
         viewModelScope.launch {
             try {
                 val listaId = state.value.user.listaId

@@ -119,7 +119,7 @@ import UIKit
         let request = Request()
 
         InterstitialAd.load(
-            withAdUnitID: adUnitId,
+            with: adUnitId,
             request: request
         ) { [weak self] ad, error in
             guard let self = self else { return }
@@ -157,7 +157,7 @@ import UIKit
         self.onAdDismissedCallback = onAdDismissed
         self.onAdFailedToShowCallback = onAdFailedToShow
 
-        interstitial.present(fromRootViewController: viewController)
+        interstitial.present(from: viewController)
     }
 
     @objc public func isAdReady() -> Bool {
@@ -173,8 +173,8 @@ import UIKit
 // MARK: - FullScreenContentDelegate
 extension AdPreloader: FullScreenContentDelegate {
 
-    public func adDidPresentFullScreenContent(_ ad: FullScreenPresentingAd) {
-        print("✅ [AdPreloader] Ad presented full screen content")
+    public func adWillPresentFullScreenContent(_ ad: FullScreenPresentingAd) {
+        print("✅ [AdPreloader] Ad will present full screen content")
         onAdShownCallback?()
     }
 

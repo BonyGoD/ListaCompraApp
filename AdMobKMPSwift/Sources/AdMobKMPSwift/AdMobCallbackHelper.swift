@@ -47,7 +47,6 @@ import GoogleMobileAds
 
     @objc private func handleLoadBannerRequest(_ notification: Notification) {
         print("🔵 [AdMob-Swift] handleLoadBannerRequest called")
-        print("🔵 [AdMob-Swift] userInfo keys: \(notification.userInfo?.keys ?? [])")
 
         guard let userInfo = notification.userInfo,
               let adUnitId = userInfo["adUnitId"] as? String,

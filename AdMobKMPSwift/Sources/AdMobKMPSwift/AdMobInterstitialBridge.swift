@@ -64,11 +64,7 @@ import UIKit
                 .OBJC_ASSOCIATION_RETAIN_NONATOMIC
             )
 
-            do {
-                try interstitialAd.present(from: rootViewController)
-            } catch {
-                completion("failed", error.localizedDescription)
-            }
+            interstitialAd.present(from: rootViewController)
         }
     }
 
@@ -88,11 +84,11 @@ private class InterstitialAdDelegate: NSObject, FullScreenContentDelegate {
         super.init()
     }
 
-    func adDidPresent(fullScreenContentAd ad: FullScreenPresentingAd) {
+    func adWillPresentFullScreenContent(_ ad: FullScreenPresentingAd) {
         completion("shown", nil)
     }
 
-    func adDidDismiss(fullScreenContentAd ad: FullScreenPresentingAd) {
+    func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
         AdMobInterstitialBridge.interstitialAd = nil
         completion("dismissed", nil)
     }

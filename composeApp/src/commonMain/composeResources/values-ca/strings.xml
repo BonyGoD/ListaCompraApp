@@ -16,6 +16,11 @@
     <string name="login_screen_dialog_subtitle">Revisa la teva safata d’entrada i la carpeta de correu brossa.</string>
     <string name="login_screen_dialog_button">Acceptar</string>
 
+    <!-- ForgotPassword -->
+    <string name="forgot_password_screen_title">Recuperar la contrasenya</string>
+    <string name="forgot_password_screen_subtitle">T'enviarem un correu de recuperació</string>
+    <string name="forgot_password_screen_button">Enviar</string>
+
     <!-- Register -->
     <string name="register_screen_title">Crea el teu compte</string>
     <string name="register_screen_subtitle">Uneix-te a ListaCompra i gestiona els teus aliments</string>

@@ -1,20 +1,24 @@
 package dev.bonygod.listacompra.login.ui.composables
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -28,10 +32,12 @@ import dev.bonygod.listacompra.login.ui.composables.interactions.AuthState
 import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
-import listacompra.composeapp.generated.resources.login_screen_login_button
-import listacompra.composeapp.generated.resources.login_screen_subtitle
-import listacompra.composeapp.generated.resources.login_screen_title
+import listacompra.composeapp.generated.resources.back_button
+import listacompra.composeapp.generated.resources.forgot_password_screen_button
+import listacompra.composeapp.generated.resources.forgot_password_screen_subtitle
+import listacompra.composeapp.generated.resources.forgot_password_screen_title
 import org.jetbrains.compose.resources.Font
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -43,10 +49,21 @@ fun ForgotPasswordContent(
     state: AuthState,
     setEvent: (AuthEvent) -> Unit = {}
 ) {
+    Icon(
+        painterResource(Res.drawable.back_button),
+        contentDescription = "Back Button",
+        tint = Color.Black,
+        modifier = Modifier
+            .padding(WindowInsets.statusBars.asPaddingValues())
+            .padding(start = 20.dp)
+            .clickable(
+                onClick = { setEvent(AuthEvent.OnBackClick) }
+            )
+    )
     Column(modifier = Modifier.fillMaxSize(), Arrangement.Center) {
         Header(
-            stringResource(Res.string.login_screen_title),
-            stringResource(Res.string.login_screen_subtitle),
+            stringResource(Res.string.forgot_password_screen_title),
+            stringResource(Res.string.forgot_password_screen_subtitle),
         )
         Column(modifier = Modifier.verticalScroll(rememberScrollState()))
         {
@@ -62,7 +79,7 @@ fun ForgotPasswordContent(
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
                 content = {
                     Text(
-                        text = stringResource(Res.string.login_screen_login_button),
+                        text = stringResource(Res.string.forgot_password_screen_button),
                         fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,

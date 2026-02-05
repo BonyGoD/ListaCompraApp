@@ -17,6 +17,11 @@
     <string name="login_screen_dialog_subtitle">Check your inbox and spam folder.</string>
     <string name="login_screen_dialog_button">Accept</string>
 
+    <!-- ForgotPassword -->
+    <string name="forgot_password_screen_title">Recover password</string>
+    <string name="forgot_password_screen_subtitle">We will send you a recovery email</string>
+    <string name="forgot_password_screen_button">Send</string>
+
     <!-- Register -->
     <string name="register_screen_title">Create your account</string>
     <string name="register_screen_subtitle">Join ListaCompra and manage your food</string>

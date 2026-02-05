@@ -146,7 +146,7 @@ class ListaCompraViewModel(
             is ListaCompraEvent.OnMenuClick -> setState { showMenu() }
             is ListaCompraEvent.OnLogoutClick -> logOut()
             is ListaCompraEvent.OnShareListClick -> setState { showCustomDialog(true) }
-            is ListaCompraEvent.DismissCustomDialog -> setState { showDialog(false) }
+            is ListaCompraEvent.DismissCustomDialog -> setState { showCustomDialog(false) }
             is ListaCompraEvent.ShareList -> shareList(event.email)
             is ListaCompraEvent.OnShareTextFieldChange -> setState { updateShareTextField(event.text) }
             is ListaCompraEvent.ShowNotificationsBottomSheet -> setState { showNotificationBottomSheet(event.show) }
@@ -195,6 +195,8 @@ class ListaCompraViewModel(
         viewModelScope.launch {
             shareListaCompraUseCase(user.nombre, user.listaId, email).fold(
                 onSuccess = {
+                    // Actualizar el timestamp después de compartir exitosamente
+                    lastResetRequestTime = Clock.System.now().toEpochMilliseconds()
                     setState { showCustomDialog(false) }
                     setState {
                         showSuccessAlert(
@@ -202,6 +204,7 @@ class ListaCompraViewModel(
                             "La lista ha sido compartida con éxito."
                         )
                     }
+                    setState { updateShareTextField(TextFieldValue("")) }
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? Exception)?.message ?: "Error desconocido"

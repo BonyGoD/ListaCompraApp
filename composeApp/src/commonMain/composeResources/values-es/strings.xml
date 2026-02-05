@@ -16,6 +16,11 @@
     <string name="login_screen_dialog_subtitle">Revisa tu bandeja de entrada y la carpeta de spam.</string>
     <string name="login_screen_dialog_button">Aceptar</string>
 
+    <!-- ForgotPassword -->
+    <string name="forgot_password_screen_title">Recuperar contraseña</string>
+    <string name="forgot_password_screen_subtitle">Te enviaremos un correo de recuperación</string>
+    <string name="forgot_password_screen_button">Enviar</string>
+
     <!-- Register -->
     <string name="register_screen_title">Crea tu cuenta</string>
     <string name="register_screen_subtitle">Únete a ListaCompra y gestiona tus alimentos</string>

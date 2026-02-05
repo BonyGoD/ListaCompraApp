@@ -22,7 +22,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         // Precargar el intersticial usando el Ad Unit ID correcto desde Kotlin
         let adUnitId = InterstitialAdPreloader().getAdUnitId()
-        print("🟡 [iOS] Preloading ad with ID: \(adUnitId)")
         AdPreloader.shared.preloadAd(adUnitId: adUnitId)
 
         return true

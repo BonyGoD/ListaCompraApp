@@ -1,16 +1,17 @@
 package dev.bonygod.listacompra
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import dev.bonygod.listacompra.ui.screens.HomeScreen
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.remember
+import dev.bonygod.listacompra.core.navigation.NavigationWrapper
 
 @Composable
-@Preview
 fun App() {
+    val snackbarHostState = remember { SnackbarHostState() }
     MaterialTheme {
         ScreenWrapper {
-            HomeScreen()
+            NavigationWrapper(snackbarHostState)
         }
     }
 }

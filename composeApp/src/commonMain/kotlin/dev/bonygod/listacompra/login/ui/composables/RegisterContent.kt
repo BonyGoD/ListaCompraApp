@@ -2,11 +2,15 @@ package dev.bonygod.listacompra.login.ui.composables
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -35,6 +39,7 @@ import dev.bonygod.listacompra.login.ui.composables.interactions.AuthState
 import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
+import listacompra.composeapp.generated.resources.back_button
 import listacompra.composeapp.generated.resources.google_icon
 import listacompra.composeapp.generated.resources.register_screen_google_register
 import listacompra.composeapp.generated.resources.register_screen_name
@@ -54,6 +59,17 @@ fun RegisterContent(
     state: AuthState,
     setEvent: (AuthEvent) -> Unit = {}
 ) {
+    Icon(
+        painterResource(Res.drawable.back_button),
+        contentDescription = "Back Button",
+        tint = Color.Black,
+        modifier = Modifier
+            .padding(WindowInsets.statusBars.asPaddingValues())
+            .padding(start = 20.dp)
+            .clickable(
+                onClick = { setEvent(AuthEvent.OnBackClick) }
+            )
+    )
     Column(modifier = Modifier.fillMaxSize().padding(top = 40.dp, bottom = 10.dp))
     {
         Header(

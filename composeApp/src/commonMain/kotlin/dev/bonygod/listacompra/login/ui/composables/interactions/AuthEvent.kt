@@ -17,4 +17,5 @@ sealed class AuthEvent {
     data object OnNavigateToRegister : AuthEvent()
     data object DismissDialog : AuthEvent()
     data object OnNavigateToForgotPassword : AuthEvent()
+    data object OnBackClick: AuthEvent()
 }

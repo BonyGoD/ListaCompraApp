@@ -71,11 +71,8 @@ class AuthViewModel(
             is AuthEvent.OnNavigateToRegister -> navigator.navigateTo(Routes.Register)
             is AuthEvent.DismissDialog -> setState { showDialog(false) }
             is AuthEvent.OnNavigateToForgotPassword -> navigator.navigateTo(Routes.ForgotPassword)
+            is AuthEvent.OnBackClick -> navigator.goBack()
         }
-    }
-
-    fun navigateToHome(userId: String) {
-        navigator.clearAndNavigateTo(Routes.Home(userId))
     }
 
     private fun createUserListAndNavigate(uid: String, displayName: String, email: String) {

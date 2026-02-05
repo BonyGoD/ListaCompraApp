@@ -31,6 +31,7 @@ fun ForgotPasswordScreen(snackbarHostState: SnackbarHostState) {
                 is AuthEffect.NavigateTo -> {
                     // Navigation is handled directly in the ViewModel via the navigator
                 }
+                is AuthEffect.ShowInterstitialAndNavigate -> { /* no-op */ }
             }
         }
     }

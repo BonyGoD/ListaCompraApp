@@ -90,6 +90,9 @@ kotlin {
             implementation(libs.androidx.credentials.play.services.auth)
             implementation(libs.googleid)
             implementation(libs.play.services.auth)
+
+            // AdMob
+            implementation(libs.play.services.ads)
         }
     }
 }
@@ -118,6 +121,24 @@ buildConfig {
 
     buildConfigField("FIREBASE_API_KEY", apiKey)
     buildConfigField("CLIENT_ID", clientId)
+
+    // AdMob Application IDs
+    val admobAndroidAppId = properties.getProperty("ADMOB_ANDROID_APP_ID") ?: ""
+    val admobIosAppId = properties.getProperty("ADMOB_IOS_APP_ID") ?: ""
+
+    buildConfigField("ADMOB_ANDROID_APP_ID", admobAndroidAppId)
+    buildConfigField("ADMOB_IOS_APP_ID", admobIosAppId)
+
+    // AdMob Ad Unit IDs (solo los de producción, los de prueba son públicos de Google)
+    val admobAndroidBanner = properties.getProperty("ADMOB_ANDROID_BANNER") ?: ""
+    val admobAndroidInterstitial = properties.getProperty("ADMOB_ANDROID_INTERSTITIAL") ?: ""
+    val admobIosBanner = properties.getProperty("ADMOB_IOS_BANNER") ?: ""
+    val admobIosInterstitial = properties.getProperty("ADMOB_IOS_INTERSTITIAL") ?: ""
+
+    buildConfigField("ADMOB_ANDROID_BANNER", admobAndroidBanner)
+    buildConfigField("ADMOB_ANDROID_INTERSTITIAL", admobAndroidInterstitial)
+    buildConfigField("ADMOB_IOS_BANNER", admobIosBanner)
+    buildConfigField("ADMOB_IOS_INTERSTITIAL", admobIosInterstitial)
 }
 
 dependencies {

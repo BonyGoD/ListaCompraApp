@@ -74,13 +74,18 @@ class AuthViewModel(
         }
     }
 
+    fun navigateToHome(userId: String) {
+        navigator.clearAndNavigateTo(Routes.Home(userId))
+    }
+
     private fun createUserListAndNavigate(uid: String, displayName: String, email: String) {
         viewModelScope.launch {
             sharedState.showLoading(true)
             googleRegisterUserUseCase(uid, displayName, email).fold(
                 onSuccess = { usuario ->
                     setState { setUserData(usuario.toUI()) }
-                    navigator.clearAndNavigateTo(Routes.Home(usuario.uid))
+                    sharedState.showLoading(false)
+                    setEffect(AuthEffect.ShowInterstitialAndNavigate(usuario.uid))
                 },
                 onFailure = { error ->
                     sharedState.showLoading(false)
@@ -96,7 +101,8 @@ class AuthViewModel(
             sharedState.showLoading(true)
             registerUseCase(state.value.getUserData().toDomain()).fold(
                 onSuccess = { usuario ->
-                    navigator.navigateTo(Routes.Home(usuario.uid))
+                    sharedState.showLoading(false)
+                    setEffect(AuthEffect.ShowInterstitialAndNavigate(usuario.uid))
                 },
                 onFailure = { error ->
                     sharedState.showLoading(false)
@@ -135,7 +141,8 @@ class AuthViewModel(
             val user = state.value.getUserData()
             userLoginUseCase(user.email, user.password).fold(
                 onSuccess = { usuario ->
-                    navigator.clearAndNavigateTo(Routes.Home(usuario.uid))
+                    sharedState.showLoading(false)
+                    setEffect(AuthEffect.ShowInterstitialAndNavigate(usuario.uid))
                 },
                 onFailure = { error ->
                     sharedState.showLoading(false)

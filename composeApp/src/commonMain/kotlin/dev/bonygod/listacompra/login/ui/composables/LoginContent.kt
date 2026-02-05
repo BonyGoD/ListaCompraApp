@@ -1,7 +1,6 @@
 package dev.bonygod.listacompra.login.ui.composables
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -24,11 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.googlesignin.kmp.ui.GoogleSignin
-import dev.bonygod.listacompra.ads.AdConstants
-import dev.bonygod.listacompra.ads.getBannerAdUnitId
-import dev.bonygod.listacompra.ads.getInterstitialAdUnitId
-import dev.bonygod.listacompra.ads.ui.BannerAd
-import dev.bonygod.listacompra.ads.ui.InterstitialAdTrigger
 import dev.bonygod.listacompra.login.ui.composables.components.EmailTextField
 import dev.bonygod.listacompra.login.ui.composables.components.GoogleSpacer
 import dev.bonygod.listacompra.login.ui.composables.components.Header
@@ -119,21 +113,6 @@ fun LoginContent(
                 }
             )
             NoAccountText(setEvent)
-
-            //Example
-            BannerAd(
-                modifier = Modifier.fillMaxWidth(),
-                adUnitId = AdConstants.getBannerAdUnitId()
-            )
-
-            InterstitialAdTrigger(
-                adUnitId = AdConstants.getInterstitialAdUnitId(),
-                onAdDismissed = { /* navegar */ }
-            ) { showAd ->
-                Button(onClick = { showAd() }) {
-                    Text("Eliminar")
-                }
-            }
         }
     }
 }

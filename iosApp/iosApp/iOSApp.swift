@@ -4,6 +4,7 @@ import GoogleSignIn
 import GoogleSignInKMPSwift
 import GoogleMobileAds
 import AdMobKMPSwift
+import ComposeApp
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
@@ -19,9 +20,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Inicializar el helper para escuchar las notificaciones de Kotlin (AdMob)
         _ = AdMobCallbackHelper.shared
 
-        // Precargar el intersticial
-        // TODO: Obtener el Ad Unit ID correcto desde Kotlin/BuildConfig
-        let adUnitId = "ca-app-pub-3940256099942544/4411468910" // ID de prueba de Google
+        // Precargar el intersticial usando el Ad Unit ID correcto desde Kotlin
+        let adUnitId = InterstitialAdPreloader().getAdUnitId()
+        print("🟡 [iOS] Preloading ad with ID: \(adUnitId)")
         AdPreloader.shared.preloadAd(adUnitId: adUnitId)
 
         return true

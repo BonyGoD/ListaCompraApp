@@ -1,134 +1,85 @@
 # ==========================================
-# ProGuard Rules - ListaCompra App
+# ProGuard Rules - ComposeApp Module
 # ==========================================
 
-# Mantener información de líneas para stack traces
+# ==========================================
+# Stacktraces útiles en release
+# ==========================================
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
-# Mantener anotaciones y clases internas
+# Anotaciones (necesarias para reflection)
 -keepattributes *Annotation*, InnerClasses, Signature, Exceptions
 
 # ==========================================
-# Kotlin & Coroutines
+# Kotlin Serialization (MODELOS)
 # ==========================================
--keep class kotlin.** { *; }
--keep class kotlinx.coroutines.** { *; }
--dontwarn kotlinx.coroutines.**
-
-# Kotlin Serialization
--keepattributes *Annotation*, InnerClasses
--dontnote kotlinx.serialization.AnnotationsKt
--keepclassmembers class kotlinx.serialization.json.** {
-    *** Companion;
-}
--keepclasseswithmembers class kotlinx.serialization.json.** {
-    kotlinx.serialization.KSerializer serializer(...);
-}
+# Serializers generados
 -keep,includedescriptorclasses class dev.bonygod.listacompra.**$$serializer { *; }
+
+# Companion objects
 -keepclassmembers class dev.bonygod.listacompra.** {
     *** Companion;
 }
+
+# serializer() method
 -keepclasseswithmembers class dev.bonygod.listacompra.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
 
 # ==========================================
-# Jetpack Compose
+# Firebase / Firestore
 # ==========================================
--keep class androidx.compose.** { *; }
--keep class androidx.compose.runtime.** { *; }
--keep class androidx.compose.ui.** { *; }
--keep class androidx.compose.material3.** { *; }
--keep class androidx.compose.foundation.** { *; }
--dontwarn androidx.compose.**
-
-# ==========================================
-# Firebase (GitLive)
-# ==========================================
--keep class dev.gitlive.firebase.** { *; }
--keep class com.google.firebase.** { *; }
--keep class com.google.android.gms.** { *; }
 -dontwarn dev.gitlive.firebase.**
 -dontwarn com.google.firebase.**
 -dontwarn com.google.android.gms.**
 
-# Firestore
+# Firestore @PropertyName
 -keepclassmembers class * {
     @com.google.firebase.firestore.PropertyName <fields>;
 }
 
 # ==========================================
-# Koin (Dependency Injection)
+# Koin (DI)
 # ==========================================
--keep class org.koin.** { *; }
--keep class org.koin.core.** { *; }
--keep class org.koin.dsl.** { *; }
--keepnames class androidx.lifecycle.ViewModel
--keepclassmembers public class * extends androidx.lifecycle.ViewModel {
+# ViewModels inyectados por Koin
+-keepclassmembers class * extends androidx.lifecycle.ViewModel {
     public <init>(...);
 }
 
+-dontwarn org.koin.**
+
 # ==========================================
-# Navigation 3
+# Navigation / Credentials / Ads
 # ==========================================
--keep class androidx.navigation.** { *; }
--keep class androidx.navigation3.** { *; }
 -dontwarn androidx.navigation.**
-
-# ==========================================
-# Google Sign-In & Credentials
-# ==========================================
--keep class com.google.android.gms.auth.** { *; }
--keep class com.google.android.gms.common.** { *; }
--keep class androidx.credentials.** { *; }
--keep class com.google.android.libraries.identity.googleid.** { *; }
--dontwarn com.google.android.gms.**
 -dontwarn androidx.credentials.**
-
-# ==========================================
-# Google AdMob
-# ==========================================
--keep class com.google.android.gms.ads.** { *; }
--keep class com.google.ads.mediation.** { *; }
 -dontwarn com.google.android.gms.ads.**
 
 # ==========================================
-# AndroidX & Lifecycle
+# AndroidX / Compose
 # ==========================================
--keep class androidx.lifecycle.** { *; }
--keep class androidx.activity.** { *; }
--keep class androidx.core.** { *; }
+# Compose y AndroidX ya traen sus reglas
+-dontwarn androidx.compose.**
 -dontwarn androidx.lifecycle.**
+-dontwarn androidx.activity.**
+-dontwarn androidx.core.**
 
 # ==========================================
-# Tu app - Solo mantener lo necesario
+# Tu app (solo lo necesario)
 # ==========================================
-# ViewModels
--keep class * extends androidx.lifecycle.ViewModel {
-    <init>(...);
-}
-
-# Data classes y modelos (si usas Firestore)
+# Modelos usados por Firestore / Serialization
 -keep class dev.bonygod.listacompra.**.model.** { *; }
 -keep class dev.bonygod.listacompra.**.domain.model.** { *; }
 -keep class dev.bonygod.listacompra.**.data.model.** { *; }
 
-# Clases de UI (Compose)
--keep class dev.bonygod.listacompra.**.ui.** { *; }
-
-# Mantener nombres de clases para debugging
+# Mantener nombres para debugging (opcional)
 -keepnames class dev.bonygod.listacompra.**
 
 # ==========================================
-# Optimizaciones
+# Limpieza de logs (opcional)
 # ==========================================
--optimizationpasses 5
--dontusemixedcaseclassnames
--dontskipnonpubliclibraryclasses
--verbose
-
-# Remover logs en producción (opcional - descomenta si quieres)
+# Descomenta para eliminar logs en producción
 # -assumenosideeffects class android.util.Log {
 #     public static *** d(...);
 #     public static *** v(...);

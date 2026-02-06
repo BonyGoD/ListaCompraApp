@@ -3,6 +3,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Permiso requerido para usar AdMob en Android 13+ (API 33+) -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+
     <application
         android:name="dev.bonygod.listacompra.ListaCompraApp"
         android:allowBackup="true"

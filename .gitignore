@@ -31,6 +31,9 @@ render.experimental.xml
 google-services.json
 GoogleService-Info.plist
 
+# iOS Configuration con credenciales (xcconfig con valores reales)
+iosApp/Configuration/Config.xcconfig
+
 # Android Profiling
 *.hprof
 
@@ -50,6 +53,11 @@ iosApp/Pods/
 iosApp/Podfile.lock
 iosApp/*.xcworkspace
 iosApp/DerivedData/
+
+# Swift Package Manager
+Package.resolved
+iosApp/Package.resolved
+.swiftpm/
 
 # Archivos de configuración sensible iOS
 iosApp/GoogleService-Info.plist
@@ -82,3 +90,7 @@ iosApp/fastlane/test_output/
 iosApp/.DS_Store
 iosApp/**/.DS_Store
 project.pbxproj
+
+# AdMob Config generado (contiene IDs sensibles)
+iosApp/AdMobConfig.xcconfig
+

@@ -10,24 +10,12 @@ import dev.gitlive.firebase.initialize
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge(
-            navigationBarStyle = SystemBarStyle.light(
-                scrim = android.graphics.Color.WHITE,
-                darkScrim = android.graphics.Color.WHITE
-            )
-        )
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         Firebase.initialize(this)
+        initPlatform(this)
         setContent {
             App()
         }
     }
 }
-
-//@Preview(showSystemUi = true, showBackground = true)
-//@Composable
-//fun AppAndroidPreview() {
-//    ScreenWrapper {
-//        HomeScreen(firestoreRepository)
-//    }
-//}

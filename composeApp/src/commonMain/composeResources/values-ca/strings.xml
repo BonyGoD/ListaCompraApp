@@ -1,0 +1,37 @@
+<resources>
+    <!-- Common -->
+    <string name="login_register_screen_email">CORREU ELECTRÒNIC</string>
+    <string name="login_register_screen_password">CONTRASENYA</string>
+
+    <!-- Login -->
+    <string name="login_screen_title">Benvingut a ListaCompra!</string>
+    <string name="login_screen_subtitle">Gestionem els aliments que ens falten</string>
+    <string name="login_screen_forgot_password">Has oblidat la teva contrasenya?</string>
+    <string name="login_screen_login_button">Accedir</string>
+    <string name="login_screen_or_login_with">O accedeix amb</string>
+    <string name="login_screen_no_account">No tens un compte?</string>
+    <string name="login_screen_register_link">Registra’t</string>
+    <string name="login_screen_google_access">Accedir amb Google</string>
+    <string name="login_screen_dialog_title">Correu de recuperació enviat</string>
+    <string name="login_screen_dialog_subtitle">Revisa la teva safata d’entrada i la carpeta de correu brossa.</string>
+    <string name="login_screen_dialog_button">Acceptar</string>
+
+    <!-- ForgotPassword -->
+    <string name="forgot_password_screen_title">Recuperar la contrasenya</string>
+    <string name="forgot_password_screen_subtitle">T'enviarem un correu de recuperació</string>
+    <string name="forgot_password_screen_button">Enviar</string>
+
+    <!-- Register -->
+    <string name="register_screen_title">Crea el teu compte</string>
+    <string name="register_screen_subtitle">Uneix-te a ListaCompra i gestiona els teus aliments</string>
+    <string name="register_screen_name">NOM</string>
+    <string name="register_screen_confirm_password">CONFIRMAR CONTRASENYA</string>
+    <string name="register_screen_register_button">Registrar-se</string>
+    <string name="register_screen_or_register_with">O registra’t amb</string>
+    <string name="register_screen_google_register">Registrar-se amb Google</string>
+
+    <!-- Home -->
+    <string name="home_notification_dialog_title">Comparteix la teva llista de la compra</string>
+    <string name="home_notification_dialog_subtitle">Introdueix el correu electrònic de la persona amb qui vols compartir la teva llista</string>
+    <string name="home_notification_dialog_button">Comparteix</string>
+</resources>

@@ -1,14 +1,15 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    //alias(libs.plugins.composeHotReload)
-    alias(libs.plugins.google.services.firebase)
+    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.gradleBuildConfig)
 }
 
 kotlin {
@@ -19,34 +20,25 @@ kotlin {
         }
     }
 
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
     if (System.getProperty("os.name").contains("Mac", ignoreCase = true)) {
-        listOf(
-            iosX64(),
-            iosArm64(),
-            iosSimulatorArm64()
-        ).forEach { iosTarget ->
-            iosTarget.binaries.framework {
+        targets.withType<KotlinNativeTarget>().configureEach {
+            binaries.framework {
                 baseName = "ComposeApp"
                 isStatic = true
-                binaryOption("bundleId", "dev.bonygod.listacompra.ComposeApp")
+                binaryOption(
+                    "bundleId",
+                    "dev.bonygod.listacompra.ComposeApp"
+                )
             }
         }
     }
 
-    jvm()
-
     sourceSets {
 
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
-
-            //Dependency Injection
-            implementation(libs.koin.android)
-
-            //Firebase
-            implementation(project.dependencies.platform(libs.firebase.bom))
-        }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -54,32 +46,53 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            // androidx.lifecycle.viewmodelCompose causa conflictos en iOS
-            //implementation(libs.androidx.lifecycle.viewmodelCompose)
+
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlin.serialization)
             implementation(libs.kotlinx.datetime)
 
-            //Dependency Injection
+            // Navigation 3
+            implementation(libs.jetbrains.material3.adaptiveNavigation3)
+            implementation(libs.jetbrains.lifecycle.viewmodelNavigation3)
+
+            // Dependency Injection
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
 
-            //GitLive Firebase
+            // GitLive Firebase
             implementation(libs.gitlive.firebase.firestore)
+            implementation(libs.gitlive.firebase.auth)
+            implementation(libs.gitlive.firebase.crashlytics)
+            implementation(libs.gitlive.firebase.analitics)
+
+            implementation("com.github.BonyGoD.GoogleSignInKMP:googlesignin-kmp:1.0.0")
         }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
-        jvmMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutinesSwing)
 
-            //Dependency Injection for JVM
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.core)
+        androidMain.dependencies {
+            implementation(compose.preview)
+            implementation(libs.androidx.activity.compose)
+
+            // Dependency Injection
+            implementation(libs.koin.android)
+
+            // Firebase
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.auth)
+
+            // Sign In with Google
+            implementation(libs.androidx.credentials)
+            implementation(libs.androidx.credentials.play.services.auth)
+            implementation(libs.googleid)
+            implementation(libs.play.services.auth)
+
+            // AdMob
+            implementation(libs.play.services.ads)
         }
     }
 }
@@ -89,44 +102,45 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "dev.bonygod.listacompra"
         minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 3
-        versionName = "2.0.0"
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+buildConfig {
+    packageName("dev.bonygod.listacompra")
+
+    val properties = Properties()
+    properties.load(project.rootProject.file("local.properties").reader())
+    val apiKey = properties.getProperty("FIREBASE_API_KEY")
+    val clientId = properties.getProperty("CLIENT_ID")
+
+    buildConfigField("FIREBASE_API_KEY", apiKey)
+    buildConfigField("CLIENT_ID", clientId)
+
+    // AdMob Application IDs
+    val admobAndroidAppId = properties.getProperty("ADMOB_ANDROID_APP_ID") ?: ""
+    val admobIosAppId = properties.getProperty("ADMOB_IOS_APP_ID") ?: ""
+
+    buildConfigField("ADMOB_ANDROID_APP_ID", admobAndroidAppId)
+    buildConfigField("ADMOB_IOS_APP_ID", admobIosAppId)
+
+    // AdMob Ad Unit IDs (solo los de producción, los de prueba son públicos de Google)
+    val admobAndroidBanner = properties.getProperty("ADMOB_ANDROID_BANNER") ?: ""
+    val admobAndroidInterstitial = properties.getProperty("ADMOB_ANDROID_INTERSTITIAL") ?: ""
+    val admobIosBanner = properties.getProperty("ADMOB_IOS_BANNER") ?: ""
+    val admobIosInterstitial = properties.getProperty("ADMOB_IOS_INTERSTITIAL") ?: ""
+
+    buildConfigField("ADMOB_ANDROID_BANNER", admobAndroidBanner)
+    buildConfigField("ADMOB_ANDROID_INTERSTITIAL", admobAndroidInterstitial)
+    buildConfigField("ADMOB_IOS_BANNER", admobIosBanner)
+    buildConfigField("ADMOB_IOS_INTERSTITIAL", admobIosInterstitial)
 }
 
 dependencies {
     debugImplementation(compose.uiTooling)
-}
-
-compose.desktop {
-    application {
-        mainClass = "dev.bonygod.listacompra.MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "dev.bonygod.listacompra"
-            packageVersion = "2.0.0"
-        }
-    }
 }

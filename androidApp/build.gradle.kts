@@ -67,8 +67,11 @@ android {
         getByName("release") {
             // Aplicar firma si está configurada, sino usar debug signing
             val releaseSigningConfig = signingConfigs.getByName("release")
-            if (releaseSigningConfig.storeFile == null) {
-                throw GradleException("❌ Release keystore not configured")
+            if (releaseSigningConfig.storeFile != null) {
+                signingConfig = releaseSigningConfig
+                println("✅ Using release signing")
+            } else {
+                println("⚠️ Using debug signing for release build (keystore not configured) or is iOS compile")
             }
             isMinifyEnabled = true
             isShrinkResources = true

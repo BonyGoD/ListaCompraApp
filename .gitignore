@@ -43,7 +43,6 @@ iosApp/Configuration/Config.xcconfig
 kotlinTransformedMetadataLibraries/
 
 # Xcode
-*.xcodeproj/project.pbxproj
 *.xcodeproj/xcuserdata/
 *.xcworkspace/xcuserdata/
 *.xcuserstate
@@ -89,7 +88,6 @@ iosApp/fastlane/test_output/
 # Archivos temporales macOS en iOS
 iosApp/.DS_Store
 iosApp/**/.DS_Store
-project.pbxproj
 
 # AdMob Config generado (contiene IDs sensibles)
 iosApp/AdMobConfig.xcconfig

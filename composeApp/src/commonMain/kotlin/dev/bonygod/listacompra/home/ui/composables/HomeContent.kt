@@ -109,7 +109,7 @@ fun HomeContent(
         Button(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
+                .padding(start = 20.dp, end = 20.dp, bottom = 30.dp),
             colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
             content = {
                 Text(

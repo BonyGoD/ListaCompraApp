@@ -44,8 +44,7 @@ class UsersDataSource(
         val userDoc = firebase.collection("usuarios")
             .document(userUID)
             .get()
-        val lista = userDoc.get("listas") as List<String>
-        if (userUID.isNotEmpty() && lista.isNotEmpty()) {
+        if (userDoc.exists) {
             return UserResponse(
                 uid = userUID,
                 nombre = userDoc.get("nombre") as? String ?: "",
@@ -191,6 +190,7 @@ class UsersDataSource(
                 ),
                 merge = true
             )
+        deleteOwnerList()
         return UserResponse(
             uid = uid,
             nombre = auth.currentUser?.displayName.orEmpty(),
@@ -214,5 +214,19 @@ class UsersDataSource(
                 doc.reference.delete()
             }
 
+    }
+
+    suspend fun deleteOwnerList() {
+        val userUID = auth.currentUser?.uid.orEmpty()
+        firebase
+            .collection("lista-compra")
+            .where {
+                "owner".equalTo(userUID)
+            }
+            .get()
+            .documents
+            .forEach { doc ->
+                doc.reference.delete()
+            }
     }
 }

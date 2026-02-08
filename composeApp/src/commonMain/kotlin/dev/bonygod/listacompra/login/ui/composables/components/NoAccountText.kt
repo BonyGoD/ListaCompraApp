@@ -21,7 +21,8 @@ import org.jetbrains.compose.resources.stringResource
 fun NoAccountText(setEvent: (AuthEvent) -> Unit) {
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(bottom = 40.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {

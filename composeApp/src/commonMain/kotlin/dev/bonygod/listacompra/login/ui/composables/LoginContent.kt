@@ -52,7 +52,11 @@ fun LoginContent(
     state: AuthState,
     setEvent: (AuthEvent) -> Unit = {}
 ) {
-    Column(modifier = Modifier.fillMaxSize().padding(top = 40.dp, bottom = 10.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 40.dp, bottom = 10.dp)
+    ) {
         Header(
             stringResource(Res.string.login_screen_title),
             stringResource(Res.string.login_screen_subtitle),

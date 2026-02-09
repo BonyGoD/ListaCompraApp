@@ -9,7 +9,7 @@ composeHotReload = "1.0.0"
 composeMultiplatform = "1.9.3"
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
-serialization = "3.3.3"
+kotlinx-serialization = "1.8.0"
 dateTime = "0.7.1"
 
 #Navigation3
@@ -45,7 +45,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
-kotlin-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTime" }
 
 #Navitation

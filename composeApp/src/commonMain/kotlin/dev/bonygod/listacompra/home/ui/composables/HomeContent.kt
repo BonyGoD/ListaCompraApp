@@ -2,11 +2,17 @@ package dev.bonygod.listacompra.home.ui.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -18,8 +24,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,84 +63,119 @@ fun HomeContent(
     state: ListaCompraState,
     onEvent: (ListaCompraEvent) -> Unit = {}
 ) {
-    Column(modifier = Modifier.fillMaxSize().background(SecondaryBlue)) {
-        TopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = SecondaryBlue),
-            title = { Text(text = "Lista de la compra") },
-            navigationIcon = {
-                IconButton(
-                    onClick = {
-                        onEvent(ListaCompraEvent.OnMenuClick)
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.menu_hamburguesa),
-                        contentDescription = "Abrir menú",
-                        tint = PrimaryBlue
-                    )
-                }
-            },
-            actions = {
-                Column(
-                    modifier = Modifier
-                        .clickable {
-                            onEvent(ListaCompraEvent.ShowDialog(true))
+    // Estado para almacenar la altura real del banner
+    var bannerHeight by remember { mutableStateOf(0) }
+    val density = LocalDensity.current
+
+    Box(modifier = Modifier.fillMaxSize().background(SecondaryBlue)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SecondaryBlue)
+                .windowInsetsPadding(WindowInsets.navigationBars)
+        ) {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = SecondaryBlue),
+                title = { Text(text = "Lista de la compra") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            onEvent(ListaCompraEvent.OnMenuClick)
                         }
-                        .padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Borrar lista",
-                        fontSize = 15.sp,
-                        fontWeight = Bold,
-                        color = PrimaryBlue
-                    )
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.menu_hamburguesa),
+                            contentDescription = "Abrir menú",
+                            tint = PrimaryBlue
+                        )
+                    }
+                },
+                actions = {
+                    Column(
+                        modifier = Modifier
+                            .clickable {
+                                onEvent(ListaCompraEvent.ShowDialog(true))
+                            }
+                            .padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Borrar lista",
+                            fontSize = 15.sp,
+                            fontWeight = Bold,
+                            color = PrimaryBlue
+                        )
+                    }
+                }
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                LazyColumn(modifier = Modifier.padding(10.dp)) {
+                    items(data.productos) { producto ->
+                        if (state.editingProductId == producto.id) {
+                            TextFieldComponent(
+                                onEvent = onEvent,
+                                state = state
+                            )
+                        } else {
+                            TextComponent(
+                                producto = producto,
+                                onEvent = onEvent
+                            )
+                        }
+                        Spacer(
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
                 }
             }
-        )
-        Column(modifier = Modifier.weight(1f)) {
-            LazyColumn(modifier = Modifier.padding(10.dp)) {
-                items(data.productos) { producto ->
-                    if (state.editingProductId == producto.id) {
-                        TextFieldComponent(
-                            onEvent = onEvent,
-                            state = state
-                        )
-                    } else {
-                        TextComponent(
-                            producto = producto,
-                            onEvent = onEvent
-                        )
-                    }
-                    Spacer(
-                        modifier = Modifier.padding(vertical = 8.dp)
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                content = {
+                    Text(
+                        fontWeight = Bold,
+                        fontSize = 15.sp,
+                        text = "Agregar producto"
                     )
+                },
+                onClick = {
+                    onEvent(ListaCompraEvent.ShowBottomSheet(true))
                 }
+            )
+
+            // Spacer dinámico con la altura REAL del banner medida
+            with(density) {
+                Spacer(modifier = Modifier.height(bannerHeight.toDp()))
+            }
+            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+        }
+
+        // Banner por encima de la barra de navegación
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        ) {
+            Column {
+                BannerAd(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onSizeChanged { size ->
+                            bannerHeight = size.height  // Capturar altura real del banner
+                        },
+                    adUnitId = AdConstants.getBannerAdUnitId()
+                )
+                // Spacer para extender el banner por debajo de la barra de navegación
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsBottomHeight(WindowInsets.navigationBars)
+                        .background(SecondaryBlue)
+                )
             }
         }
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, bottom = 30.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
-            content = {
-                Text(
-                    fontWeight = Bold,
-                    fontSize = 15.sp,
-                    text = "Agregar producto"
-                )
-            },
-            onClick = {
-                onEvent(ListaCompraEvent.ShowBottomSheet(true))
-            }
-        )
-
-        BannerAd(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 4.dp),
-            adUnitId = AdConstants.getBannerAdUnitId()
-        )
     }
 
     if (state.dialogState) {

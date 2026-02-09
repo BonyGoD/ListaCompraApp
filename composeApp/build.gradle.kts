@@ -48,7 +48,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
 
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.kotlin.serialization)
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
 
             // Navigation 3

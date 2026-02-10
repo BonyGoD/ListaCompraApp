@@ -59,7 +59,7 @@ fun AddProductBottomSheet(
             Button(
                 onClick = { onEvent(ListaCompraEvent.AddProducto) },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = state.newProductText.text.isNotBlank(),
+                enabled = state.newProductText.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF00913F)
                 )

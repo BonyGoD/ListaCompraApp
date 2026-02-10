@@ -63,7 +63,6 @@ fun HomeContent(
     state: ListaCompraState,
     onEvent: (ListaCompraEvent) -> Unit = {}
 ) {
-    // Estado para almacenar la altura real del banner
     var bannerHeight by remember { mutableStateOf(0) }
     val density = LocalDensity.current
 
@@ -145,14 +144,15 @@ fun HomeContent(
                 }
             )
 
-            // Spacer dinámico con la altura REAL del banner medida
-            with(density) {
-                Spacer(modifier = Modifier.height(bannerHeight.toDp()))
+            if (bannerHeight > 0) {
+                with(density) {
+                    Spacer(modifier = Modifier.height(bannerHeight.toDp()))
+                }
             }
+
             Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
         }
 
-        // Banner por encima de la barra de navegación
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -163,11 +163,10 @@ fun HomeContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .onSizeChanged { size ->
-                            bannerHeight = size.height  // Capturar altura real del banner
+                            bannerHeight = size.height
                         },
                     adUnitId = AdConstants.getBannerAdUnitId()
                 )
-                // Spacer para extender el banner por debajo de la barra de navegación
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()

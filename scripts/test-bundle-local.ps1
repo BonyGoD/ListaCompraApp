@@ -3,12 +3,32 @@ Write-Host "  Probar Bundle AAB Localmente"
 Write-Host "========================================"
 Write-Host ""
 
+# Leer credenciales desde local.properties
+Write-Host "Leyendo credenciales desde local.properties..."
+$localPropertiesPath = "local.properties"
+
+if (-not (Test-Path $localPropertiesPath)) {
+    Write-Host "ERROR: No se encuentra el archivo local.properties"
+    exit 1
+}
+
+$localProperties = Get-Content $localPropertiesPath
+$keystorePassword = ($localProperties | Select-String "KEYSTORE_PASSWORD=(.+)" | ForEach-Object { $_.Matches.Groups[1].Value }).Trim()
+$keyAlias = ($localProperties | Select-String "KEY_ALIAS=(.+)" | ForEach-Object { $_.Matches.Groups[1].Value }).Trim()
+$keyPassword = ($localProperties | Select-String "KEY_PASSWORD=(.+)" | ForEach-Object { $_.Matches.Groups[1].Value }).Trim()
+
+if (-not $keystorePassword -or -not $keyAlias -or -not $keyPassword) {
+    Write-Host "ERROR: No se pudieron leer las credenciales del keystore desde local.properties"
+    Write-Host "Asegurate de que existan: KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD"
+    exit 1
+}
+
+Write-Host "Credenciales cargadas correctamente"
+Write-Host ""
+
 $bundlePath = "androidApp\build\outputs\bundle\release\androidApp-release.aab"
 $outputApks = "androidApp\build\outputs\bundle\release\app.apks"
 $keystorePath = "app-keystore.jks"
-$keystorePassword = "Naiamatt16"
-$keyAlias = "listacompra"
-$keyPassword = "Naiamatt16"
 $adb = "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"
 
 # Verificar que el bundle existe

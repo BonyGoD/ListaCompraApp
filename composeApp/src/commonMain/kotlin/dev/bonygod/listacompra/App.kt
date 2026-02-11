@@ -10,7 +10,7 @@ import dev.bonygod.listacompra.core.navigation.NavigationWrapper
 fun App() {
     val snackbarHostState = remember { SnackbarHostState() }
     MaterialTheme {
-        ScreenWrapper {
+        ScreenWrapper(snackbarHostState = snackbarHostState) {
             NavigationWrapper(snackbarHostState)
         }
     }

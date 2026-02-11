@@ -70,7 +70,11 @@ fun RegisterContent(
                 onClick = { setEvent(AuthEvent.OnBackClick) }
             )
     )
-    Column(modifier = Modifier.fillMaxSize().padding(top = 40.dp, bottom = 10.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 40.dp, bottom = 10.dp)
+    )
     {
         Header(
             stringResource(Res.string.register_screen_title),

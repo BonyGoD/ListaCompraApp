@@ -14,7 +14,16 @@ captures/
 .cxx/
 *.aab
 *.apk
+*.apks
 output-metadata.json
+
+# Bundletool (herramienta de testing local)
+bundletool*.jar
+
+# Scripts de testing local
+scripts/test-apk-local.ps1
+scripts/test-bundle-local.ps1
+scripts/verify-proguard.ps1
 
 # IntelliJ
 *.iml

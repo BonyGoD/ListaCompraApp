@@ -60,7 +60,10 @@ fun ForgotPasswordContent(
                 onClick = { setEvent(AuthEvent.OnBackClick) }
             )
     )
-    Column(modifier = Modifier.fillMaxSize(), Arrangement.Center) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
         Header(
             stringResource(Res.string.forgot_password_screen_title),
             stringResource(Res.string.forgot_password_screen_subtitle),

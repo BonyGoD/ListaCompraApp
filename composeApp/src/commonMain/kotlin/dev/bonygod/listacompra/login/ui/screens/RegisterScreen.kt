@@ -2,18 +2,29 @@ package dev.bonygod.listacompra.login.ui.screens
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import dev.bonygod.listacompra.ScreenWrapper
 import dev.bonygod.listacompra.login.ui.AuthViewModel
 import dev.bonygod.listacompra.login.ui.composables.RegisterContent
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEffect
+import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RegisterScreen(snackbarHostState: SnackbarHostState) {
     val viewModel: AuthViewModel = koinViewModel()
     val state = viewModel.state.collectAsState()
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.onEvent(AuthEvent.OnEmailChange(""))
+            viewModel.onEvent(AuthEvent.OnPasswordChange(""))
+            viewModel.onEvent(AuthEvent.OnConfirmPasswordChange(""))
+            viewModel.onEvent(AuthEvent.OnUserNameChange(""))
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->

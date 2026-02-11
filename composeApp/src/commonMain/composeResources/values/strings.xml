@@ -36,4 +36,15 @@
     <string name="home_notification_dialog_subtitle">Enter the email address of the person you want to share your list with</string>
     <string name="home_notification_dialog_button">Share</string>
 
+    <!-- Side menu -->
+    <string name="menu_lateral_share_list">Share list</string>
+    <string name="menu_lateral_logout">Log out</string>
+    <string name="menu_lateral_delete_account">Delete account</string>
+    <string name="delete_account_title">Delete account permanently?</string>
+    <string name="delete_account_subtitle">This action is irreversible. All your data and shopping lists will be deleted.</string>
+    <string name="delete_account_button">Delete account</string>
+
+
+
+
 </resources>

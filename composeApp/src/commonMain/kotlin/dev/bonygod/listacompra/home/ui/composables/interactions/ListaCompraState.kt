@@ -27,8 +27,12 @@ data class ListaCompraState(
     val customDialog: Boolean = false,
     val shareTextField: TextFieldValue = TextFieldValue(""),
     val notifications: List<NotificationsUI> = emptyList(),
-    val showNotifications: Boolean = false
+    val showNotifications: Boolean = false,
+    val showDeleteAccount: Boolean = false
 ) {
+    fun showDeleteAccountDialog(show: Boolean): ListaCompraState {
+        return copy(showDeleteAccount = show)
+    }
     fun showNotificationBottomSheet(show: Boolean): ListaCompraState {
         return copy(showNotifications = show)
     }

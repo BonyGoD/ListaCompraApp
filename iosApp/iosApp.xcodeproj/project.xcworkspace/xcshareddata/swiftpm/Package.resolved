@@ -1,5 +1,5 @@
 {
-  "originHash" : "55a21e00a295169bfc35bd4efcb7aa5a39e00d4a3532aafe9b31cc1535af0f8e",
+  "originHash" : "7a2b898c39f786afbd4ce4b3c4d5bcce9c3dbe6ef300d7a58f1d2f8ed62781e0",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -74,15 +74,6 @@
       }
     },
     {
-      "identity" : "googlesigninkmp",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/BonyGoD/GoogleSignInKMP",
-      "state" : {
-        "revision" : "7d6b8b123cabd6d3df34508734eb9ed8f4dbc32a",
-        "version" : "1.0.0"
-      }
-    },
-    {
       "identity" : "googleutilities",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleUtilities.git",
@@ -152,6 +143,15 @@
       "state" : {
         "revision" : "540318ecedd63d883069ae7f1ed811a2df00b6ac",
         "version" : "2.4.0"
+      }
+    },
+    {
+      "identity" : "signinkmp",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/BonyGoD/SignInKMP",
+      "state" : {
+        "revision" : "504edd81974a4ceb68a5b0e918ee550df1dc935a",
+        "version" : "1.1.0"
       }
     },
     {

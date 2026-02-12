@@ -22,7 +22,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.bonygod.googlesignin.kmp.ui.GoogleSignin
 import dev.bonygod.listacompra.login.ui.composables.components.EmailTextField
 import dev.bonygod.listacompra.login.ui.composables.components.GoogleSpacer
 import dev.bonygod.listacompra.login.ui.composables.components.Header
@@ -31,6 +30,7 @@ import dev.bonygod.listacompra.login.ui.composables.components.PasswordTextField
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthState
 import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
+import dev.bonygod.signin.kmp.ui.GoogleSignin
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.google_icon

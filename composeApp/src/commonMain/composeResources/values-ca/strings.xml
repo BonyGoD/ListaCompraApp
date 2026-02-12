@@ -34,4 +34,14 @@
     <string name="home_notification_dialog_title">Comparteix la teva llista de la compra</string>
     <string name="home_notification_dialog_subtitle">Introdueix el correu electrònic de la persona amb qui vols compartir la teva llista</string>
     <string name="home_notification_dialog_button">Comparteix</string>
+
+    <!-- Menú lateral -->
+    <string name="menu_lateral_share_list">Compartir llista</string>
+    <string name="menu_lateral_logout">Tancar sessió</string>
+    <string name="menu_lateral_delete_account">Eliminar compte</string>
+    <string name="delete_account_title">Eliminar compte permanentment?</string>
+    <string name="delete_account_subtitle">Aquesta acció és irreversible. S\'eliminaran totes les teves dades i llistes de la compra.</string>
+    <string name="delete_account_button">Elimina compte</string>
+
+
 </resources>

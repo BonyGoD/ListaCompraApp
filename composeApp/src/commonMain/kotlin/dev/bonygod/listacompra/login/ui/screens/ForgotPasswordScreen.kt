@@ -2,6 +2,7 @@ package dev.bonygod.listacompra.login.ui.screens
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import dev.bonygod.listacompra.ScreenWrapper
@@ -16,6 +17,12 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ForgotPasswordScreen(snackbarHostState: SnackbarHostState) {
     val viewModel: AuthViewModel = koinViewModel()
     val state = viewModel.state.collectAsState()
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.onEvent(AuthEvent.OnEmailChange(""))
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->

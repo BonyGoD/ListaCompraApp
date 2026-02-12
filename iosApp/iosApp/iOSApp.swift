@@ -1,7 +1,7 @@
 import SwiftUI
 import Firebase
 import GoogleSignIn
-import GoogleSignInKMPSwift
+import SignInKMPSwift
 import GoogleMobileAds
 import AdMobKMPSwift
 import ComposeApp
@@ -12,7 +12,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         FirebaseApp.configure()
 
         // Inicializar el helper para escuchar las notificaciones de Kotlin (GoogleSignIn)
-        _ = GoogleAuthCallbackHelper.shared
+        _ = SignInCallbackHelper.shared
 
         // Inicializar Google Mobile Ads SDK
         MobileAds.shared.start()

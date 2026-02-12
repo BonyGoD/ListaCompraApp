@@ -5,6 +5,7 @@ import dev.bonygod.listacompra.login.data.model.UserResponse
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
 import dev.bonygod.listacompra.login.domain.model.Notifications
 import dev.gitlive.firebase.auth.FirebaseAuth
+import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.coroutines.flow.Flow
@@ -228,5 +229,48 @@ class UsersDataSource(
             .forEach { doc ->
                 doc.reference.delete()
             }
+    }
+
+    suspend fun deletFirestoreAccount(currentUser: FirebaseUser?) {
+        val userUID = currentUser?.uid.orEmpty()
+        val userEmail = currentUser?.email.orEmpty()
+        try {
+            firebase
+                .collection("notifications")
+                .where {
+                    "email".equalTo(userEmail)
+                }
+                .get()
+                .documents
+                .forEach { doc ->
+                    doc.reference.delete()
+                }
+            firebase
+                .collection("usuarios")
+                .document(userUID)
+                .delete()
+        } catch (e: Exception) {
+            throw Exception("Error al borrar la cuenta de Firestore: ${e.message}", e)
+        }
+    }
+
+    suspend fun deleteAccount() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            throw Exception("No hay usuario logueado. Por favor, inicia sesión para borrar la cuenta.")
+        }
+        deleteOwnerList()
+        deletFirestoreAccount(currentUser)
+        try {
+            currentUser.delete()
+        } catch (e: Exception) {
+            if (e.message?.contains("recently authenticated") == true ||
+                e.message?.contains("re-authenticate") == true) {
+                throw Exception("Por seguridad, debes volver a iniciar sesión antes de borrar la cuenta.")
+            } else {
+                throw Exception("Error al borrar la cuenta de autenticación: ${e.message}")
+            }
+        }
+        logOut()
     }
 }

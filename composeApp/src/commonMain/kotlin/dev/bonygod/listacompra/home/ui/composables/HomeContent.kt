@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -71,7 +72,7 @@ fun HomeContent(
             modifier = Modifier
                 .fillMaxSize()
                 .background(SecondaryBlue)
-                .windowInsetsPadding(WindowInsets.navigationBars)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
         ) {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = SecondaryBlue),
@@ -150,7 +151,7 @@ fun HomeContent(
                 }
             }
 
-            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
         }
 
         Box(

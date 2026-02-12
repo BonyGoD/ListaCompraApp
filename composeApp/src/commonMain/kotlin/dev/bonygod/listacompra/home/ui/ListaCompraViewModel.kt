@@ -17,6 +17,7 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.home.ui.mapper.toUI
 import dev.bonygod.listacompra.login.domain.usecase.AddSharedListUseCase
+import dev.bonygod.listacompra.login.domain.usecase.DeleteAccountUseCase
 import dev.bonygod.listacompra.login.domain.usecase.DeleteNotificationUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
@@ -47,7 +48,8 @@ class ListaCompraViewModel(
     private val getNotificationsUseCase: GetNotificationsUseCase,
     private val shareListaCompraUseCase: ShareListaCompraUseCase,
     private val addSharedListUseCase: AddSharedListUseCase,
-    private val deleteNotificationUseCase: DeleteNotificationUseCase
+    private val deleteNotificationUseCase: DeleteNotificationUseCase,
+    private val deleteAccountUseCase: DeleteAccountUseCase
 ) : ViewModel() {
     private var notificationsJob: Job? = null
     private var productosJob: Job? = null
@@ -152,6 +154,20 @@ class ListaCompraViewModel(
             is ListaCompraEvent.ShowNotificationsBottomSheet -> setState { showNotificationBottomSheet(event.show) }
             is ListaCompraEvent.OnAcceptSharedList -> acceptSharedList(event.listaId)
             is ListaCompraEvent.OnCancelSharedList -> cancelSharedList(event.listaId)
+            is ListaCompraEvent.OnDeleteAccountClick -> setState { showDeleteAccountDialog(true) }
+            is ListaCompraEvent.DismissDeleteAccountDialog -> setState { showDeleteAccountDialog(false) }
+            is ListaCompraEvent.OnDeleteAccountConfirm -> deleteAccount()
+        }
+    }
+
+    private fun deleteAccount() {
+        viewModelScope.launch {
+            deleteAccountUseCase()
+            setState { showDeleteAccountDialog(false) }
+            sharedState.showLoading(false)
+            stopNotificationsListener()
+            setState { ListaCompraState() }
+            navigator.clearAndNavigateTo(Routes.Login)
         }
     }
 

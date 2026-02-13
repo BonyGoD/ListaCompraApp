@@ -31,7 +31,10 @@ sealed class ListaCompraEvent {
     data object OnShareListClick : ListaCompraEvent()
     data class ShareList(val email: String) : ListaCompraEvent()
     data object DismissCustomDialog : ListaCompraEvent()
+    data object DismissDeleteAccountDialog : ListaCompraEvent()
     data class OnShareTextFieldChange(val text: TextFieldValue) : ListaCompraEvent()
     data class OnAcceptSharedList(val listaId: String) : ListaCompraEvent()
     data class OnCancelSharedList(val listaId: String) : ListaCompraEvent()
+    data object OnDeleteAccountClick: ListaCompraEvent()
+    data object OnDeleteAccountConfirm: ListaCompraEvent()
 }

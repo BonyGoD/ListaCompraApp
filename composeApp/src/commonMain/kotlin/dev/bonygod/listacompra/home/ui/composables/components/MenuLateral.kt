@@ -21,6 +21,7 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
+import listacompra.composeapp.generated.resources.basura_black
 import listacompra.composeapp.generated.resources.logout
 import listacompra.composeapp.generated.resources.notification_blank
 import listacompra.composeapp.generated.resources.notification_with_noti
@@ -106,6 +107,28 @@ fun MenuLateral(
                 fontWeight = FontWeight.Bold,
                 color = Color.Gray,
                 text = "Cerrar sesión"
+            )
+        }
+        Row(
+            modifier = Modifier.padding(start = 10.dp, top = 30.dp)
+                .clickable {
+                    setEvent(ListaCompraEvent.OnDeleteAccountClick)
+                    onCloseDrawer()
+                },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.basura_black),
+                tint = Color.Gray,
+                contentDescription = "Icono menú",
+            )
+            Text(
+                modifier = Modifier.padding(start = 10.dp),
+                fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray,
+                text = "Eliminar cuenta"
             )
         }
         Spacer(Modifier.weight(1f))

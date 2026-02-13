@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import dev.bonygod.listacompra.home.ui.ListaCompraViewModel
 import dev.bonygod.listacompra.home.ui.composables.HomeContent
+import dev.bonygod.listacompra.home.ui.composables.components.DeleteAccountDialog
 import dev.bonygod.listacompra.home.ui.composables.components.MenuLateral
 import dev.bonygod.listacompra.home.ui.composables.components.ShareListaCompraDialog
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEffect
@@ -49,6 +50,13 @@ fun HomeScreen(snackbarHostState: SnackbarHostState, userId: String) {
 
     if (state.value.customDialog) {
         ShareListaCompraDialog(
+            state = state.value,
+            setEvent = viewModel::onEvent
+        )
+    }
+
+    if (state.value.showDeleteAccount) {
+        DeleteAccountDialog(
             state = state.value,
             setEvent = viewModel::onEvent
         )

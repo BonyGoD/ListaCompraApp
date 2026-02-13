@@ -35,4 +35,12 @@
     <string name="home_notification_dialog_subtitle">Introduce el correo electrónico de la persona con la que quieres compartir tu lista</string>
     <string name="home_notification_dialog_button">Comparte</string>
 
+    <!-- Menu lateral -->
+    <string name="menu_lateral_share_list">Compartir lista</string>
+    <string name="menu_lateral_logout">Cerrar sesión</string>
+    <string name="menu_lateral_delete_account">Eliminar cuenta</string>
+    <string name="delete_account_title">¿Eliminar cuenta permanentemente?</string>
+    <string name="delete_account_subtitle">Esta acción es irreversible. Se eliminarán todos tus datos y listas de compra.</string>
+    <string name="delete_account_button">Eliminar cuenta</string>
+
 </resources>

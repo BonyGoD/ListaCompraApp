@@ -1,5 +1,5 @@
 {
-  "originHash" : "55a21e00a295169bfc35bd4efcb7aa5a39e00d4a3532aafe9b31cc1535af0f8e",
+  "originHash" : "402bf011e945226f62dbe0c441a48605604eb1b079c8df3ae620d61ac0396599",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -71,15 +71,6 @@
       "state" : {
         "revision" : "913b4005ea26aebe1c97d54e35ad82a515924c71",
         "version" : "9.1.0"
-      }
-    },
-    {
-      "identity" : "googlesigninkmp",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/BonyGoD/GoogleSignInKMP",
-      "state" : {
-        "revision" : "7d6b8b123cabd6d3df34508734eb9ed8f4dbc32a",
-        "version" : "1.0.0"
       }
     },
     {

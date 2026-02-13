@@ -96,4 +96,12 @@ class UserRepository(
             throw e.toUserFailure()
         }
     }
+
+    suspend fun deleteAccount() {
+        return try {
+            usersDS.deleteAccount()
+        } catch (e: Exception) {
+            throw e.toUserFailure()
+        }
+    }
 }

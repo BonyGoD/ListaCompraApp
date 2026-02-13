@@ -67,7 +67,7 @@ kotlin {
             implementation(libs.gitlive.firebase.crashlytics)
             implementation(libs.gitlive.firebase.analitics)
 
-            implementation("com.github.BonyGoD.SignInKMP:signin-kmp:1.1.0")
+            implementation("com.github.BonyGoD.SignInKMP:signin-kmp:2.0.0")
         }
 
         commonTest.dependencies {

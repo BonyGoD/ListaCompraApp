@@ -130,7 +130,8 @@ fun LoginContent(
                     icon = painterResource(Res.drawable.applelogo),
                     textColor = Color.White,
                     onSuccess = { displayName, uid, email, photoUrl ->
-                        println("Hola que ase ${displayName} ${uid} ${email} ${photoUrl}")
+                        setEvent(AuthEvent.OnGoogleSignInSuccess(uid, displayName, email))
+                        println("$displayName $uid $email")
                     },
                     onError = {
 

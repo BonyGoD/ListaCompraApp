@@ -24,7 +24,7 @@ sealed class ListaCompraEvent {
     data object HideSuccessAlert : ListaCompraEvent()
     data class ShowBottomSheet(val show: Boolean) : ListaCompraEvent()
     data class ShowNotificationsBottomSheet(val show: Boolean) : ListaCompraEvent()
-    data class UpdateNewProductText(val text: String) : ListaCompraEvent()
+    data class UpdateNewProductText(val text: TextFieldValue) : ListaCompraEvent()
     data object AddProducto : ListaCompraEvent()
     data object OnMenuClick : ListaCompraEvent()
     data object OnLogoutClick : ListaCompraEvent()

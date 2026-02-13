@@ -302,7 +302,7 @@ class ListaCompraViewModel(
 
     private fun addProducto() {
         val currentState = _state.value
-        val newProductText = currentState.newProductText.trim()
+        val newProductText = currentState.newProductText.text.trim()
 
         if (newProductText.isNotBlank()) {
             viewModelScope.launch {
@@ -313,7 +313,7 @@ class ListaCompraViewModel(
                     setState {
                         copy(
                             showBottomSheet = false,
-                            newProductText = ""
+                            newProductText = TextFieldValue("")
                         )
                     }
                 } catch (e: Exception) {

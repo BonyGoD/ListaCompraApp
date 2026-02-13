@@ -30,6 +30,7 @@ import dev.bonygod.listacompra.login.ui.composables.components.PasswordTextField
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEvent
 import dev.bonygod.listacompra.login.ui.composables.interactions.AuthState
 import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
+import dev.bonygod.listacompra.getPlatform
 import dev.bonygod.signin.kmp.ui.AppleSignin
 import dev.bonygod.signin.kmp.ui.GoogleSignin
 import listacompra.composeapp.generated.resources.Inter_Italic
@@ -118,22 +119,24 @@ fun LoginContent(
                     setEvent(AuthEvent.OnGoogleSignInError(errorMessage))
                 }
             )
-            AppleSignin(
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp, bottom = 30.dp)
-                    .height(50.dp),
-                text = "Acceder con Apple",
-                containerColor = Color.Black,
-                contentColor = Color.White,
-                icon = painterResource(Res.drawable.applelogo),
-                textColor = Color.White,
-                onSuccess = { displayName, uid, email, photoUrl ->
-                    println("Hola que ase ${displayName} ${uid} ${email} ${photoUrl}")
-                },
-                onError = {
+            if(getPlatform().name.contains("Android").not()) {
+                AppleSignin(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp, bottom = 30.dp)
+                        .height(50.dp),
+                    text = "Acceder con Apple",
+                    containerColor = Color.Black,
+                    contentColor = Color.White,
+                    icon = painterResource(Res.drawable.applelogo),
+                    textColor = Color.White,
+                    onSuccess = { displayName, uid, email, photoUrl ->
+                        println("Hola que ase ${displayName} ${uid} ${email} ${photoUrl}")
+                    },
+                    onError = {
 
-                }
-            )
+                    }
+                )
+            }
             NoAccountText(setEvent)
         }
     }

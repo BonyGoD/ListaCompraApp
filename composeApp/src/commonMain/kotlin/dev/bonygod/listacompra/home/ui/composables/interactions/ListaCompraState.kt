@@ -21,7 +21,7 @@ data class ListaCompraState(
     val successAlertTitle: String = "",
     val successAlertMessage: String = "",
     val showBottomSheet: Boolean = false,
-    val newProductText: String = "",
+    val newProductText: TextFieldValue = TextFieldValue(""),
     val showMenu: Boolean = false,
     val drawerState: DrawerState = DrawerState(initialValue = DrawerValue.Closed),
     val customDialog: Boolean = false,
@@ -146,7 +146,7 @@ data class ListaCompraState(
         return copy(showBottomSheet = show)
     }
 
-    fun updateNewProductText(text: String): ListaCompraState {
+    fun updateNewProductText(text: TextFieldValue): ListaCompraState {
         return copy(newProductText = text)
     }
 }

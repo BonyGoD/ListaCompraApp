@@ -16,6 +16,7 @@
     <string name="login_screen_dialog_title">Recovery email sent</string>
     <string name="login_screen_dialog_subtitle">Check your inbox and spam folder.</string>
     <string name="login_screen_dialog_button">Accept</string>
+    <string name="login_screen_apple_signin">Sign in with Apple</string>
 
     <!-- ForgotPassword -->
     <string name="forgot_password_screen_title">Recover password</string>

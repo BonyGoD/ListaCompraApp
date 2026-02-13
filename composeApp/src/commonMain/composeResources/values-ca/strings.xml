@@ -15,6 +15,7 @@
     <string name="login_screen_dialog_title">Correu de recuperació enviat</string>
     <string name="login_screen_dialog_subtitle">Revisa la teva safata d’entrada i la carpeta de correu brossa.</string>
     <string name="login_screen_dialog_button">Acceptar</string>
+    <string name="login_screen_apple_signin">Accedeix amb Apple</string>
 
     <!-- ForgotPassword -->
     <string name="forgot_password_screen_title">Recuperar la contrasenya</string>

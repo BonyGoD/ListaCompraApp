@@ -37,6 +37,7 @@ import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.applelogo
 import listacompra.composeapp.generated.resources.google_icon
+import listacompra.composeapp.generated.resources.login_screen_apple_signin
 import listacompra.composeapp.generated.resources.login_screen_forgot_password
 import listacompra.composeapp.generated.resources.login_screen_google_access
 import listacompra.composeapp.generated.resources.login_screen_login_button
@@ -124,14 +125,14 @@ fun LoginContent(
                     modifier = Modifier
                         .padding(start = 10.dp, end = 10.dp, bottom = 30.dp)
                         .height(50.dp),
-                    text = "Acceder con Apple",
+                    text = stringResource(Res.string.login_screen_apple_signin),
                     containerColor = Color.Black,
                     contentColor = Color.White,
                     icon = painterResource(Res.drawable.applelogo),
                     textColor = Color.White,
                     onSuccess = { displayName, uid, email, photoUrl ->
-                        setEvent(AuthEvent.OnGoogleSignInSuccess(uid, displayName, email))
-                        println("$displayName $uid $email")
+                        val name = email.substringBefore("@")
+                        setEvent(AuthEvent.OnGoogleSignInSuccess(uid,name,email))
                     },
                     onError = {
 

@@ -35,11 +35,11 @@
 		1343E00E2F0A0798007885CC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1343E00D2F0A0798007885CC /* GoogleService-Info.plist */; };
 		1383794E2F0B177900B9112C /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 1383794D2F0B177900B9112C /* GoogleSignIn */; };
 		138379622F0B492B00B9112C /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 138379602F0B492B00B9112C /* Config.xcconfig */; };
-		139AA6562F3F943F0014701B /* SignInKMPSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 139AA6552F3F943F0014701B /* SignInKMPSwift */; };
 		13F2B22D2F32ADEF00C6C6A3 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 13F2B22C2F32ADEF00C6C6A3 /* GoogleMobileAds */; };
 		13F2B2302F32B0B300C6C6A3 /* AdMobKMPSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 13F2B22F2F32B0B300C6C6A3 /* AdMobKMPSwift */; };
 		13F2B2332F340A4700C6C6A3 /* AdMobKMPSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 13F2B2322F340A4700C6C6A3 /* AdMobKMPSwift */; };
 		13F2B2352F340B0100C6C6A3 /* AdPreloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F2B2342F340B0000C6C6A3 /* AdPreloader.swift */; };
+		13FAEE432F3FC10E007F2243 /* SignInKMPSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 13FAEE422F3FC10E007F2243 /* SignInKMPSwift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		7555FF8D242A565B00829871 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF8C242A565B00829871 /* Preview Assets.xcassets */; };
@@ -67,7 +67,7 @@
 				1335CDDD2F0A01A500F6E000 /* FirebaseAppDistribution-Beta in Frameworks */,
 				1335CDE92F0A01A500F6E000 /* FirebaseFirestore in Frameworks */,
 				1335CDE12F0A01A500F6E000 /* FirebaseAuthCombine-Community in Frameworks */,
-				139AA6562F3F943F0014701B /* SignInKMPSwift in Frameworks */,
+				13FAEE432F3FC10E007F2243 /* SignInKMPSwift in Frameworks */,
 				13F2B22D2F32ADEF00C6C6A3 /* GoogleMobileAds in Frameworks */,
 				13F2B2332F340A4700C6C6A3 /* AdMobKMPSwift in Frameworks */,
 				1335CDF32F0A01A500F6E000 /* FirebaseInstallations in Frameworks */,
@@ -207,7 +207,7 @@
 				1383794C2F0B177900B9112C /* XCRemoteSwiftPackageReference "googlesignin-ios" */,
 				13F2B22B2F32ADEF00C6C6A3 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				13F2B2312F340A4700C6C6A3 /* XCLocalSwiftPackageReference "../AdMobKMPSwift" */,
-				139AA6542F3F943F0014701B /* XCLocalSwiftPackageReference "../../SignInKMP" */,
+				13FAEE412F3FC10E007F2243 /* XCRemoteSwiftPackageReference "SignInKMP" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -394,7 +394,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 58WAQFQU28;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -432,7 +432,7 @@
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 58WAQFQU28;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -484,10 +484,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		139AA6542F3F943F0014701B /* XCLocalSwiftPackageReference "../../SignInKMP" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../SignInKMP;
-		};
 		13F2B2312F340A4700C6C6A3 /* XCLocalSwiftPackageReference "../AdMobKMPSwift" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../AdMobKMPSwift;
@@ -517,6 +513,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 12.14.0;
+			};
+		};
+		13FAEE412F3FC10E007F2243 /* XCRemoteSwiftPackageReference "SignInKMP" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/BonyGoD/SignInKMP";
+			requirement = {
+				kind = exactVersion;
+				version = 2.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -647,10 +651,6 @@
 			package = 1383794C2F0B177900B9112C /* XCRemoteSwiftPackageReference "googlesignin-ios" */;
 			productName = GoogleSignIn;
 		};
-		139AA6552F3F943F0014701B /* SignInKMPSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SignInKMPSwift;
-		};
 		13F2B22C2F32ADEF00C6C6A3 /* GoogleMobileAds */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 13F2B22B2F32ADEF00C6C6A3 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
@@ -663,6 +663,11 @@
 		13F2B2322F340A4700C6C6A3 /* AdMobKMPSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AdMobKMPSwift;
+		};
+		13FAEE422F3FC10E007F2243 /* SignInKMPSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 13FAEE412F3FC10E007F2243 /* XCRemoteSwiftPackageReference "SignInKMP" */;
+			productName = SignInKMPSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

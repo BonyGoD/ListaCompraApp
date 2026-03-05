@@ -2,22 +2,25 @@ package dev.bonygod.listacompra.home.data.datasource
 
 import dev.bonygod.listacompra.home.data.model.entity.ProductoResponse
 import dev.bonygod.listacompra.home.domain.mapper.toDomain
+import dev.bonygod.listacompra.home.domain.model.Producto
 import dev.bonygod.listacompra.util.timeStampTransform
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class ListaCompraDataSource(
     private val firebase: FirebaseFirestore
 ) {
-    fun getProductos(listaId: String) = flow {
+    fun getProductos(listaId: String): Flow<List<Producto>> {
         val productosCollection =
             firebase.collection("lista-compra").document(listaId).collection("productos")
-        productosCollection.snapshots.collect { querySnapshot ->
-            val productos = querySnapshot.documents.map { documentSnapshot ->
+
+        return productosCollection.snapshots.map { querySnapshot ->
+            querySnapshot.documents.map { documentSnapshot ->
                 val fechaTimestamp = documentSnapshot.get("fecha") as? Timestamp
                 ProductoResponse(
                     id = documentSnapshot.id,
@@ -28,7 +31,6 @@ class ListaCompraDataSource(
             }.sortedBy { producto ->
                 producto.fecha
             }
-            emit(productos)
         }
     }
 

@@ -1,4 +1,5 @@
 import java.util.Properties
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -10,12 +11,16 @@ android {
     namespace = "dev.bonygod.listacompra.android"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "dev.bonygod.listacompra"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 16
-        versionName = "1.0.0"
+        versionCode = 17
+        versionName = "1.0.1"
 
         // Leer AdMob App ID desde local.properties (mismo patrón que composeApp)
         val properties = Properties()
@@ -28,7 +33,6 @@ android {
 
         manifestPlaceholders["admobAndroidAppId"] = admobAppId
     }
-
     // Configuración de firma para release
     signingConfigs {
         create("release") {
@@ -64,6 +68,12 @@ android {
     }
 
     buildTypes {
+        getByName("debug") {
+            configure<CrashlyticsExtension> {
+                mappingFileUploadEnabled = false
+            }
+        }
+
         getByName("release") {
             // Aplicar firma si está configurada, sino usar debug signing
             val releaseSigningConfig = signingConfigs.getByName("release")
@@ -76,7 +86,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android.txt"), // Cambiado de optimize a normal
+                getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
 
@@ -84,6 +94,8 @@ android {
             ndk {
                 debugSymbolLevel = "FULL"
             }
+
+            // En release, Crashlytics está ACTIVADO por defecto
         }
     }
 

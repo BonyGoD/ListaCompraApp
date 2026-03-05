@@ -23,17 +23,22 @@ import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
-import dev.bonygod.listacompra.login.ui.composables.interactions.AuthEffect
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ListaCompraViewModel(
     private val navigator: Navigator,
     private val sharedState: SharedState,
@@ -59,6 +64,26 @@ class ListaCompraViewModel(
 
     private val _effect = MutableSharedFlow<ListaCompraEffect>(replay = 1)
     val effect: SharedFlow<ListaCompraEffect> = _effect.asSharedFlow()
+    private val _currentListaId = MutableStateFlow<String?>(null)
+    private val sharedProductosFlow = _currentListaId
+        .flatMapLatest { listaId ->
+            if (listaId != null) {
+                getProductosUseCase(listaId)
+            } else {
+                emptyFlow()
+            }
+        }
+        .shareIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            replay = 1
+        )
+    private val sharedNotificationsFlow = getNotificationsUseCase()
+        .shareIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            replay = 1
+        )
 
     fun setState(reducer: ListaCompraState.() -> ListaCompraState) {
         _state.value = _state.value.reducer()
@@ -75,21 +100,37 @@ class ListaCompraViewModel(
         productosJob?.cancel()
         notificationsJob = null
         productosJob = null
+        _currentListaId.value = null
     }
 
     fun loadUserData() {
         // Cancela los listeners activos
         stopNotificationsListener()
         // Reinicia los listeners y recarga los datos del usuario y productos
-        productosJob = viewModelScope.launch {
+        viewModelScope.launch {
             try {
                 getUserUseCase().fold(
                     onSuccess = { usuario ->
                         setState { setUser(usuario.toUI()) }
                         analyticsService.setUserId(usuario.uid)
-                        getProductosUseCase(usuario.listas[0]).collect { listaCompraUI ->
-                            setState { getListaCompraUI(listaCompraUI) }
+
+                        // Actualiza el listaId para activar el flow compartido
+                        _currentListaId.value = usuario.listas[0]
+
+                        // Suscribirse al flow compartido de productos
+                        productosJob = viewModelScope.launch {
+                            sharedProductosFlow.collect { listaCompraUI ->
+                                setState { getListaCompraUI(listaCompraUI) }
+                            }
                         }
+
+                        // Suscribirse al flow compartido de notificaciones
+                        notificationsJob = viewModelScope.launch {
+                            sharedNotificationsFlow.collect { notifications ->
+                                setState { updateNotifications(notifications) }
+                            }
+                        }
+
                         sharedState.showLoading(false)
                     },
                     onFailure = { error ->
@@ -100,15 +141,12 @@ class ListaCompraViewModel(
                                 message = errorMessage
                             )
                         }
+                        sharedState.showLoading(false)
                     }
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
-            }
-        }
-        notificationsJob = viewModelScope.launch {
-            getNotificationsUseCase().collect { notifications ->
-                setState { updateNotifications(notifications) }
+                sharedState.showLoading(false)
             }
         }
     }
@@ -184,9 +222,8 @@ class ListaCompraViewModel(
                 onSuccess = { user ->
                     deleteNotificationUseCase(listaId)
                     setState { showNotificationBottomSheet(false) }
-                    getProductosUseCase(user.listas[0]).collect { listaCompraUI ->
-                        setState { getListaCompraUI(listaCompraUI) }
-                    }
+                    // Actualiza el listaId para que el flow compartido se suscriba a la nueva lista
+                    _currentListaId.value = user.listas[0]
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? Exception)?.message ?: "Error desconocido"

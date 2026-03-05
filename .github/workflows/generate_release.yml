@@ -18,28 +18,42 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get current versionName from composeApp/build.gradle.kts
+      - name: Get current versionName from androidApp/build.gradle.kts
         id: gradle_version
         run: |
-          VERSION=$(grep 'versionName[[:space:]]*=' composeApp/build.gradle.kts | head -1 | sed 's/.*versionName[[:space:]]*=[[:space:]]*//;s/"//g')
+          VERSION=$(grep 'versionName[[:space:]]*=' androidApp/build.gradle.kts | head -1 | sed 's/.*versionName[[:space:]]*=[[:space:]]*//;s/"//g')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📱 Current version: $VERSION"
 
       - name: Get previous versionName from parent commit
         id: previous_version
         run: |
-          git show HEAD^:composeApp/build.gradle.kts > old_build.gradle.kts || touch old_build.gradle.kts
+          git show HEAD^:androidApp/build.gradle.kts > old_build.gradle.kts || touch old_build.gradle.kts
           PREV_VERSION=$(grep 'versionName[[:space:]]*=' old_build.gradle.kts | head -1 | sed 's/.*versionName[[:space:]]*=[[:space:]]*//;s/"//g')
           echo "prev_version=$PREV_VERSION" >> $GITHUB_OUTPUT
+          echo "📱 Previous version: $PREV_VERSION"
 
       - name: Compare versionNames
         id: version_compare
         run: |
-          echo "Current version: ${{ steps.gradle_version.outputs.version }}"
-          echo "Previous version: ${{ steps.previous_version.outputs.prev_version }}"
+          echo "========================================"
+          echo "📱 Current version: ${{ steps.gradle_version.outputs.version }}"
+          echo "📱 Previous version: ${{ steps.previous_version.outputs.prev_version }}"
+          echo "========================================"
+          
+          if [ -z "${{ steps.gradle_version.outputs.version }}" ]; then
+            echo "❌ ERROR: No se pudo leer la versión actual"
+            exit 1
+          fi
+          
           if [ "${{ steps.gradle_version.outputs.version }}" = "${{ steps.previous_version.outputs.prev_version }}" ]; then
-            echo "No version bump detected."
+            echo "ℹ️  No version bump detected - skipping release"
+            echo "💡 Para crear un release, incrementa versionName en androidApp/build.gradle.kts"
             echo "bump=false" >> $GITHUB_OUTPUT
           else
+            echo "✅ Version bump detected!"
+            echo "   ${{ steps.previous_version.outputs.prev_version }} → ${{ steps.gradle_version.outputs.version }}"
+            echo "🚀 Creating release..."
             echo "bump=true" >> $GITHUB_OUTPUT
           fi
 

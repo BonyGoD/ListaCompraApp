@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -63,17 +65,17 @@ fun ShareListaCompraDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(350.dp),
+                    .verticalScroll(rememberScrollState())
+                    .padding(vertical = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Spacer(modifier = Modifier.weight(1f))
                 Image(
                     painter = painterResource(Res.drawable.app_icon),
                     contentDescription = "Confirmación",
                     modifier = Modifier.size(70.dp)
                 )
-                Spacer(modifier = Modifier.weight(0.3f))
+
                 Text(
                     text = stringResource(Res.string.home_notification_dialog_title),
                     fontSize = 16.sp,
@@ -83,7 +85,7 @@ fun ShareListaCompraDialog(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                Spacer(modifier = Modifier.weight(0.3f))
+
                 Text(
                     text = stringResource(Res.string.home_notification_dialog_subtitle),
                     fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
@@ -92,11 +94,15 @@ fun ShareListaCompraDialog(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                Spacer(modifier = Modifier.weight(0.7f))
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 OutlinedTextField(
                     value = state.shareTextField,
                     onValueChange = { setEvent(ListaCompraEvent.OnShareTextFieldChange(it)) },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
                     textStyle = TextStyle(fontSize = 20.sp),
                     shape = RoundedCornerShape(14.dp),
                     keyboardOptions = KeyboardOptions(
@@ -111,12 +117,17 @@ fun ShareListaCompraDialog(
                         )
                     }
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Button(
                     onClick = {
                         setEvent(ListaCompraEvent.ShareList(state.shareTextField.text))
                         setEvent(ListaCompraEvent.DismissCustomDialog)
                     },
-                    modifier = Modifier.padding(bottom = 20.dp, top = 20.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
                 ) {
                     Text(text = stringResource(Res.string.home_notification_dialog_button))

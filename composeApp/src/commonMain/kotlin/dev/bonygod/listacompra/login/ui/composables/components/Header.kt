@@ -43,9 +43,11 @@ fun Header(
             fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
             fontWeight = FontWeight.Bold,
             fontSize = 25.sp,
+            textAlign = TextAlign.Center,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 16.dp)
+                .fillMaxWidth()
+                .padding(top = 16.dp, start = 32.dp, end = 32.dp)
         )
         Text(
             text = subtitle,

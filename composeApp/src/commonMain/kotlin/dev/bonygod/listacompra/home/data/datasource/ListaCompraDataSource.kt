@@ -26,7 +26,8 @@ class ListaCompraDataSource(
                     id = documentSnapshot.id,
                     producto = documentSnapshot.get("producto") as? String ?: "",
                     fecha = fechaTimestamp?.timeStampTransform() ?: "",
-                    isImportant = documentSnapshot.get("isImportant") as? Boolean ?: false
+                    isImportant = documentSnapshot.get("isImportant") as? Boolean ?: false,
+                    isPurchased = documentSnapshot.get("isPurchased") as? Boolean ?: false
                 ).toDomain()
             }.sortedBy { producto ->
                 producto.fecha
@@ -34,13 +35,20 @@ class ListaCompraDataSource(
         }
     }
 
-    suspend fun updateProducto(listaId: String, id: String, nombre: String, isImportant: Boolean) {
+    suspend fun updateProducto(
+        listaId: String,
+        id: String,
+        nombre: String,
+        isImportant: Boolean,
+        isPurchased: Boolean
+    ) {
         val productosCollection =
             firebase.collection("lista-compra").document(listaId).collection("productos")
         productosCollection.document(id).set(
             data = mapOf(
                 "producto" to nombre,
-                "isImportant" to isImportant
+                "isImportant" to isImportant,
+                "isPurchased" to isPurchased
             ),
             merge = true
         )

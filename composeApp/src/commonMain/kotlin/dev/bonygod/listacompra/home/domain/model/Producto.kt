@@ -4,5 +4,6 @@ data class Producto(
     val id: String,
     val nombre: String,
     val fecha: String,
-    val isImportant: Boolean
+    val isImportant: Boolean,
+    val isPurchased: Boolean = false
 )

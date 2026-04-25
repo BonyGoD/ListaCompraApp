@@ -11,8 +11,14 @@ class ProductosRepository(
         return listaCompraDS.getProductos(listaId)
     }
 
-    suspend fun updateProducto(listaId: String, id: String, nombre: String, isImportant: Boolean) {
-        listaCompraDS.updateProducto(listaId, id, nombre, isImportant)
+    suspend fun updateProducto(
+        listaId: String,
+        id: String,
+        nombre: String,
+        isImportant: Boolean,
+        isPurchased: Boolean
+    ) {
+        listaCompraDS.updateProducto(listaId, id, nombre, isImportant, isPurchased)
     }
 
     suspend fun deleteProducto(listaId: String, id: String) {

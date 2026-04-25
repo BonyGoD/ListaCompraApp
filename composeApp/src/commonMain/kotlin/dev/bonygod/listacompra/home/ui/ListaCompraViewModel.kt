@@ -50,7 +50,7 @@ class ListaCompraViewModel(
     private val analyticsService: AnalyticsService,
     private val getUserUseCase: GetUserUseCase,
     private val logoutUseCase: LogOutUseCase,
-    private val getNotificationsUseCase: GetNotificationsUseCase,
+    getNotificationsUseCase: GetNotificationsUseCase,
     private val shareListaCompraUseCase: ShareListaCompraUseCase,
     private val addSharedListUseCase: AddSharedListUseCase,
     private val deleteNotificationUseCase: DeleteNotificationUseCase,
@@ -195,6 +195,7 @@ class ListaCompraViewModel(
             is ListaCompraEvent.OnDeleteAccountClick -> setState { showDeleteAccountDialog(true) }
             is ListaCompraEvent.DismissDeleteAccountDialog -> setState { showDeleteAccountDialog(false) }
             is ListaCompraEvent.OnDeleteAccountConfirm -> deleteAccount()
+            is ListaCompraEvent.TogglePurchased -> togglePurchased(event.productId)
         }
     }
 
@@ -286,7 +287,8 @@ class ListaCompraViewModel(
         viewModelScope.launch {
             try {
                 val listaId = state.value.user.listaId
-                updateProductoUseCase(listaId, id, nombre, isImportant)
+                val isPurchased = state.value.listaCompraUI.productos.find { it.id == id }?.isPurchased ?: false
+                updateProductoUseCase(listaId, id, nombre, isImportant, isPurchased)
                 analyticsService.logProductoUpdated(nombre, isImportant)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -307,12 +309,14 @@ class ListaCompraViewModel(
             viewModelScope.launch {
                 try {
                     val listaId = state.value.user.listaId
+                    val isPurchased = originalProduct?.isPurchased ?: false
                     updateProductoUseCase(
                         listaId,
                         editingId,
                         editingText,
-                        false
-                    ) // isImportant = false por defecto
+                        false,
+                        isPurchased
+                    )
                     analyticsService.logProductoUpdated(editingText, false)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -389,8 +393,34 @@ class ListaCompraViewModel(
         }
     }
 
-    private fun borrarTodosLosProductos() {
+    private fun togglePurchased(productId: String) {
+        val producto = _state.value.listaCompraUI.productos.find { it.id == productId } ?: return
+        val newIsPurchased = !producto.isPurchased
+        setState { togglePurchased(productId) }
         viewModelScope.launch {
+            try {
+                val listaId = state.value.user.listaId
+                updateProductoUseCase(
+                    listaId,
+                    productId,
+                    producto.nombre,
+                    producto.isImportant,
+                    newIsPurchased
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                setState { togglePurchased(productId) }
+                setState {
+                    showErrorAlert(
+                        "Error al actualizar",
+                        "No se pudo guardar el estado del producto. Verifica tu conexión e inténtalo de nuevo."
+                    )
+                }
+            }
+        }
+    }
+
+    private fun borrarTodosLosProductos() {        viewModelScope.launch {
             try {
                 val listaId = state.value.user.listaId
                 val totalProductos = _state.value.listaCompraUI.productos.size

@@ -5,5 +5,6 @@ data class ProductoUI(
     val nombre: String = "",
     val fecha: String = "",
     val isImportant: Boolean = false,
-    val unidades: Int = 0
+    val unidades: Int = 0,
+    val isPurchased: Boolean = false
 )

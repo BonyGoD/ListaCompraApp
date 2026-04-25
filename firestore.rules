@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ======================
+    // Usuarios
+    // ======================
+    match /usuarios/{userId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == userId;
+    }
+
+    // ======================
+    // Listas de compra
+    // ======================
+    match /lista-compra/{listaId} {
+      allow create: if request.auth != null
+        && request.resource.data.owner == request.auth.uid;
+
+      allow read, update, delete: if request.auth != null
+        && (usuarioTieneAccesoALista(listaId)
+            || resource.data.owner == request.auth.uid);
+
+      match /productos/{productoId} {
+        allow read, write: if request.auth != null
+          && (usuarioTieneAccesoALista(listaId)
+              || get(/databases/$(database)/documents/lista-compra/$(listaId)).data.owner == request.auth.uid);
+      }
+    }
+
+    // ======================
+    // Notificaciones (SIN DRAMA)
+    // ======================
+    match /notifications/{notificationId} {
+      allow read, write, delete: if request.auth != null;
+    }
+
+    // ======================
+    // Función auxiliar
+    // ======================
+    function usuarioTieneAccesoALista(listaId) {
+      let userData = get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+      return userData.keys().hasAll(['listas']) && listaId in userData.listas;
+    }
+  }
+}
+

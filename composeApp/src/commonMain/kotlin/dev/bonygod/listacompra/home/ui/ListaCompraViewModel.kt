@@ -16,6 +16,7 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEffec
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.home.ui.mapper.toUI
+import dev.bonygod.listacompra.home.ui.model.ListaCompraUI
 import dev.bonygod.listacompra.login.domain.usecase.AddSharedListUseCase
 import dev.bonygod.listacompra.login.domain.usecase.DeleteAccountUseCase
 import dev.bonygod.listacompra.login.domain.usecase.DeleteNotificationUseCase
@@ -23,6 +24,7 @@ import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
+import dev.bonygod.listacompra.mislistas.domain.usecase.GetListasUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,6 +33,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.shareIn
@@ -54,7 +57,8 @@ class ListaCompraViewModel(
     private val shareListaCompraUseCase: ShareListaCompraUseCase,
     private val addSharedListUseCase: AddSharedListUseCase,
     private val deleteNotificationUseCase: DeleteNotificationUseCase,
-    private val deleteAccountUseCase: DeleteAccountUseCase
+    private val deleteAccountUseCase: DeleteAccountUseCase,
+    private val getListasUseCase: GetListasUseCase
 ) : ViewModel() {
     private var notificationsJob: Job? = null
     private var productosJob: Job? = null
@@ -69,19 +73,22 @@ class ListaCompraViewModel(
         .flatMapLatest { listaId ->
             if (listaId != null) {
                 getProductosUseCase(listaId)
+                    .catch { emit(ListaCompraUI()) }
             } else {
                 emptyFlow()
             }
         }
+        .catch { emit(ListaCompraUI()) }
         .shareIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 0),
             replay = 1
         )
     private val sharedNotificationsFlow = getNotificationsUseCase()
+        .catch { emit(emptyList()) }
         .shareIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 0),
             replay = 1
         )
 
@@ -116,6 +123,15 @@ class ListaCompraViewModel(
 
                         // Actualiza el listaId para activar el flow compartido
                         _currentListaId.value = usuario.listas[0]
+
+                        // Obtiene el nombre de la lista activa
+                        getListasUseCase().fold(
+                            onSuccess = { listas ->
+                                val nombre = listas.firstOrNull()?.nombre ?: "Lista de la compra"
+                                setState { setListaNombre(nombre) }
+                            },
+                            onFailure = { /* mantiene el nombre por defecto */ }
+                        )
 
                         // Suscribirse al flow compartido de productos
                         productosJob = viewModelScope.launch {
@@ -196,15 +212,17 @@ class ListaCompraViewModel(
             is ListaCompraEvent.DismissDeleteAccountDialog -> setState { showDeleteAccountDialog(false) }
             is ListaCompraEvent.OnDeleteAccountConfirm -> deleteAccount()
             is ListaCompraEvent.TogglePurchased -> togglePurchased(event.productId)
+            is ListaCompraEvent.OnMisListasClick -> navigator.navigateTo(Routes.MisListas)
         }
     }
 
     private fun deleteAccount() {
         viewModelScope.launch {
+            // Parar listeners ANTES de borrar la cuenta
+            stopNotificationsListener()
             deleteAccountUseCase()
             setState { showDeleteAccountDialog(false) }
             sharedState.showLoading(false)
-            stopNotificationsListener()
             setState { ListaCompraState() }
             navigator.clearAndNavigateTo(Routes.Login)
         }
@@ -220,11 +238,12 @@ class ListaCompraViewModel(
     private fun acceptSharedList(listaId: String) {
         viewModelScope.launch {
             addSharedListUseCase(listaId).fold(
-                onSuccess = { user ->
+                onSuccess = {
                     deleteNotificationUseCase(listaId)
                     setState { showNotificationBottomSheet(false) }
-                    // Actualiza el listaId para que el flow compartido se suscriba a la nueva lista
-                    _currentListaId.value = user.listas[0]
+                    // Recarga todos los datos del usuario para que los permisos de Firestore
+                    // estén propagados antes de suscribirse a la nueva lista
+                    loadUserData()
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
@@ -275,9 +294,10 @@ class ListaCompraViewModel(
 
     private fun logOut() {
         viewModelScope.launch {
+            // Parar listeners ANTES de cerrar sesión para evitar PERMISSION_DENIED
+            stopNotificationsListener()
             logoutUseCase()
             sharedState.showLoading(false)
-            stopNotificationsListener()
             setState { ListaCompraState() }
             navigator.clearAndNavigateTo(Routes.Login)
         }

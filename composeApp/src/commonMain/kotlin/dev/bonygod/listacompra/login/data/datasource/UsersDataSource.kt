@@ -4,6 +4,7 @@ import dev.bonygod.listacompra.login.data.model.NotificationsReponse
 import dev.bonygod.listacompra.login.data.model.UserResponse
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
 import dev.bonygod.listacompra.login.domain.model.Notifications
+import dev.bonygod.listacompra.mislistas.domain.model.ListaInfo
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.firestore.FirebaseFirestore
@@ -272,5 +273,89 @@ class UsersDataSource(
             }
         }
         logOut()
+    }
+
+    /**
+     * Obtener info de todas las listas del usuario.
+     * El nombre se lee primero del mapa `nombresListas` en el doc del usuario
+     * (que el usuario siempre puede escribir), y hace fallback al doc de lista-compra.
+     */
+    suspend fun getListas(): List<ListaInfo> {
+        val userUID = auth.currentUser?.uid.orEmpty()
+        val userDoc = firebase.collection("usuarios").document(userUID).get()
+        val listaIds = (userDoc.get("listas") as? List<String>) ?: emptyList()
+        val defaultListaId = listaIds.firstOrNull() ?: ""
+        @Suppress("UNCHECKED_CAST")
+        val nombresListas = (userDoc.get("nombresListas") as? Map<String, String>) ?: emptyMap()
+
+        return listaIds.mapIndexed { index, listaId ->
+            val nombre = nombresListas[listaId] ?: try {
+                val listaDoc = firebase.collection("lista-compra").document(listaId).get()
+                listaDoc.get("nombre") as? String ?: "Lista ${index + 1}"
+            } catch (e: Exception) {
+                "Lista ${index + 1}"
+            }
+            ListaInfo(id = listaId, nombre = nombre, isDefault = listaId == defaultListaId)
+        }
+    }
+
+    /**
+     * Establecer una lista como predeterminada (mueve al inicio del array en Firestore)
+     */
+    suspend fun setDefaultLista(listaId: String) {
+        val userUID = auth.currentUser?.uid.orEmpty()
+        val userDoc = firebase.collection("usuarios").document(userUID).get()
+        val currentListas = (userDoc.get("listas") as? List<String>) ?: emptyList()
+        if (!currentListas.contains(listaId)) return
+        val reordered = listOf(listaId) + currentListas.filter { it != listaId }
+        firebase.collection("usuarios").document(userUID).set(
+            data = mapOf("listas" to reordered),
+            merge = true
+        )
+    }
+
+    /**
+     * Renombrar una lista.
+     * Guarda el nombre en `usuarios/{uid}.nombresListas` para evitar problemas
+     * de permisos en `lista-compra/{listaId}` (documentos sin campo owner, listas compartidas…)
+     */
+    suspend fun renameNombreLista(listaId: String, nombre: String) {
+        val userUID = auth.currentUser?.uid.orEmpty()
+        val userDoc = firebase.collection("usuarios").document(userUID).get()
+        @Suppress("UNCHECKED_CAST")
+        val currentNombres = (userDoc.get("nombresListas") as? Map<String, String>) ?: emptyMap()
+        val updatedNombres = currentNombres + (listaId to nombre)
+        firebase.collection("usuarios").document(userUID).set(
+            data = mapOf("nombresListas" to updatedNombres),
+            merge = true
+        )
+    }
+
+    /**
+     * Crear una nueva lista y añadirla al usuario.
+     * También guarda el nombre inicial en `nombresListas`.
+     */
+    suspend fun addNewLista(nombre: String): ListaInfo {
+        val userUID = auth.currentUser?.uid.orEmpty()
+        val docRef = firebase.collection("lista-compra").add(
+            mapOf(
+                "createdAt" to Timestamp.now(),
+                "owner" to userUID,
+                "nombre" to nombre
+            )
+        )
+        val newListaId = docRef.id
+        val userDoc = firebase.collection("usuarios").document(userUID).get()
+        val currentListas = (userDoc.get("listas") as? List<String>) ?: emptyList()
+        @Suppress("UNCHECKED_CAST")
+        val currentNombres = (userDoc.get("nombresListas") as? Map<String, String>) ?: emptyMap()
+        firebase.collection("usuarios").document(userUID).set(
+            data = mapOf(
+                "listas" to (currentListas + newListaId),
+                "nombresListas" to (currentNombres + (newListaId to nombre))
+            ),
+            merge = true
+        )
+        return ListaInfo(id = newListaId, nombre = nombre, isDefault = false)
     }
 }

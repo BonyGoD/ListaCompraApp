@@ -22,6 +22,7 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.basura_black
+import listacompra.composeapp.generated.resources.listas
 import listacompra.composeapp.generated.resources.logout
 import listacompra.composeapp.generated.resources.notification_blank
 import listacompra.composeapp.generated.resources.notification_with_noti
@@ -66,7 +67,29 @@ fun MenuLateral(
             text = state.user.email
         )
         Row(
-            modifier = Modifier.padding(start = 10.dp, top = 50.dp)
+            modifier = Modifier.padding(start = 10.dp, top = 30.dp)
+                .clickable {
+                    setEvent(ListaCompraEvent.OnMisListasClick)
+                    onCloseDrawer()
+                },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.listas),
+                tint = Color.Gray,
+                contentDescription = "Mis listas",
+            )
+            Text(
+                modifier = Modifier.padding(start = 5.dp),
+                fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray,
+                text = "Mis listas"
+            )
+        }
+        Row(
+            modifier = Modifier.padding(start = 10.dp, top = 30.dp)
                 .clickable {
                     setEvent(ListaCompraEvent.OnShareListClick)
                     onCloseDrawer()

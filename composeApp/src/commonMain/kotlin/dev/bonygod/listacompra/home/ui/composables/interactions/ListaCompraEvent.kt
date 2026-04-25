@@ -38,4 +38,5 @@ sealed class ListaCompraEvent {
     data object OnDeleteAccountClick: ListaCompraEvent()
     data object OnDeleteAccountConfirm: ListaCompraEvent()
     data class TogglePurchased(val productId: String) : ListaCompraEvent()
+    data object OnMisListasClick : ListaCompraEvent()
 }

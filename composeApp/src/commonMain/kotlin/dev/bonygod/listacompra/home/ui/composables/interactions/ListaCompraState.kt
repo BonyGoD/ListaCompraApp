@@ -149,4 +149,12 @@ data class ListaCompraState(
     fun updateNewProductText(text: TextFieldValue): ListaCompraState {
         return copy(newProductText = text)
     }
+
+    fun togglePurchased(productId: String): ListaCompraState {
+        val updatedProductos = listaCompraUI.productos.map { producto ->
+            if (producto.id == productId) producto.copy(isPurchased = !producto.isPurchased)
+            else producto
+        }
+        return copy(listaCompraUI = listaCompraUI.copy(productos = updatedProductos))
+    }
 }

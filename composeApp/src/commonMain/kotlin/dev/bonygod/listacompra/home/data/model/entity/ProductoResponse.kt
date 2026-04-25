@@ -7,5 +7,6 @@ data class ProductoResponse(
     val id: String = "",
     val producto: String = "",
     val fecha: String = "",
-    val isImportant: Boolean = false
+    val isImportant: Boolean = false,
+    val isPurchased: Boolean = false
 )

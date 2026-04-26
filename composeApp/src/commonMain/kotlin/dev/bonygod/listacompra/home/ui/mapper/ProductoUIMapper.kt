@@ -10,6 +10,7 @@ fun Producto.toUI(): ProductoUI {
         nombre = this.nombre,
         fecha = this.fecha,
         isImportant = this.isImportant,
+        isPurchased = this.isPurchased
     )
 }
 

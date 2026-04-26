@@ -8,6 +8,7 @@ fun ProductoResponse.toDomain(): Producto {
         id = this.id,
         nombre = this.producto,
         fecha = this.fecha,
-        isImportant = this.isImportant
+        isImportant = this.isImportant,
+        isPurchased = this.isPurchased
     )
 }

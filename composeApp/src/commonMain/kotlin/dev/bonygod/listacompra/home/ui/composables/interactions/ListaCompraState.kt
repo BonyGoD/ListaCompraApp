@@ -12,6 +12,7 @@ data class ListaCompraState(
     val error: String? = null,
     val listaCompraUI: ListaCompraUI = ListaCompraUI(),
     val user: UserUI = UserUI(),
+    val listaNombre: String = "Lista de la compra",
     val editingProductId: String? = null,
     val editingText: TextFieldValue = TextFieldValue(""),
     val showErrorAlert: Boolean = false,
@@ -55,6 +56,10 @@ data class ListaCompraState(
 
     fun setUser(user: UserUI): ListaCompraState {
         return copy(user = user)
+    }
+
+    fun setListaNombre(nombre: String): ListaCompraState {
+        return copy(listaNombre = nombre)
     }
 
     fun showDialog(show: Boolean = false): ListaCompraState {
@@ -148,5 +153,13 @@ data class ListaCompraState(
 
     fun updateNewProductText(text: TextFieldValue): ListaCompraState {
         return copy(newProductText = text)
+    }
+
+    fun togglePurchased(productId: String): ListaCompraState {
+        val updatedProductos = listaCompraUI.productos.map { producto ->
+            if (producto.id == productId) producto.copy(isPurchased = !producto.isPurchased)
+            else producto
+        }
+        return copy(listaCompraUI = listaCompraUI.copy(productos = updatedProductos))
     }
 }

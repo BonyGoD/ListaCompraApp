@@ -27,6 +27,11 @@ import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
 import dev.bonygod.listacompra.login.ui.AuthViewModel
+import dev.bonygod.listacompra.mislistas.domain.usecase.AddNewListaUseCase
+import dev.bonygod.listacompra.mislistas.domain.usecase.GetListasUseCase
+import dev.bonygod.listacompra.mislistas.domain.usecase.RenameListaUseCase
+import dev.bonygod.listacompra.mislistas.domain.usecase.SetDefaultListaUseCase
+import dev.bonygod.listacompra.mislistas.ui.MisListasViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
@@ -50,6 +55,7 @@ val appModule = module {
 val viewModelsModule = module {
     viewModelOf(::ListaCompraViewModel)
     viewModelOf(::AuthViewModel)
+    viewModelOf(::MisListasViewModel)
 }
 
 val dataModule = module {
@@ -70,6 +76,10 @@ val dataModule = module {
     single { DeleteNotificationUseCase(get()) }
     single { DeleteAccountUseCase(get()) }
     single { SharedState() }
+    single { GetListasUseCase(get()) }
+    single { SetDefaultListaUseCase(get()) }
+    single { RenameListaUseCase(get()) }
+    single { AddNewListaUseCase(get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

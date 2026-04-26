@@ -19,8 +19,8 @@ android {
         applicationId = "dev.bonygod.listacompra"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 17
-        versionName = "1.0.1"
+        versionCode = 18
+        versionName = "1.0.2"
 
         // Leer AdMob App ID desde local.properties (mismo patrón que composeApp)
         val properties = Properties()

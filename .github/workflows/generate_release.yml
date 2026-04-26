@@ -21,7 +21,7 @@ jobs:
       - name: Get current versionName from androidApp/build.gradle.kts
         id: gradle_version
         run: |
-          VERSION=$(grep 'versionName[[:space:]]*=' androidApp/build.gradle.kts | head -1 | sed 's/.*versionName[[:space:]]*=[[:space:]]*//;s/"//g')
+          VERSION=$(grep 'versionName[[:space:]]*=' androidApp/build.gradle.kts | head -1 | sed 's/.*versionName[[:space:]]*=[[:space:]]*//;s/\"//g')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "📱 Current version: $VERSION"
 
@@ -29,7 +29,7 @@ jobs:
         id: previous_version
         run: |
           git show HEAD^:androidApp/build.gradle.kts > old_build.gradle.kts || touch old_build.gradle.kts
-          PREV_VERSION=$(grep 'versionName[[:space:]]*=' old_build.gradle.kts | head -1 | sed 's/.*versionName[[:space:]]*=[[:space:]]*//;s/"//g')
+          PREV_VERSION=$(grep 'versionName[[:space:]]*=' old_build.gradle.kts | head -1 | sed 's/.*versionName[[:space:]]*=[[:space:]]*//;s/\"//g')
           echo "prev_version=$PREV_VERSION" >> $GITHUB_OUTPUT
           echo "📱 Previous version: $PREV_VERSION"
 
@@ -57,84 +57,47 @@ jobs:
             echo "bump=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Get latest release tag
-        if: steps.version_compare.outputs.bump == 'true'
-        id: latest_tag
-        run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
-          echo "Latest tag: $LATEST_TAG"
-
-      - name: Generate changelog from PR titles
+      - name: Generate changelog from merged PRs in develop
         if: steps.version_compare.outputs.bump == 'true'
         id: changelog
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "=== Generando changelog ==="
-          
-          if [ -z "${{ steps.latest_tag.outputs.tag }}" ]; then
-            echo "No hay tag previo, obteniendo todos los commits de merge"
-            COMMITS=$(git log --pretty=format:"%s" --merges)
-          else
-            echo "Obteniendo commits desde ${{ steps.latest_tag.outputs.tag }} hasta HEAD"
-            COMMITS=$(git log ${{ steps.latest_tag.outputs.tag }}..HEAD --pretty=format:"%s" --merges)
-          fi
-          
-          echo "=== Commits encontrados: ==="
-          echo "$COMMITS"
-          echo "=== Fin de commits ==="
-          
-          # Extraer títulos de PRs
+          echo "=== Generando changelog desde PRs mergeadas en develop ==="
+
+          # Obtener la fecha de publicación del último release
+          LAST_RELEASE_DATE=$(curl -s \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/latest" | \
+            jq -r '.published_at // "1970-01-01T00:00:00Z"')
+
+          echo "📅 Último release publicado: $LAST_RELEASE_DATE"
+
+          # Obtener PRs mergeadas en develop después del último release
+          # Paginamos hasta 100 por seguridad
+          PRS=$(curl -s \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls?state=closed&base=develop&sort=updated&direction=desc&per_page=100" | \
+            jq -r --arg since "$LAST_RELEASE_DATE" \
+            '[.[] | select(.merged_at != null and .merged_at > $since)] | .[] | "- \(.title) (#\(.number))"')
+
+          echo "=== PRs encontradas ==="
+          echo "$PRS"
+          echo "======================"
+
           CHANGELOG="## What's Changed"
-          PR_COUNT=0
-          
-          while IFS= read -r commit; do
-            if [ -z "$commit" ]; then
-              continue
-            fi
-          
-            echo "Procesando commit: $commit"
-          
-            # Formato 1: "Merge pull request #X from ..."
-            if [[ $commit =~ Merge\ pull\ request\ \#([0-9]+) ]]; then
-              PR_NUM="${BASH_REMATCH[1]}"
-              echo "  Detectado PR #${PR_NUM} (formato merge)"
-          
-              # Obtener el título del PR usando la API de GitHub
-              PR_TITLE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github.v3+json" \
-                "https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUM}" | \
-                jq -r '.title // empty')
-          
-              if [ -n "$PR_TITLE" ] && [ "$PR_TITLE" != "null" ]; then
-                echo "  Título obtenido: $PR_TITLE"
-                CHANGELOG="${CHANGELOG}"$'\n'"- ${PR_TITLE} (#${PR_NUM})"
-                PR_COUNT=$((PR_COUNT + 1))
-              else
-                echo "  No se pudo obtener el título, usando commit message"
-                CHANGELOG="${CHANGELOG}"$'\n'"- ${commit}"
-                PR_COUNT=$((PR_COUNT + 1))
-              fi
-          
-            # Formato 2: "Title (#123)" - Squash merge
-            elif [[ $commit =~ \(#([0-9]+)\)$ ]]; then
-              echo "  Detectado PR (formato squash merge)"
-              CHANGELOG="${CHANGELOG}"$'\n'"- ${commit}"
-              PR_COUNT=$((PR_COUNT + 1))
-            fi
-          done <<< "$COMMITS"
-          
-          echo ""
-          echo "=== Total de PRs encontrados: $PR_COUNT ==="
-          
-          # Si no se encontraron PRs, añadir mensaje por defecto
-          if [ $PR_COUNT -eq 0 ]; then
-            echo "No se encontraron PRs, añadiendo mensaje por defecto"
+
+          if [ -n "$PRS" ]; then
+            CHANGELOG="${CHANGELOG}"$'\n'"${PRS}"
+          else
+            echo "⚠️ No se encontraron PRs, usando mensaje por defecto"
             CHANGELOG="${CHANGELOG}"$'\n'"- Release version v${{ steps.gradle_version.outputs.version }}"
           fi
-          
-          # Guardar changelog en un archivo temporal
+
           echo "$CHANGELOG" > changelog.txt
-          
+
           echo ""
           echo "=== CHANGELOG FINAL ==="
           cat changelog.txt

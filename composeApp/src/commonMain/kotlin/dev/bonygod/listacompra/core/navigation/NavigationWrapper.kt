@@ -13,6 +13,7 @@ import dev.bonygod.listacompra.login.ui.screens.AdLoadingScreen
 import dev.bonygod.listacompra.login.ui.screens.ForgotPasswordScreen
 import dev.bonygod.listacompra.login.ui.screens.LoginScreen
 import dev.bonygod.listacompra.login.ui.screens.RegisterScreen
+import dev.bonygod.listacompra.mislistas.ui.screens.MisListasScreen
 import org.koin.compose.koinInject
 
 @Composable
@@ -39,6 +40,9 @@ fun NavigationWrapper(snackbarHostState: SnackbarHostState) {
             entry<Routes.Home> { entry ->
                 val userId = entry.userId
                 HomeScreen(snackbarHostState = snackbarHostState, userId)
+            }
+            entry<Routes.MisListas> {
+                MisListasScreen()
             }
         },
         transitionSpec = {

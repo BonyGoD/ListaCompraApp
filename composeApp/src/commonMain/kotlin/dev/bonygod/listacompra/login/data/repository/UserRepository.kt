@@ -5,6 +5,7 @@ import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
 import dev.bonygod.listacompra.login.domain.model.Notifications
 import dev.bonygod.listacompra.login.domain.model.Usuario
+import dev.bonygod.listacompra.mislistas.domain.model.ListaInfo
 import kotlinx.coroutines.flow.Flow
 
 class UserRepository(
@@ -102,6 +103,40 @@ class UserRepository(
             usersDS.deleteAccount()
         } catch (e: Exception) {
             throw e.toUserFailure()
+        }
+    }
+
+    suspend fun getListas(): Result<List<ListaInfo>> {
+        return try {
+            Result.success(usersDS.getListas())
+        } catch (e: Exception) {
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun setDefaultLista(listaId: String): Result<Unit> {
+        return try {
+            usersDS.setDefaultLista(listaId)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun renameNombreLista(listaId: String, nombre: String): Result<Unit> {
+        return try {
+            usersDS.renameNombreLista(listaId, nombre)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun addNewLista(nombre: String): Result<ListaInfo> {
+        return try {
+            Result.success(usersDS.addNewLista(nombre))
+        } catch (e: Exception) {
+            Result.failure(e.toUserFailure())
         }
     }
 }

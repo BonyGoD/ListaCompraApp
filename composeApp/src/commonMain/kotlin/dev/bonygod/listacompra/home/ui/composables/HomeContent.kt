@@ -76,7 +76,7 @@ fun HomeContent(
         ) {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = SecondaryBlue),
-                title = { Text(text = "Lista de la compra") },
+                title = { Text(text = state.listaNombre, fontWeight = Bold) },
                 navigationIcon = {
                     IconButton(
                         onClick = {

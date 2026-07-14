@@ -23,17 +23,16 @@ koin-compose = "4.2.2"
 
 #Firebase-Firestore
 google-services = "4.5.0"
-firebase-bom = "34.7.0"
+firebase-bom = "34.15.0"
 firebase-crashlytics = "3.0.7"
 
 #GitLive
 gitlive = "2.4.0"
 
 #Sigin with Google
-googleid = "1.1.1"
-playServicesAuth = "21.4.0"
-credentialsPlayServicesAuth = "1.5.0"
-firebaseAuthKtx = "23.2.1"
+googleid = "1.2.0"
+playServicesAuth = "21.6.0"
+credentialsPlayServicesAuth = "1.6.0"
 
 #AdMob
 playServicesAds = "23.6.0"
@@ -58,7 +57,7 @@ bonygod-signinkmp = { module = "com.github.BonyGoD.SignInKMP:signin-kmp", versio
 
 #Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
-firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx"}
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
 
 #GitLive
 gitlive-firebase-firestore = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "gitlive" }

@@ -35,7 +35,7 @@ playServicesAuth = "21.6.0"
 credentialsPlayServicesAuth = "1.6.0"
 
 #AdMob
-playServicesAds = "23.6.0"
+playServicesAds = "25.4.0"
 
 #BuildConfig
 buildConfig = "6.0.10"

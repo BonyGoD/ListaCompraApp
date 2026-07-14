@@ -105,3 +105,6 @@ iosApp/AdMobConfig.xcconfig
 # OpenCode (puede contener API keys)
 opencode.json
 
+# Graphify (outputs y caché generados localmente)
+graphify-out/
+

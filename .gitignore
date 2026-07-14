@@ -102,3 +102,6 @@ iosApp/**/.DS_Store
 # AdMob Config generado (contiene IDs sensibles)
 iosApp/AdMobConfig.xcconfig
 
+# OpenCode (puede contener API keys)
+opencode.json
+

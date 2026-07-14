@@ -1,11 +1,11 @@
 [versions]
 agp = "9.2.1"
-android-compileSdk = "36"
+android-compileSdk = "37"
 android-minSdk = "24"
 android-targetSdk = "36"
-androidx-activity = "1.12.2"
-androidx-lifecycle = "2.9.6"
-composeHotReload = "1.0.0"
+androidx-activity = "1.13.0"
+androidx-lifecycle = "2.11.0"
+composeHotReload = "1.1.1"
 composeMultiplatform = "1.11.1"
 kotlin = "2.4.10"
 kotlinx-coroutines = "1.11.0"
@@ -23,7 +23,7 @@ koin-compose = "4.2.2"
 
 #Firebase-Firestore
 google-services = "4.5.0"
-firebase-bom = "34.15.0"
+firebase-bom = "34.16.0"
 firebase-crashlytics = "3.0.7"
 
 #GitLive

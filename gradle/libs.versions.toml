@@ -22,9 +22,9 @@ koin = "4.1.1"
 koin-compose = "4.1.1"
 
 #Firebase-Firestore
-google-services = "4.4.4"
+google-services = "4.5.0"
 firebase-bom = "34.7.0"
-firebase-crashlytics = "3.0.6"
+firebase-crashlytics = "3.0.7"
 
 #GitLive
 gitlive = "2.4.0"
@@ -39,7 +39,7 @@ firebaseAuthKtx = "23.2.1"
 playServicesAds = "23.6.0"
 
 #BuildConfig
-buildConfig = "6.0.7"
+buildConfig = "6.0.10"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

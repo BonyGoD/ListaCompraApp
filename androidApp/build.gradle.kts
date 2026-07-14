@@ -53,10 +53,10 @@ android {
                     storePassword = keystorePassword
                     this.keyAlias = keyAlias
                     this.keyPassword = keyPassword
-                    println("✅ Release signing configured")
+                    logger.lifecycle("✅ Release signing configured")
                 }
             } else {
-                println("⚠️ Keystore not found. Release build will use debug signing.")
+                logger.lifecycle("⚠️ Keystore not found. Release build will use debug signing.")
             }
         }
     }
@@ -79,9 +79,9 @@ android {
             val releaseSigningConfig = signingConfigs.getByName("release")
             if (releaseSigningConfig.storeFile != null) {
                 signingConfig = releaseSigningConfig
-                println("✅ Using release signing")
+                logger.lifecycle("✅ Using release signing")
             } else {
-                println("⚠️ Using debug signing for release build (keystore not configured) or is iOS compile")
+                logger.lifecycle("⚠️ Using debug signing for release build (keystore not configured) or is iOS compile")
             }
             isMinifyEnabled = true
             isShrinkResources = true
@@ -100,8 +100,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

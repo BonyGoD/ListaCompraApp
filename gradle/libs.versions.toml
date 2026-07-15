@@ -1,51 +1,48 @@
 [versions]
-agp = "8.13.2"
-android-compileSdk = "36"
+agp = "9.2.1"
+android-compileSdk = "37"
 android-minSdk = "24"
 android-targetSdk = "36"
-androidx-activity = "1.12.2"
-androidx-lifecycle = "2.9.6"
-composeHotReload = "1.0.0"
-composeMultiplatform = "1.9.3"
-kotlin = "2.3.0"
-kotlinx-coroutines = "1.10.2"
-kotlinx-serialization = "1.8.0"
-dateTime = "0.7.1"
+androidx-activity = "1.13.0"
+androidx-lifecycle = "2.11.0"
+composeHotReload = "1.1.1"
+composeMultiplatform = "1.11.1"
+kotlin = "2.4.10"
+kotlinx-serialization = "1.11.0"
+dateTime = "0.8.0"
 signin-kmp = "2.0.1"
 
 #Navigation3
-navigation3-multiplatform-adaptive = "1.3.0-alpha02"
-navigation3-multiplatform-lifecycle = "2.10.0-alpha05"
+navigation3-multiplatform-adaptive = "1.3.0-beta02"
+navigation3-multiplatform-lifecycle = "2.11.0"
 
 #Koin Dependency Injection
-koin = "4.1.1"
-koin-compose = "4.1.1"
+koin = "4.2.2"
+koin-compose = "4.2.2"
 
 #Firebase-Firestore
-google-services = "4.4.4"
-firebase-bom = "34.7.0"
-firebase-crashlytics = "3.0.6"
+google-services = "4.5.0"
+firebase-bom = "34.16.0"
+firebase-crashlytics = "3.0.7"
 
 #GitLive
 gitlive = "2.4.0"
 
 #Sigin with Google
-googleid = "1.1.1"
-playServicesAuth = "21.4.0"
-credentialsPlayServicesAuth = "1.5.0"
-firebaseAuthKtx = "23.2.1"
+googleid = "1.2.0"
+playServicesAuth = "21.6.0"
+credentialsPlayServicesAuth = "1.6.0"
 
 #AdMob
-playServicesAds = "23.6.0"
+playServicesAds = "25.4.0"
 
 #BuildConfig
-buildConfig = "6.0.7"
+buildConfig = "6.0.10"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTime" }
 
@@ -58,7 +55,7 @@ bonygod-signinkmp = { module = "com.github.BonyGoD.SignInKMP:signin-kmp", versio
 
 #Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
-firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx"}
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
 
 #GitLive
 gitlive-firebase-firestore = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "gitlive" }

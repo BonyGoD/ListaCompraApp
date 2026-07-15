@@ -8,7 +8,6 @@ androidx-lifecycle = "2.11.0"
 composeHotReload = "1.1.1"
 composeMultiplatform = "1.11.1"
 kotlin = "2.4.10"
-kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.11.0"
 dateTime = "0.8.0"
 signin-kmp = "2.0.1"
@@ -44,7 +43,6 @@ buildConfig = "6.0.10"
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTime" }
 

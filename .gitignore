@@ -56,6 +56,7 @@ kotlinTransformedMetadataLibraries/
 *.xcodeproj/xcuserdata/
 *.xcworkspace/xcuserdata/
 *.xcuserstate
+**/xcshareddata/WorkspaceSettings.xcsettings
 
 # iOS App específico
 iosApp/Pods/
@@ -66,6 +67,8 @@ iosApp/DerivedData/
 # Swift Package Manager
 Package.resolved
 iosApp/Package.resolved
+iosApp/**/*.resolved
+iosApp/**/swiftpm/Package.resolved
 .swiftpm/
 
 # Archivos de configuración sensible iOS

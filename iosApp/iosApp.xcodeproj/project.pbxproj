@@ -520,7 +520,7 @@
 			repositoryURL = "https://github.com/BonyGoD/SignInKMP";
 			requirement = {
 				kind = exactVersion;
-				version = 2.0.0;
+				version = 2.0.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

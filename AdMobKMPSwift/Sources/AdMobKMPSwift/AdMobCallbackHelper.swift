@@ -88,7 +88,11 @@ import GoogleMobileAds
 
             // Configurar el frame del banner para que coincida con el containerView
             // IMPORTANTE: El frame debe establecerse DESPUÉS de crear el banner
-            let width = containerView.bounds.width
+            // Si containerView aún no ha sido medido por Compose, bounds.width puede ser 0,
+            // por lo que se usa UIScreen.main.bounds.width como fallback.
+            let width = containerView.bounds.width > 0
+                ? containerView.bounds.width
+                : UIScreen.main.bounds.width
             let height: CGFloat = 50 // Altura estándar del banner de AdMob
             bannerView.frame = CGRect(x: 0, y: 0, width: width, height: height)
             bannerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]

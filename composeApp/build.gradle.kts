@@ -70,8 +70,8 @@ kotlin {
             // SignInKMP
             implementation(libs.bonygod.signinkmp)
 
-            // CrashlyticsKMP (montaje temporal como project include, ver settings.gradle.kts)
-            implementation(project(":crashlytics-kmp"))
+            // CrashlyticsKMP (JitPack)
+            implementation(libs.bonygod.crashlyticskmp)
         }
 
         commonTest.dependencies {

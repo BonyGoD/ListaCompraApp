@@ -215,6 +215,7 @@ class ListaCompraViewModel(
             is ListaCompraEvent.OnDeleteAccountConfirm -> deleteAccount()
             is ListaCompraEvent.TogglePurchased -> togglePurchased(event.productId)
             is ListaCompraEvent.OnMisListasClick -> navigator.navigateTo(Routes.MisListas)
+            is ListaCompraEvent.OnForceCrashClick -> crashReporter.forceCrash()
         }
     }
 

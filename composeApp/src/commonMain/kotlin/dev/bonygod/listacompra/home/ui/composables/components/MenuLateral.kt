@@ -154,6 +154,23 @@ fun MenuLateral(
                 text = "Eliminar cuenta"
             )
         }
+        Row(
+            modifier = Modifier.padding(start = 10.dp, top = 30.dp)
+                .clickable {
+                    setEvent(ListaCompraEvent.OnForceCrashClick)
+                    onCloseDrawer()
+                },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                modifier = Modifier.padding(start = 10.dp),
+                fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
+                fontWeight = FontWeight.Bold,
+                color = Color.Red,
+                text = "Forzar crash (test)"
+            )
+        }
         Spacer(Modifier.weight(1f))
         Text(
             modifier = Modifier.align(Alignment.End),

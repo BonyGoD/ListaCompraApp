@@ -20,7 +20,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 21
-        versionName = "1.1.1"
+        versionName = "0.0.1"
 
         // Leer AdMob App ID desde local.properties (mismo patrón que composeApp)
         val properties = Properties()

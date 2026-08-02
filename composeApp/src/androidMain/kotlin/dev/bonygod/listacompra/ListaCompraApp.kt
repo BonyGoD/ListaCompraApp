@@ -1,7 +1,6 @@
 package dev.bonygod.listacompra
 
 import android.app.Application
-import android.content.pm.ApplicationInfo
 import com.google.android.gms.ads.MobileAds
 import dev.bonygod.crashlytics.kmp.core.CrashlyticsConfig
 import dev.bonygod.crashlytics.kmp.core.CrashlyticsKMP
@@ -33,10 +32,9 @@ class ListaCompraApp: Application() {
             )
         }
 
-        val isDebug = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
         CrashlyticsKMP.initialize(
             CrashlyticsConfig(
-                isDebugBuild = isDebug,
+                isDebugBuild = getPlatform().isDebugBuild,
                 defaultCustomKeys = mapOf(CrashlyticsKeys.APP_VERSION to (getPlatform().appVersion ?: "unknown"))
             )
         )

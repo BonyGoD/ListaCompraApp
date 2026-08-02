@@ -1,7 +1,11 @@
 package dev.bonygod.listacompra
 
 import android.app.Application
+import android.content.pm.ApplicationInfo
 import com.google.android.gms.ads.MobileAds
+import dev.bonygod.crashlytics.kmp.core.CrashlyticsConfig
+import dev.bonygod.crashlytics.kmp.core.CrashlyticsKMP
+import dev.bonygod.crashlytics.kmp.core.CrashlyticsKeys
 import dev.bonygod.listacompra.ads.AdConstants
 import dev.bonygod.listacompra.ads.InterstitialAdManager
 import dev.bonygod.listacompra.ads.getInterstitialAdUnitId
@@ -28,6 +32,14 @@ class ListaCompraApp: Application() {
                 AdConstants.getInterstitialAdUnitId()
             )
         }
+
+        val isDebug = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        CrashlyticsKMP.initialize(
+            CrashlyticsConfig(
+                isDebugBuild = isDebug,
+                defaultCustomKeys = mapOf(CrashlyticsKeys.APP_VERSION to (getPlatform().appVersion ?: "unknown"))
+            )
+        )
 
         initKoin {
             androidLogger(Level.DEBUG)

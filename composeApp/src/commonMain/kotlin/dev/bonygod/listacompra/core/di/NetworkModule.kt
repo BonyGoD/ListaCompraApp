@@ -1,5 +1,7 @@
 package dev.bonygod.listacompra.core.di
 
+import dev.bonygod.crashlytics.kmp.core.CrashReporter
+import dev.bonygod.crashlytics.kmp.core.CrashlyticsKMP
 import dev.bonygod.listacompra.BuildConfig
 import dev.bonygod.listacompra.common.ui.state.SharedState
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
@@ -39,15 +41,20 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 val appModule = module {
-    single { Navigator() }
+    // ⚠️ Koin cachea esta instancia en la primera resolución (single): CrashlyticsKMP.initialize()
+    // debe ejecutarse ANTES de initKoin() en ambas plataformas (ListaCompraApp.onCreate / el
+    // `configure` de MainViewController). Si se invirtiera el orden, quedaría cacheado para
+    // siempre el NoOpCrashReporter previo a initialize() y la app dejaría de reportar en silencio.
+    single<CrashReporter> { CrashlyticsKMP.reporter }
+    single { Navigator(get()) }
     single { NetworkProvider().provideFirebaseClient() }
     single { NetworkProvider().provideAnalytics() }
     single { NetworkProvider().provideAuth() }
     single { AnalyticsService(get()) }
-    single { ListaCompraDataSource(get()) }
+    single { ListaCompraDataSource(get(), get()) }
     single { UsersDataSource(get(), get()) }
     single { ProductosRepository(get()) }
-    single { UserRepository(get()) }
+    single { UserRepository(get(), get()) }
     single<String>(named("API_KEY")) { BuildConfig.FIREBASE_API_KEY }
     single<String>(named("CLIENT_ID")) { BuildConfig.CLIENT_ID }
 }
@@ -66,7 +73,7 @@ val dataModule = module {
     single { AddProductoUseCase(get()) }
     single { GetUserUseCase(get()) }
     single { UserLoginUseCase(get()) }
-    single { LogOutUseCase(get()) }
+    single { LogOutUseCase(get(), get()) }
     single { ResetPasswordUseCase(get()) }
     single { UserRegisterUseCase(get()) }
     single { GoogleRegisterUserUseCase(get()) }

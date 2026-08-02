@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.login.data.repository
 
+import dev.bonygod.crashlytics.kmp.core.CrashReporter
 import dev.bonygod.listacompra.core.CustomFailures.toUserFailure
 import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
@@ -9,13 +10,15 @@ import dev.bonygod.listacompra.mislistas.domain.model.ListaInfo
 import kotlinx.coroutines.flow.Flow
 
 class UserRepository(
-    private val usersDS: UsersDataSource
+    private val usersDS: UsersDataSource,
+    private val crashReporter: CrashReporter
 ) {
     suspend fun userRegister(email: String, password: String): Result<Usuario> {
         return try {
             val userResponse = usersDS.userRegister(email, password)
             Result.success(userResponse.toDomain())
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.userRegister")
             Result.failure(e.toUserFailure())
         }
     }
@@ -29,6 +32,7 @@ class UserRepository(
             val userResponse = usersDS.loginWithEmail(email, password)
             Result.success(userResponse.toDomain())
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.loginWithEmail")
             Result.failure(e.toUserFailure())
         }
     }
@@ -38,6 +42,7 @@ class UserRepository(
             usersDS.resetPassword(email)
             Result.success(Unit)
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.resetPassword")
             Result.failure(e.toUserFailure())
         }
     }
@@ -51,6 +56,7 @@ class UserRepository(
             val userResponse = usersDS.getActualUser()
             Result.success(userResponse.toDomain())
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.getActualUser")
             Result.failure(e.toUserFailure())
         }
     }
@@ -60,6 +66,7 @@ class UserRepository(
             val userResponse = usersDS.userGoogleRegister(uid, displayName, email)
             Result.success(userResponse.toDomain())
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.googleRegister")
             Result.failure(e.toUserFailure())
         }
     }
@@ -68,6 +75,7 @@ class UserRepository(
         return try {
             usersDS.getNotifications()
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.getNotifications")
             throw e.toUserFailure()
         }
     }
@@ -77,6 +85,7 @@ class UserRepository(
             usersDS.shareListaCompra(nombre, listaId, email)
             Result.success(Unit)
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.shareListaCompra")
             Result.failure(e.toUserFailure())
         }
     }
@@ -86,6 +95,7 @@ class UserRepository(
             val userResponse = usersDS.addSharedList(listaId)
             Result.success(userResponse.toDomain())
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.addSharedList")
             Result.failure(e.toUserFailure())
         }
     }
@@ -94,6 +104,7 @@ class UserRepository(
         return try {
             usersDS.deleteNotification(listaId)
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.deleteNotification")
             throw e.toUserFailure()
         }
     }
@@ -102,6 +113,7 @@ class UserRepository(
         return try {
             usersDS.deleteAccount()
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.deleteAccount")
             throw e.toUserFailure()
         }
     }
@@ -110,6 +122,7 @@ class UserRepository(
         return try {
             Result.success(usersDS.getListas())
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.getListas")
             Result.failure(e.toUserFailure())
         }
     }
@@ -119,6 +132,7 @@ class UserRepository(
             usersDS.setDefaultLista(listaId)
             Result.success(Unit)
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.setDefaultLista")
             Result.failure(e.toUserFailure())
         }
     }
@@ -128,6 +142,7 @@ class UserRepository(
             usersDS.renameNombreLista(listaId, nombre)
             Result.success(Unit)
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.renameNombreLista")
             Result.failure(e.toUserFailure())
         }
     }
@@ -136,6 +151,7 @@ class UserRepository(
         return try {
             Result.success(usersDS.addNewLista(nombre))
         } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.addNewLista")
             Result.failure(e.toUserFailure())
         }
     }

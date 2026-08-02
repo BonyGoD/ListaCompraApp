@@ -3,6 +3,7 @@ package dev.bonygod.listacompra.home.ui
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.bonygod.crashlytics.kmp.core.CrashReporter
 import dev.bonygod.listacompra.common.ui.state.SharedState
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.navigation.Navigator
@@ -58,7 +59,8 @@ class ListaCompraViewModel(
     private val addSharedListUseCase: AddSharedListUseCase,
     private val deleteNotificationUseCase: DeleteNotificationUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
-    private val getListasUseCase: GetListasUseCase
+    private val getListasUseCase: GetListasUseCase,
+    private val crashReporter: CrashReporter
 ) : ViewModel() {
     private var notificationsJob: Job? = null
     private var productosJob: Job? = null
@@ -312,6 +314,7 @@ class ListaCompraViewModel(
                 analyticsService.logProductoUpdated(nombre, isImportant)
             } catch (e: Exception) {
                 e.printStackTrace()
+                crashReporter.recordException(e, "ListaCompraViewModel.updateProducto")
             }
         }
     }
@@ -340,6 +343,7 @@ class ListaCompraViewModel(
                     analyticsService.logProductoUpdated(editingText, false)
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    crashReporter.recordException(e, "ListaCompraViewModel.saveEditedProduct")
                     if (originalProduct != null) {
                         setState {
                             startEditingProduct(editingId, originalProduct.nombre)
@@ -403,6 +407,7 @@ class ListaCompraViewModel(
                 setState { removeProducto(id) }
             } catch (e: Exception) {
                 e.printStackTrace()
+                crashReporter.recordException(e, "ListaCompraViewModel.borrarProducto")
                 setState {
                     showErrorAlert(
                         "Error al eliminar",
@@ -429,6 +434,7 @@ class ListaCompraViewModel(
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
+                crashReporter.recordException(e, "ListaCompraViewModel.togglePurchased")
                 setState { togglePurchased(productId) }
                 setState {
                     showErrorAlert(

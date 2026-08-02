@@ -2,6 +2,7 @@ package dev.bonygod.crashlytics.kmp.internal
 
 import dev.bonygod.crashlytics.kmp.core.CrashReporter
 import dev.bonygod.crashlytics.kmp.core.CrashlyticsConfig
+import kotlin.experimental.ExperimentalNativeApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSNotificationCenter
 
@@ -114,6 +115,7 @@ internal class IosCrashReporter(private val config: CrashlyticsConfig) : CrashRe
      * como frames `"Caused by: <clase>: <mensaje>"` y sus propios frames.
      * Nunca devuelve `null`: en el peor caso, lista vacía.
      */
+    @OptIn(ExperimentalNativeApi::class)
     private fun buildStackTrace(throwable: Throwable): List<String> {
         val frames = mutableListOf<String>()
         frames.addAll(throwable.getStackTrace())

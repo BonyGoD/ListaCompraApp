@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
+		0AC042C58F2B0A179B7D11D1 /* CrashlyticsKMPSwift in Frameworks */ = {isa = PBXBuildFile; productRef = EDE023E65ACC997A07495AF3 /* CrashlyticsKMPSwift */; };
 		1335CDD12F0A01A500F6E000 /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = 1335CDD02F0A01A500F6E000 /* FirebaseAI */; };
 		1335CDD32F0A01A500F6E000 /* FirebaseAILogic in Frameworks */ = {isa = PBXBuildFile; productRef = 1335CDD22F0A01A500F6E000 /* FirebaseAILogic */; };
 		1335CDD52F0A01A500F6E000 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1335CDD42F0A01A500F6E000 /* FirebaseAnalytics */; };
@@ -77,6 +78,7 @@
 				1335CDD12F0A01A500F6E000 /* FirebaseAI in Frameworks */,
 				13F2B2302F32B0B300C6C6A3 /* AdMobKMPSwift in Frameworks */,
 				1335CDE52F0A01A500F6E000 /* FirebaseCrashlytics in Frameworks */,
+				0AC042C58F2B0A179B7D11D1 /* CrashlyticsKMPSwift in Frameworks */,
 				1335CDEF2F0A01A500F6E000 /* FirebaseFunctionsCombine-Community in Frameworks */,
 				1335CDFF2F0A01A500F6E000 /* FirebaseStorageCombine-Community in Frameworks */,
 				1335CDE72F0A01A500F6E000 /* FirebaseDatabase in Frameworks */,
@@ -167,6 +169,7 @@
 				7555FF77242A565900829871 /* Sources */,
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
+				1379018D301FC83900AD118A /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -208,6 +211,7 @@
 				13F2B22B2F32ADEF00C6C6A3 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				13F2B2312F340A4700C6C6A3 /* XCLocalSwiftPackageReference "../AdMobKMPSwift" */,
 				13FAEE412F3FC10E007F2243 /* XCRemoteSwiftPackageReference "SignInKMP" */,
+				84C7FC7FE1A058E25C6DEA59 /* XCLocalSwiftPackageReference "../CrashlyticsKMP" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -233,6 +237,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1379018D301FC83900AD118A /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "Run Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
 		F85CB1118929364A00AEE155 /* Compile Kotlin Framework */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -409,7 +434,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 0.0.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -447,7 +472,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 0.0.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -487,6 +512,10 @@
 		13F2B2312F340A4700C6C6A3 /* XCLocalSwiftPackageReference "../AdMobKMPSwift" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../AdMobKMPSwift;
+		};
+		84C7FC7FE1A058E25C6DEA59 /* XCLocalSwiftPackageReference "../CrashlyticsKMP" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../CrashlyticsKMP;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -668,6 +697,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 13FAEE412F3FC10E007F2243 /* XCRemoteSwiftPackageReference "SignInKMP" */;
 			productName = SignInKMPSwift;
+		};
+		EDE023E65ACC997A07495AF3 /* CrashlyticsKMPSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CrashlyticsKMPSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -216,6 +216,10 @@ class ListaCompraViewModel(
             is ListaCompraEvent.TogglePurchased -> togglePurchased(event.productId)
             is ListaCompraEvent.OnMisListasClick -> navigator.navigateTo(Routes.MisListas)
             is ListaCompraEvent.OnForceCrashClick -> crashReporter.forceCrash()
+            is ListaCompraEvent.OnForceNonFatalClick -> crashReporter.recordException(
+                Exception("Non-fatal de prueba desde el menú lateral"),
+                "ListaCompraViewModel.OnForceNonFatalClick"
+            )
         }
     }
 

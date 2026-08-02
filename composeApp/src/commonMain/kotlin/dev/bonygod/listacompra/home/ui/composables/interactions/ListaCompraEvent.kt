@@ -40,4 +40,5 @@ sealed class ListaCompraEvent {
     data class TogglePurchased(val productId: String) : ListaCompraEvent()
     data object OnMisListasClick : ListaCompraEvent()
     data object OnForceCrashClick : ListaCompraEvent()
+    data object OnForceNonFatalClick : ListaCompraEvent()
 }

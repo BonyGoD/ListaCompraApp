@@ -4,12 +4,14 @@ import GoogleSignIn
 import SignInKMPSwift
 import GoogleMobileAds
 import AdMobKMPSwift
+import CrashlyticsKMPSwift
 import ComposeApp
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         FirebaseApp.configure()
+        _ = CrashlyticsCallbackHelper.shared   // debe ir DESPUÉS de configure()
 
         // Inicializar el helper para escuchar las notificaciones de Kotlin (GoogleSignIn)
         _ = SignInCallbackHelper.shared

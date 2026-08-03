@@ -164,3 +164,12 @@
     @androidx.credentials.* *;
     @com.google.android.gms.* *;
 }
+
+# ==========================================
+# Crashlytics - simbolización de stack traces
+# ==========================================
+# `-keepattributes SourceFile,LineNumberTable` lo aporta el consumer-rules.pro de
+# crashlytics-kmp. `-renamesourcefileattribute` es una opción global y AGP no permite
+# que un AAR la declare, así que va aquí: mantiene oculto el nombre real del fichero
+# sin perder los números de línea que Crashlytics necesita.
+-renamesourcefileattribute SourceFile

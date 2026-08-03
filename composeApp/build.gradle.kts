@@ -69,6 +69,9 @@ kotlin {
 
             // SignInKMP
             implementation(libs.bonygod.signinkmp)
+
+            // CrashlyticsKMP (JitPack)
+            implementation(libs.bonygod.crashlyticskmp)
         }
 
         commonTest.dependencies {

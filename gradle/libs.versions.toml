@@ -11,6 +11,7 @@ kotlin = "2.4.10"
 kotlinx-serialization = "1.11.0"
 dateTime = "0.8.0"
 signin-kmp = "2.0.1"
+crashlytics-kmp = "1.0.0"
 
 #Navigation3
 navigation3-multiplatform-adaptive = "1.3.0-beta02"
@@ -52,10 +53,12 @@ jetbrains-lifecycle-viewmodelNavigation3 = { module = "org.jetbrains.androidx.li
 
 #BonyGoD
 bonygod-signinkmp = { module = "com.github.BonyGoD.SignInKMP:signin-kmp", version.ref = "signin-kmp" }
+bonygod-crashlyticskmp = { module = "com.github.BonyGoD.CrashlyticsKMP:crashlytics-kmp", version.ref = "crashlytics-kmp" }
 
 #Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 
 #GitLive
 gitlive-firebase-firestore = { group = "dev.gitlive", name = "firebase-firestore", version.ref = "gitlive" }

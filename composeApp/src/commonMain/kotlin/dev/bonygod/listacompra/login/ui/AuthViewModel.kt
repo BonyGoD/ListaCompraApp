@@ -103,7 +103,6 @@ class AuthViewModel(
             registerUseCase(state.value.getUserData().toDomain()).fold(
                 onSuccess = { usuario ->
                     sharedState.showLoading(false)
-                    // Solo el uid de Firebase, nunca email ni displayName (política de privacidad).
                     crashReporter.setUserId(usuario.uid)
                     navigator.clearAndNavigateTo(Routes.AdLoading(usuario.uid))
                 },
@@ -145,7 +144,6 @@ class AuthViewModel(
             userLoginUseCase(user.email, user.password).fold(
                 onSuccess = { usuario ->
                     sharedState.showLoading(false)
-                    // Solo el uid de Firebase, nunca email ni displayName (política de privacidad).
                     crashReporter.setUserId(usuario.uid)
                     navigator.clearAndNavigateTo(Routes.AdLoading(usuario.uid))
                 },

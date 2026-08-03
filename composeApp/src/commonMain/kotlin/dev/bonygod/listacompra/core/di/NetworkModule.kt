@@ -41,10 +41,6 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 val appModule = module {
-    // ⚠️ Koin cachea esta instancia en la primera resolución (single): CrashlyticsKMP.initialize()
-    // debe ejecutarse ANTES de initKoin() en ambas plataformas (ListaCompraApp.onCreate / el
-    // `configure` de MainViewController). Si se invirtiera el orden, quedaría cacheado para
-    // siempre el NoOpCrashReporter previo a initialize() y la app dejaría de reportar en silencio.
     single<CrashReporter> { CrashlyticsKMP.reporter }
     single { Navigator(get()) }
     single { NetworkProvider().provideFirebaseClient() }

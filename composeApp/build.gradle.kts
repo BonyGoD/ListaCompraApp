@@ -125,9 +125,14 @@ buildConfig {
     packageName("dev.bonygod.listacompra")
 
     val properties = Properties()
-    properties.load(project.rootProject.file("local.properties").reader())
-    val apiKey = properties.getProperty("FIREBASE_API_KEY")
-    val clientId = properties.getProperty("CLIENT_ID")
+    val localPropertiesFile = project.rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        properties.load(localPropertiesFile.reader())
+    } else {
+        logger.lifecycle("⚠️ local.properties not found — BuildConfig secrets will be empty strings")
+    }
+    val apiKey = properties.getProperty("FIREBASE_API_KEY") ?: ""
+    val clientId = properties.getProperty("CLIENT_ID") ?: ""
 
     buildConfigField("FIREBASE_API_KEY", apiKey)
     buildConfigField("CLIENT_ID", clientId)

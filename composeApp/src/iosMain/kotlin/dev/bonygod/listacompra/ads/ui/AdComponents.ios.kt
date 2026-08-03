@@ -1,8 +1,10 @@
 package dev.bonygod.listacompra.ads.ui
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
+import androidx.compose.ui.unit.dp
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import platform.CoreGraphics.CGRectMake
@@ -24,8 +26,11 @@ actual fun BannerAd(
     onAdLoaded: () -> Unit,
     onAdFailedToLoad: (String) -> Unit
 ) {
+    // Se fuerza una altura de 50.dp para que Compose asigne el espacio correcto.
+    // Un UIView plano no tiene intrinsicContentSize, por lo que sin esta restricción
+    // Compose le asignaría altura = 0 y el banner quedaría invisible.
     UIKitView(
-        modifier = modifier,
+        modifier = modifier.height(50.dp),
         factory = {
             // Crear el AdMobBannerView directamente
             // Swift lo expone como una clase accesible desde Kotlin

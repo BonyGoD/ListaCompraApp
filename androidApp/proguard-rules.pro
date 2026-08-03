@@ -144,6 +144,15 @@
 
 
 # ==========================================
+# WorkManager / Room - implementaciones generadas
+# ==========================================
+# R8 elimina las clases *_Impl generadas por Room si no se protegen.
+# WorkManager usa Room internamente (WorkDatabase_Impl), por lo que
+# sin esta regla crashea en release con "Failed to create an instance".
+-keep class * extends androidx.room.RoomDatabase { *; }
+-keep class androidx.work.impl.WorkDatabase_Impl { *; }
+
+# ==========================================
 # Desactivar optimizaciones agresivas
 # ==========================================
 # No optimizar clases críticas de Google Sign-In

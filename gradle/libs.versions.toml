@@ -53,8 +53,6 @@ jetbrains-lifecycle-viewmodelNavigation3 = { module = "org.jetbrains.androidx.li
 
 #BonyGoD
 bonygod-signinkmp = { module = "com.github.BonyGoD.SignInKMP:signin-kmp", version.ref = "signin-kmp" }
-# Sin usar mientras CrashlyticsKMP se consuma como project include (ver settings.gradle.kts).
-# Se recupera en la Fase 9 al publicar en JitPack.
 bonygod-crashlyticskmp = { module = "com.github.BonyGoD.CrashlyticsKMP:crashlytics-kmp", version.ref = "crashlytics-kmp" }
 
 #Firebase

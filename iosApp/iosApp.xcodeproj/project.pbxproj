@@ -211,7 +211,7 @@
 				13F2B22B2F32ADEF00C6C6A3 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				13F2B2312F340A4700C6C6A3 /* XCLocalSwiftPackageReference "../AdMobKMPSwift" */,
 				13FAEE412F3FC10E007F2243 /* XCRemoteSwiftPackageReference "SignInKMP" */,
-				84C7FC7FE1A058E25C6DEA59 /* XCLocalSwiftPackageReference "../CrashlyticsKMP" */,
+				84C7FC7FE1A058E25C6DEA59 /* XCRemoteSwiftPackageReference "CrashlyticsKMP" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -513,10 +513,6 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../AdMobKMPSwift;
 		};
-		84C7FC7FE1A058E25C6DEA59 /* XCLocalSwiftPackageReference "../CrashlyticsKMP" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../CrashlyticsKMP;
-		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -550,6 +546,14 @@
 			requirement = {
 				kind = exactVersion;
 				version = 2.0.1;
+			};
+		};
+		84C7FC7FE1A058E25C6DEA59 /* XCRemoteSwiftPackageReference "CrashlyticsKMP" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/BonyGoD/CrashlyticsKMP";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -700,6 +704,7 @@
 		};
 		EDE023E65ACC997A07495AF3 /* CrashlyticsKMPSwift */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 84C7FC7FE1A058E25C6DEA59 /* XCRemoteSwiftPackageReference "CrashlyticsKMP" */;
 			productName = CrashlyticsKMPSwift;
 		};
 /* End XCSwiftPackageProductDependency section */

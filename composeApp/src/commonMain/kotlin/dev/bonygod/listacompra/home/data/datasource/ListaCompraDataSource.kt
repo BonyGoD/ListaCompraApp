@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.home.data.datasource
 
+import dev.bonygod.crashlytics.kmp.core.CrashReporter
 import dev.bonygod.listacompra.home.data.model.entity.ProductoResponse
 import dev.bonygod.listacompra.home.domain.mapper.toDomain
 import dev.bonygod.listacompra.home.domain.model.Producto
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class ListaCompraDataSource(
-    private val firebase: FirebaseFirestore
+    private val firebase: FirebaseFirestore,
+    private val crashReporter: CrashReporter
 ) {
     fun getProductos(listaId: String): Flow<List<Producto>> {
         val productosCollection =
@@ -72,6 +74,7 @@ class ListaCompraDataSource(
                 }.awaitAll()
             }
         } catch (e: Exception) {
+            crashReporter.recordException(e, "ListaCompraDataSource.deleteAllProductos")
             throw Exception("Error al eliminar todos los productos: ${e.message}", e)
         }
     }
@@ -106,6 +109,7 @@ class ListaCompraDataSource(
                     )
             }
         } catch (e: Exception) {
+            crashReporter.recordException(e, "ListaCompraDataSource.addProducto")
             throw Exception("Error al insertar el producto: ${e.message}", e)
         }
     }

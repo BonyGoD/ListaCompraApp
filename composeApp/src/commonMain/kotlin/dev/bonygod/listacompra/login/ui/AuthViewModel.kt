@@ -2,6 +2,7 @@ package dev.bonygod.listacompra.login.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.bonygod.crashlytics.kmp.core.CrashReporter
 import dev.bonygod.listacompra.common.ui.state.SharedState
 import dev.bonygod.listacompra.core.CustomFailures.LoginFailure
 import dev.bonygod.listacompra.core.navigation.Navigator
@@ -30,7 +31,8 @@ class AuthViewModel(
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val userLoginUseCase: UserLoginUseCase,
     private val registerUseCase: UserRegisterUseCase,
-    private val googleRegisterUserUseCase: GoogleRegisterUserUseCase
+    private val googleRegisterUserUseCase: GoogleRegisterUserUseCase,
+    private val crashReporter: CrashReporter
 ) : ViewModel() {
     private val _state = MutableStateFlow(AuthState())
     val state: StateFlow<AuthState> = _state
@@ -82,6 +84,8 @@ class AuthViewModel(
                 onSuccess = { usuario ->
                     setState { setUserData(usuario.toUI()) }
                     sharedState.showLoading(false)
+                    // Solo el uid de Firebase, nunca email ni displayName (política de privacidad).
+                    crashReporter.setUserId(usuario.uid)
                     navigator.clearAndNavigateTo(Routes.AdLoading(usuario.uid))
                 },
                 onFailure = { error ->
@@ -99,6 +103,7 @@ class AuthViewModel(
             registerUseCase(state.value.getUserData().toDomain()).fold(
                 onSuccess = { usuario ->
                     sharedState.showLoading(false)
+                    crashReporter.setUserId(usuario.uid)
                     navigator.clearAndNavigateTo(Routes.AdLoading(usuario.uid))
                 },
                 onFailure = { error ->
@@ -139,6 +144,7 @@ class AuthViewModel(
             userLoginUseCase(user.email, user.password).fold(
                 onSuccess = { usuario ->
                     sharedState.showLoading(false)
+                    crashReporter.setUserId(usuario.uid)
                     navigator.clearAndNavigateTo(Routes.AdLoading(usuario.uid))
                 },
                 onFailure = { error ->

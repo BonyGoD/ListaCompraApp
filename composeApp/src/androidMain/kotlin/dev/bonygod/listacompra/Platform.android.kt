@@ -14,6 +14,8 @@ class AndroidPlatform : Platform {
         } catch (e: Exception) {
             "N/A"
         }
+    override val isDebugBuild: Boolean
+        get() = (appContext.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
 }
 
 actual fun getPlatform(): Platform = AndroidPlatform()

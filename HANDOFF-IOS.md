@@ -122,6 +122,9 @@ proyecto de Xcode. Anota qué se ve al arrancar.
   retirarlos. El porqué de cada decisión vive en el plan, no en el código.
 - Hay un grafo del proyecto en `graphify-out/`; `graphify query "..."` para
   localizar código, y `graphify update .` tras modificarlo.
+  > **No viene en el repo**: está en `.gitignore` (son 15 MB de artefactos
+  > generados). Al clonar en el Mac **no existirá**. Si se quiere usar, hay que
+  > generarlo allí. Mientras tanto, `grep` y lectura directa.
 
 ---
 

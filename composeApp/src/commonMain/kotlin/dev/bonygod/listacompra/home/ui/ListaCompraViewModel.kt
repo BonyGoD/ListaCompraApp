@@ -591,7 +591,8 @@ class ListaCompraViewModel(
         }
     }
 
-    private fun borrarTodosLosProductos() {        viewModelScope.launch {
+    private fun borrarTodosLosProductos() {
+        viewModelScope.launch {
             try {
                 val listaId = state.value.user.listaId
                 val totalProductos = _state.value.listaCompraUI.productos.size

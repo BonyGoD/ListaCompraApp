@@ -1301,6 +1301,61 @@ ya son rutas Login, Registro y ForgotPassword. Home se queda con **un** evento
 
 ---
 
+## 22 bis. Sacar Splash a su propia feature
+
+**No entra en esta rama.** Propuesto por el usuario el 18 ago 2026 al revisar el
+código, y **forma parte de la misma pasada de arquitectura** que las secciones 20 y
+21 (ver más abajo por qué).
+
+### El problema
+
+`login/` alberga hoy **dos ViewModels**: `AuthViewModel` y `SplashViewModel`.
+
+Que `AuthViewModel` cubra Login, Registro y Recuperar contraseña tiene sentido: son
+un mismo flujo de autenticación. Splash no pertenece a ese flujo — resuelve **con
+qué sesión arranca la app**, que es otra responsabilidad. Y tiene todo lo de una
+feature completa: tríada MVI propia, ViewModel, pantalla y caso de uso que **solo
+usa él** (`ResolveSessionUseCase`, comprobado con grep).
+
+### Qué se mueve
+
+```
+login/ui/SplashViewModel.kt                       ->  splash/ui/
+login/ui/screens/SplashScreen.kt                  ->  splash/ui/screens/
+login/ui/composables/interactions/SplashState.kt  ->  splash/ui/.../interactions/
+login/ui/composables/interactions/SplashEvent.kt  ->  splash/ui/.../interactions/
+```
+
+Más actualizar los imports en `NavigationWrapper.kt` y `NetworkModule.kt`.
+
+### Qué NO se mueve, y por qué
+
+`SignInAnonymouslyUseCase` y `ResolveSessionUseCase` **se quedan en
+`login/domain/usecase/`**. Envuelven a `UserRepository`, que es de `login`, y el
+proyecto ya tiene ese precedente: `home` consume `GetUserUseCase` y `LogOutUseCase`
+de `login` sin owner propio. Moverlos dejaría a una feature accediendo directamente
+al repositorio de otra, un salto más profundo del que da nadie hoy.
+
+---
+
+## La pasada de arquitectura: 20 + 21 + 22 bis, juntas
+
+Las tres se solapan y hacerlas por separado significa **mover los mismos ficheros
+dos veces**:
+
+- La **20** cambia dónde vive  en todas las features.
+- La **21** crea una feature nueva para la vinculación de cuenta.
+- La **22 bis** crea una feature nueva para Splash.
+
+Si primero se crean  y la de vinculación con la estructura actual, y
+después se aplica la 20, hay que volver a tocarlas. **Una sola pasada**, con la
+convención nueva ya decidida.
+
+> **Después de verificar iOS**, no antes: no conviene mover paquetes bajo los pies
+> de una rama que está a punto de validarse del todo.
+
+---
+
 ## 22. Guion de pruebas definitivo (sustituye al de la sección 14)
 
 La sección 14 se escribió antes del crash, de la validación al compartir, de la

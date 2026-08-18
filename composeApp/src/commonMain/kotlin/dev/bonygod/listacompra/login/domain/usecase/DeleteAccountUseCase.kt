@@ -5,7 +5,7 @@ import dev.bonygod.listacompra.login.data.repository.UserRepository
 class DeleteAccountUseCase(
     private val userRepo: UserRepository
 ) {
-    suspend operator fun invoke() {
-        userRepo.deleteAccount()
+    suspend operator fun invoke(): Result<Unit> {
+        return userRepo.deleteAccount()
     }
 }

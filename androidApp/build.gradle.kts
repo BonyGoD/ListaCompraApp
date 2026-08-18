@@ -39,11 +39,14 @@ android {
             val properties = Properties()
             val localPropertiesFile = project.rootProject.file("local.properties")
 
-            val keystoreFile = project.rootProject.file("app-keystore.jks")
+            if (localPropertiesFile.exists()) {
+                properties.load(localPropertiesFile.reader())
+            }
+            val storeFilePath = properties.getProperty("STORE_FILE", "")
+            val keystoreFile = project.rootProject.file(storeFilePath.ifBlank { "app-keystore.jks" })
             val hasKeystoreConfig = localPropertiesFile.exists() && keystoreFile.exists()
 
             if (hasKeystoreConfig) {
-                properties.load(localPropertiesFile.reader())
                 val keystorePassword = properties.getProperty("KEYSTORE_PASSWORD")
                 val keyAlias = properties.getProperty("KEY_ALIAS")
                 val keyPassword = properties.getProperty("KEY_PASSWORD")

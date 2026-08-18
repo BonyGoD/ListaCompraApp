@@ -1,7 +1,13 @@
 <resources>
     <!-- Common -->
+    <string name="app_name">ListaCompra</string>
     <string name="login_register_screen_email">CORREO ELECTRÓNICO</string>
     <string name="login_register_screen_password">CONTRASEÑA</string>
+
+    <!-- Splash -->
+    <string name="splash_screen_error_message">Ha ocurrido un error. Comprueba tu conexión e inténtalo de nuevo.</string>
+    <string name="splash_screen_retry_button">Reintentar</string>
+    <string name="splash_screen_login_button">Iniciar sesión</string>
 
     <!-- Login -->
     <string name="login_screen_title">¡Bienvenido a ListaCompra!</string>
@@ -36,12 +42,56 @@
     <string name="home_notification_dialog_subtitle">Introduce el correo electrónico de la persona con la que quieres compartir tu lista</string>
     <string name="home_notification_dialog_button">Comparte</string>
 
+    <!-- Contenido del Home -->
+    <string name="home_content_menu_description">Abrir menú</string>
+    <string name="home_content_delete_list_button">Borrar lista</string>
+    <string name="home_content_add_product_button">Agregar producto</string>
+    <string name="home_content_delete_confirm_title">¿Estás seguro de borrar todos los productos?</string>
+    <string name="home_content_delete_confirm_message">Esta acción no se puede deshacer.</string>
+
     <!-- Menu lateral -->
+    <string name="menu_lateral_my_lists">Mis listas</string>
     <string name="menu_lateral_share_list">Compartir lista</string>
     <string name="menu_lateral_logout">Cerrar sesión</string>
     <string name="menu_lateral_delete_account">Eliminar cuenta</string>
+    <string name="menu_lateral_login_or_register">Iniciar sesión / Crear cuenta</string>
+    <string name="menu_lateral_data_loss_message">Si inicias sesión con otra cuenta, la lista que has creado aquí no se conservará.</string>
+    <string name="menu_lateral_version_label">Versión</string>
     <string name="delete_account_title">¿Eliminar cuenta permanentemente?</string>
     <string name="delete_account_subtitle">Esta acción es irreversible. Se eliminarán todos tus datos y listas de compra.</string>
     <string name="delete_account_button">Eliminar cuenta</string>
+
+    <!-- Diálogo de aviso de pérdida de datos -->
+    <string name="data_loss_dialog_title">¿Iniciar sesión con otra cuenta?</string>
+    <string name="data_loss_dialog_confirm_button">Continuar</string>
+    <string name="data_loss_dialog_cancel_button">Cancelar</string>
+
+    <!-- Estado vacío del Home -->
+    <string name="home_empty_list_login_prompt">¿Ya tenías cuenta? Inicia sesión</string>
+
+    <!-- Vincular cuenta anónima (punto de entrada de compartir) -->
+    <string name="share_requires_account_dialog_title">Compartir necesita una cuenta</string>
+    <string name="share_requires_account_dialog_message">Para compartir una lista hace falta una cuenta real. Tu lista actual se trasladará a tu nueva cuenta.</string>
+    <string name="share_requires_account_dialog_confirm_button">Crear cuenta</string>
+    <string name="share_requires_account_dialog_cancel_button">Cancelar</string>
+    <string name="link_account_dialog_title">Crea tu cuenta</string>
+    <string name="link_account_dialog_subtitle">Añade un correo y una contraseña. Tu lista actual se trasladará a tu nueva cuenta.</string>
+    <string name="link_account_dialog_confirm_button">Continuar</string>
+    <string name="link_account_dialog_cancel_button">Cancelar</string>
+    <string name="link_account_credential_in_use_title">Ese correo ya tiene una cuenta</string>
+    <string name="link_account_credential_in_use_message">Si inicias sesión con ella, perderás la lista que has creado hasta ahora.</string>
+
+    <!-- Alertas del Home (ViewModel) -->
+    <string name="home_alert_error_get_user_title">Error al obtener el Usuario</string>
+    <string name="home_alert_error_accept_invitation_title">Error al aceptar la invitación</string>
+    <string name="home_alert_error_share_title">Error al compartir</string>
+    <string name="home_alert_error_update_title">Error al actualizar</string>
+    <string name="home_alert_error_add_product_title">Error al agregar producto</string>
+    <string name="home_alert_error_delete_product_title">Error al eliminar</string>
+    <string name="home_alert_error_delete_list_title">Error al eliminar lista</string>
+    <string name="home_alert_error_link_account_title">Error al vincular la cuenta</string>
+    <string name="home_alert_error_login_title">Error al iniciar sesión</string>
+    <string name="home_alert_error_delete_account_title">Error al borrar la cuenta</string>
+    <string name="home_alert_share_rate_limit_message">Debes esperar 5 minutos para volver a intentarlo.</string>
 
 </resources>

@@ -13,6 +13,7 @@ import dev.bonygod.listacompra.login.ui.screens.AdLoadingScreen
 import dev.bonygod.listacompra.login.ui.screens.ForgotPasswordScreen
 import dev.bonygod.listacompra.login.ui.screens.LoginScreen
 import dev.bonygod.listacompra.login.ui.screens.RegisterScreen
+import dev.bonygod.listacompra.login.ui.screens.SplashScreen
 import dev.bonygod.listacompra.mislistas.ui.screens.MisListasScreen
 import org.koin.compose.koinInject
 
@@ -24,6 +25,9 @@ fun NavigationWrapper(snackbarHostState: SnackbarHostState) {
         backStack = navigator.backStack,
         onBack = { navigator.goBack() },
         entryProvider = entryProvider {
+            entry<Routes.Splash> {
+                SplashScreen()
+            }
             entry<Routes.Login> {
                 LoginScreen(snackbarHostState = snackbarHostState)
             }

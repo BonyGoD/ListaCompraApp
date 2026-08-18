@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Antes se usaba directamente @android:style/Theme.Material.Light.NoActionBar,
+        que no declara windowBackground propio. Android pinta con ese fondo la
+        ventana de inicio, la que se ve ANTES de que Compose dibuje su primer
+        fotograma, y en MIUI el modo oscuro forzado la invertía a negro: de ahí el
+        fogonazo negro al abrir la app.
+    -->
+    <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/splash_background</item>
+    </style>
+</resources>

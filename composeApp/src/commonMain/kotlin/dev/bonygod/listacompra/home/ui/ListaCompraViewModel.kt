@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.bonygod.crashlytics.kmp.core.CrashReporter
 import dev.bonygod.listacompra.common.ui.state.SharedState
+import dev.bonygod.listacompra.core.CustomFailures.LoginFailure
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.navigation.Routes
@@ -23,8 +24,11 @@ import dev.bonygod.listacompra.login.domain.usecase.DeleteAccountUseCase
 import dev.bonygod.listacompra.login.domain.usecase.DeleteNotificationUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
+import dev.bonygod.listacompra.login.domain.usecase.IsAnonymousUserUseCase
+import dev.bonygod.listacompra.login.domain.usecase.LinkAccountWithEmailUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
+import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.GetListasUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,6 +43,19 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import listacompra.composeapp.generated.resources.Res
+import listacompra.composeapp.generated.resources.home_alert_error_accept_invitation_title
+import listacompra.composeapp.generated.resources.home_alert_error_add_product_title
+import listacompra.composeapp.generated.resources.home_alert_error_delete_account_title
+import listacompra.composeapp.generated.resources.home_alert_error_delete_list_title
+import listacompra.composeapp.generated.resources.home_alert_error_delete_product_title
+import listacompra.composeapp.generated.resources.home_alert_error_get_user_title
+import listacompra.composeapp.generated.resources.home_alert_error_link_account_title
+import listacompra.composeapp.generated.resources.home_alert_error_login_title
+import listacompra.composeapp.generated.resources.home_alert_error_share_title
+import listacompra.composeapp.generated.resources.home_alert_error_update_title
+import listacompra.composeapp.generated.resources.home_alert_share_rate_limit_message
+import org.jetbrains.compose.resources.getString
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 
@@ -53,13 +70,16 @@ class ListaCompraViewModel(
     private val addProductoUseCase: AddProductoUseCase,
     private val analyticsService: AnalyticsService,
     private val getUserUseCase: GetUserUseCase,
+    private val isAnonymousUserUseCase: IsAnonymousUserUseCase,
     private val logoutUseCase: LogOutUseCase,
-    getNotificationsUseCase: GetNotificationsUseCase,
+    private val getNotificationsUseCase: GetNotificationsUseCase,
     private val shareListaCompraUseCase: ShareListaCompraUseCase,
     private val addSharedListUseCase: AddSharedListUseCase,
     private val deleteNotificationUseCase: DeleteNotificationUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
     private val getListasUseCase: GetListasUseCase,
+    private val linkAccountWithEmailUseCase: LinkAccountWithEmailUseCase,
+    private val userLoginUseCase: UserLoginUseCase,
     private val crashReporter: CrashReporter
 ) : ViewModel() {
     private var notificationsJob: Job? = null
@@ -86,13 +106,8 @@ class ListaCompraViewModel(
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 0),
             replay = 1
         )
-    private val sharedNotificationsFlow = getNotificationsUseCase()
+    private fun notificationsFlow() = getNotificationsUseCase()
         .catch { emit(emptyList()) }
-        .shareIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 0),
-            replay = 1
-        )
 
     fun setState(reducer: ListaCompraState.() -> ListaCompraState) {
         _state.value = _state.value.reducer()
@@ -117,55 +132,61 @@ class ListaCompraViewModel(
         stopNotificationsListener()
         // Reinicia los listeners y recarga los datos del usuario y productos
         viewModelScope.launch {
-            try {
-                getUserUseCase().fold(
-                    onSuccess = { usuario ->
-                        setState { setUser(usuario.toUI()) }
-                        analyticsService.setUserId(usuario.uid)
+            loadUserDataSuspending()
+        }
+    }
 
                         // Actualiza el listaId para activar el flow compartido
-                        _currentListaId.value = usuario.listas[0]
+    private suspend fun loadUserDataSuspending() {
+        try {
+            getUserUseCase().fold(
+                onSuccess = { usuario ->
+                    setState { setUser(usuario.toUI()) }
+                    setState { setAnonymous(isAnonymousUserUseCase()) }
+                    analyticsService.setUserId(usuario.uid)
 
                         // Obtiene el nombre de la lista activa
-                        getListasUseCase().fold(
-                            onSuccess = { listas ->
-                                val nombre = listas.firstOrNull()?.nombre ?: "Lista de la compra"
-                                setState { setListaNombre(nombre) }
-                            },
-                            onFailure = { /* mantiene el nombre por defecto */ }
-                        )
+                    _currentListaId.value = usuario.listas[0]
 
-                        // Suscribirse al flow compartido de productos
-                        productosJob = viewModelScope.launch {
-                            sharedProductosFlow.collect { listaCompraUI ->
-                                setState { getListaCompraUI(listaCompraUI) }
-                            }
-                        }
+                    getListasUseCase().fold(
+                        onSuccess = { listas ->
+                            val nombre = listas.firstOrNull()?.nombre ?: "Lista de la compra"
+                            setState { setListaNombre(nombre) }
+                        },
+                        onFailure = { /* mantiene el nombre por defecto */ }
+                    )
 
-                        // Suscribirse al flow compartido de notificaciones
-                        notificationsJob = viewModelScope.launch {
-                            sharedNotificationsFlow.collect { notifications ->
-                                setState { updateNotifications(notifications) }
-                            }
+                    productosJob = viewModelScope.launch {
+                        sharedProductosFlow.collect { listaCompraUI ->
+                            setState { getListaCompraUI(listaCompraUI) }
                         }
-
-                        sharedState.showLoading(false)
-                    },
-                    onFailure = { error ->
-                        val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
-                        setState {
-                            showErrorAlert(
-                                "Error al obtener el Usuario",
-                                message = errorMessage
-                            )
-                        }
-                        sharedState.showLoading(false)
                     }
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-                sharedState.showLoading(false)
-            }
+
+                    notificationsJob = viewModelScope.launch {
+                        notificationsFlow().collect { notifications ->
+                            setState { updateNotifications(notifications) }
+                        }
+                    }
+
+                    sharedState.showLoading(false)
+                },
+                onFailure = { error ->
+                    val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
+                    val errorTitle = getString(Res.string.home_alert_error_get_user_title)
+                    setState {
+                        showErrorAlert(
+                            errorTitle,
+                            message = errorMessage
+                        )
+                        // Suscribirse al flow compartido de productos
+                        // Suscribirse al flow compartido de notificaciones
+                    }
+                    sharedState.showLoading(false)
+                }
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            sharedState.showLoading(false)
         }
     }
 
@@ -203,7 +224,7 @@ class ListaCompraViewModel(
             is ListaCompraEvent.AddProducto -> addProducto()
             is ListaCompraEvent.OnMenuClick -> setState { showMenu() }
             is ListaCompraEvent.OnLogoutClick -> logOut()
-            is ListaCompraEvent.OnShareListClick -> setState { showCustomDialog(true) }
+            is ListaCompraEvent.OnShareListClick -> onShareListClick()
             is ListaCompraEvent.DismissCustomDialog -> setState { showCustomDialog(false) }
             is ListaCompraEvent.ShareList -> shareList(event.email)
             is ListaCompraEvent.OnShareTextFieldChange -> setState { updateShareTextField(event.text) }
@@ -220,6 +241,101 @@ class ListaCompraViewModel(
                 Exception("Non-fatal de prueba desde el menú lateral"),
                 "ListaCompraViewModel.OnForceNonFatalClick"
             )
+
+            is ListaCompraEvent.OnLoginFromMenuClick -> setState { showDataLossWarningDialog(true) }
+            is ListaCompraEvent.OnCancelLoginDataLoss -> setState { showDataLossWarningDialog(false) }
+            is ListaCompraEvent.OnConfirmLoginDataLoss -> {
+                setState { showDataLossWarningDialog(false) }
+                navigator.navigateTo(Routes.Login)
+            }
+            is ListaCompraEvent.OnLoginFromEmptyListClick -> navigator.navigateTo(Routes.Login)
+
+            is ListaCompraEvent.OnShareAccountRequiredConfirm -> {
+                setState { showShareRequiresAccountDialog(false) }
+                setState { showLinkAccountDialog(true) }
+            }
+
+            is ListaCompraEvent.OnShareAccountRequiredCancel ->
+                setState { showShareRequiresAccountDialog(false) }
+
+            is ListaCompraEvent.OnLinkEmailChange -> setState { updateLinkEmail(event.text) }
+            is ListaCompraEvent.OnLinkPasswordChange -> setState { updateLinkPassword(event.text) }
+            is ListaCompraEvent.OnLinkAccountConfirm -> linkAccountWithEmail()
+            is ListaCompraEvent.OnDismissLinkAccountDialog -> {
+                setState { showLinkAccountDialog(false) }
+                setState { clearLinkFields() }
+            }
+
+            is ListaCompraEvent.OnConfirmLinkCredentialInUse -> signInWithExistingAccountAndDiscardAnonymous()
+            is ListaCompraEvent.OnCancelLinkCredentialInUse ->
+                setState { showLinkCredentialInUseDialog(false) }
+        }
+    }
+
+    private fun onShareListClick() {
+        if (state.value.isAnonymous) {
+            setState { showShareRequiresAccountDialog(true) }
+        } else {
+            setState { showCustomDialog(true) }
+        }
+    }
+
+    private fun linkAccountWithEmail() {
+        val email = state.value.linkEmail.text.trim()
+        val password = state.value.linkPassword.text
+        viewModelScope.launch {
+            linkAccountWithEmailUseCase(email, password).fold(
+                onSuccess = { usuario ->
+                    setState { setUser(usuario.toUI()) }
+                    setState { setAnonymous(false) }
+                    setState { showLinkAccountDialog(false) }
+                    setState { clearLinkFields() }
+                    stopNotificationsListener()
+                    loadUserDataSuspending()
+                    setState { showCustomDialog(true) }
+                },
+                onFailure = { error ->
+                    if (error is LoginFailure.CredentialAlreadyInUse) {
+                        setState { showLinkCredentialInUseDialog(true) }
+                    } else {
+                        val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
+                        val errorTitle = getString(Res.string.home_alert_error_link_account_title)
+                        setState {
+                            showErrorAlert(
+                                errorTitle,
+                                errorMessage
+                            )
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    private fun signInWithExistingAccountAndDiscardAnonymous() {
+        val email = state.value.linkEmail.text.trim()
+        val password = state.value.linkPassword.text
+        viewModelScope.launch {
+            setState { showLinkCredentialInUseDialog(false) }
+            stopNotificationsListener()
+            userLoginUseCase(email, password).fold(
+                onSuccess = {
+                    setState { showLinkAccountDialog(false) }
+                    setState { clearLinkFields() }
+                    loadUserDataSuspending()
+                    setState { showCustomDialog(true) }
+                },
+                onFailure = { error ->
+                    val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
+                    val errorTitle = getString(Res.string.home_alert_error_login_title)
+                    setState {
+                        showErrorAlert(
+                            errorTitle,
+                            errorMessage
+                        )
+                    }
+                }
+            )
         }
     }
 
@@ -227,11 +343,26 @@ class ListaCompraViewModel(
         viewModelScope.launch {
             // Parar listeners ANTES de borrar la cuenta
             stopNotificationsListener()
-            deleteAccountUseCase()
-            setState { showDeleteAccountDialog(false) }
-            sharedState.showLoading(false)
-            setState { ListaCompraState() }
-            navigator.clearAndNavigateTo(Routes.Login)
+            deleteAccountUseCase().fold(
+                onSuccess = {
+                    setState { showDeleteAccountDialog(false) }
+                    sharedState.showLoading(false)
+                    setState { ListaCompraState() }
+                    navigator.clearAndNavigateTo(Routes.Login)
+                },
+                onFailure = { error ->
+                    val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
+                    val errorTitle = getString(Res.string.home_alert_error_delete_account_title)
+                    sharedState.showLoading(false)
+                    setState { showDeleteAccountDialog(false) }
+                    setState {
+                        showErrorAlert(
+                            errorTitle,
+                            message = errorMessage
+                        )
+                    }
+                }
+            )
         }
     }
 
@@ -254,9 +385,10 @@ class ListaCompraViewModel(
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
+                    val errorTitle = getString(Res.string.home_alert_error_accept_invitation_title)
                     setState {
                         showErrorAlert(
-                            "Error al aceptar la invitacion",
+                            errorTitle,
                             message = errorMessage
                         )
                     }
@@ -265,12 +397,15 @@ class ListaCompraViewModel(
         }
     }
 
-    private fun shareList(email: String) {
+    private fun shareList(rawEmail: String) {
         val currentTime = Clock.System.now().toEpochMilliseconds()
         if (currentTime - lastResetRequestTime < 5.minutes.inWholeMilliseconds) {
-            setEffect(ListaCompraEffect.ShowError("Debes esperar 5 minutos para volver a intentarlo."))
+            viewModelScope.launch {
+                setEffect(ListaCompraEffect.ShowError(getString(Res.string.home_alert_share_rate_limit_message)))
+            }
             return
         }
+        val email = rawEmail.trim()
         val user = state.value.user
         viewModelScope.launch {
             shareListaCompraUseCase(user.nombre, user.listaId, email).fold(
@@ -288,9 +423,10 @@ class ListaCompraViewModel(
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
+                    val errorTitle = getString(Res.string.home_alert_error_share_title)
                     setState {
                         showErrorAlert(
-                            "Error al compartir",
+                            errorTitle,
                             message = errorMessage
                         )
                     }
@@ -357,9 +493,10 @@ class ListaCompraViewModel(
                         setState { cancelEditing() }
                     }
 
+                    val errorTitle = getString(Res.string.home_alert_error_update_title)
                     setState {
                         showErrorAlert(
-                            "Error al actualizar",
+                            errorTitle,
                             "No se pudo actualizar el producto. Verifica tu conexión a internet e inténtalo nuevamente."
                         )
                     }
@@ -388,9 +525,10 @@ class ListaCompraViewModel(
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    val errorTitle = getString(Res.string.home_alert_error_add_product_title)
                     setState {
                         showErrorAlert(
-                            "Error al agregar producto",
+                            errorTitle,
                             "No se pudo agregar el producto. Verifica tu conexión a internet e inténtalo nuevamente."
                         )
                     }
@@ -413,9 +551,10 @@ class ListaCompraViewModel(
             } catch (e: Exception) {
                 e.printStackTrace()
                 crashReporter.recordException(e, "ListaCompraViewModel.borrarProducto")
+                val errorTitle = getString(Res.string.home_alert_error_delete_product_title)
                 setState {
                     showErrorAlert(
-                        "Error al eliminar",
+                        errorTitle,
                         "No se pudo eliminar el producto. Verifica tu conexión a internet e inténtalo nuevamente."
                     )
                 }
@@ -441,9 +580,10 @@ class ListaCompraViewModel(
                 e.printStackTrace()
                 crashReporter.recordException(e, "ListaCompraViewModel.togglePurchased")
                 setState { togglePurchased(productId) }
+                val errorTitle = getString(Res.string.home_alert_error_update_title)
                 setState {
                     showErrorAlert(
-                        "Error al actualizar",
+                        errorTitle,
                         "No se pudo guardar el estado del producto. Verifica tu conexión e inténtalo de nuevo."
                     )
                 }
@@ -460,9 +600,10 @@ class ListaCompraViewModel(
                 setState { clearAllProductos() }
             } catch (e: Exception) {
                 e.printStackTrace()
+                val errorTitle = getString(Res.string.home_alert_error_delete_list_title)
                 setState {
                     showErrorAlert(
-                        "Error al eliminar lista",
+                        errorTitle,
                         "No se pudo eliminar la lista completa. Verifica tu conexión a internet e inténtalo nuevamente."
                     )
                 }

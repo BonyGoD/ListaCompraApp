@@ -133,9 +133,9 @@ class UserRepository(
         }
     }
 
-    suspend fun addSharedList(listaId: String): Result<Usuario> {
+    suspend fun addSharedList(listaId: String, listaNombre: String): Result<Usuario> {
         return try {
-            val userResponse = usersDS.addSharedList(listaId)
+            val userResponse = usersDS.addSharedList(listaId, listaNombre)
             Result.success(userResponse.toDomain())
         } catch (e: Exception) {
             crashReporter.recordException(e, "UserRepository.addSharedList")

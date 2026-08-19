@@ -62,6 +62,7 @@ Si algo sale KO, anótalo en la línea y sigue con el resto del bloque.
 - [X] 23. **A se queda con TRES listas**, las dos suyas con sus productos intactos
 - [X] 24. La lista compartida se ve **con su nombre real**
 - [X] 25. En Firestore: **no ha desaparecido ningún documento** de `lista-compra` - No ha desaparecido ningun documento pero en el map nombresListas solo aparecen las 2 que tenia, no la compartida
+      → **ARREGLADO, repetir en el bloque 10.**
 
 > Los pasos 21 y 22 son los del crash. Los dos iban por el mismo camino roto.
 
@@ -83,31 +84,98 @@ El boton Agregar producto y el Borrar lista no estan traducidos.
 
 ## Bloque 8 bis — Repesca tras los arreglos
 
-- [ ] 34a. **Repetir el paso 18**: vincular cuenta y, sin reiniciar, crear a mano la
+- [X] 34a. **Repetir el paso 18**: vincular cuenta y, sin reiniciar, crear a mano la
       invitación en Firestore → **debe aparecer sola**
-- [ ] 34b. Tras vincular, comprobar que **la lista y sus productos siguen bien**
+- [X] 34b. Tras vincular, comprobar que **la lista y sus productos siguen bien**
       (se añadió una recarga de datos en ese camino)
-- [ ] 34c. Con una cuenta **que no sea la del desarrollador**: los botones
+- [X] 34c. Con una cuenta **que no sea la del desarrollador**: los botones
       **"Forzar crash (test)" y "Forzar non-fatal (test)" NO aparecen**
-- [ ] 34d. Con **bonygod.dev@gmail.com**: **sí aparecen** y siguen funcionando
-- [ ] 34e. Móvil en inglés → **"Add product"**, **"Clear list"** y el diálogo de
+- [X] 34d. Con **bonygod.dev@gmail.com**: **sí aparecen** y siguen funcionando
+- [X] 34e. Móvil en inglés → **"Add product"**, **"Clear list"** y el diálogo de
       confirmación de borrado, traducidos
 
 ## Bloque 9 — iOS (en el Mac)
 
-- [ ] 35. **Xcode compila y enlaza el framework** tras quitar `iosX64()`
-- [ ] 36. Repetir bloque 2 (arranque)
-- [ ] 37. Repetir bloque 3 (vincular)
-- [ ] 38. Repetir bloque 6 (aceptar y rechazar)
-- [ ] 39. Anotar qué se ve al arrancar → el *launch screen* de iOS sigue sin revisar
+- [X] 35. **Xcode compila y enlaza el framework** tras quitar `iosX64()`
+- [!] 36. Repetir bloque 2 (arranque) — el arranque va bien, pero el **banner tarda
+      10-15 s** en aparecer y mientras se ve **el hueco en negro**, tanto al arrancar
+      como al ir y volver entre pantallas.
+      → **ARREGLADO, repetir.** Contenedor con color de fondo y reutilizado entre
+      navegaciones. Ver sección 23 del plan.
+- [!] 37. Repetir bloque 3 (vincular) — la vinculación funciona, pero en **iPhone X**
+      el botón **"Crear cuenta" parte en dos líneas**.
+      → **ARREGLADO, repetir.** `maxLines = 1` y menos padding interno.
+- [X] 38. Repetir bloque 6 (aceptar y rechazar)
+- [!] 39. Anotar qué se ve al arrancar → **pantalla negra**, y después el splash con
+      logo y spinner. `UILaunchScreen` estaba vacío en `Info.plist`, así que iOS usaba
+      `systemBackground`: negro con el móvil en modo oscuro.
+      → **ARREGLADO, repetir.** Fondo blanco fijo. Ver sección 23.3 del plan.
+- [X] Extra. **Persistencia de sesión en Keychain** (criterio 6): entra directo sin
+      teclear contraseña tras actualizar
+
+## Bloque 9 bis — Repesca de iOS
+
+- [X] 40. Arrancar: **donde va el banner se ve el color de fondo de la app, no negro**
+- [X] 41. Ir a otra pantalla y volver a la lista: **el banner ya está, sin espera**
+- [X] 42. Con el móvil en **inglés** y en **catalán**, el diálogo "Compartir necesita
+      una cuenta": **"Create account" / "Crear compte" en una sola línea y sin cortar**
+- [X] 43. **Con el móvil en modo oscuro**: al arrancar se ve **blanco**, no negro, y
+      enlaza con el splash sin parpadeo
+- [X] 44. Repetir en modo claro
+
+## Bloque 10 — El nombre de la lista compartida
+
+Probado en **iOS** el 19 ago 2026, tras el tercer intento: el nombre viaja ahora en
+la invitación (`notifications.listaNombre`), resuelto por quien comparte.
+
+- [X] 45. Aceptar una invitación → en Firestore, `usuarios/{uid}.nombresListas`
+      contiene **también la lista compartida**, con su nombre real
+- [X] 46. La lista compartida se ve **con su nombre**, no "Lista de la compra"
+- [-] 47. Aceptar **dos veces** la misma invitación — **no alcanzable**:
+      `deleteNotification()` borra por `(email, listaId)`, así que al aceptar
+      desaparecen todas las invitaciones de esa lista. La guarda contra duplicados
+      sigue en el código (`currentListas.contains(listaId)` y sobrescritura de la
+      clave del mapa), pero por la interfaz no hay forma de dispararla.
+      → Variante que **sí** se puede probar si algún día interesa: compartir la
+      misma lista **otra vez, ya aceptada**, y volver a aceptarla.
+- [X] 48. Renombrar una lista propia sigue funcionando *(toca el mismo mapa)*
+
+### Bloque 10 bis — Pendiente en Android
+
+El bloque 10 se validó solo en iOS. El código es de `commonMain`, pero el resto de
+la rama se probó primero en Android, así que falta cerrar el círculo.
+
+- [ ] 49. Repetir **45, 46 y 48 en Android**, compartiendo de nuevo *(las
+      invitaciones anteriores al cambio no llevan `listaNombre`)*
+
+## Bloque 11 — Reglas endurecidas de `notifications`
+
+Publicadas y probadas en **iOS** el 19 ago 2026, con la versión estricta — la que
+normaliza con `.lower().trim()` en la propia regla.
+
+- [X] 50. Compartir → **la invitación aparece sola**, sin reiniciar
+- [X] 51. Aceptarla → **desaparece de la lista** *(el borrado pasa por el mismo
+      `allow read, delete`, y hace otra query antes)*
+- [X] 52. Con sesión **anónima**: no se ve ninguna notificación *(criterio 9, ahora
+      impuesto por el servidor: un anónimo no tiene `email` en el token)*
+- [X] 53. Nada de esto se rompió en `lista-compra` ni en `productos`: sus reglas no
+      cambiaron entre las dos versiones
+
+> No se repiten en Android: las reglas son del servidor y la query sale del mismo
+> código de `commonMain`, así que no hay comportamiento específico de plataforma
+> que probar.
 
 ---
 
-## Pendiente tras las pruebas
+## Pendiente antes de publicar
 
-- [ ] Publicar la app
-- [ ] Esperar a que se propague
-- [ ] **Entonces** volver a endurecer las reglas de `notifications`
+- [X] ~~Endurecer las reglas de `notifications`~~ — hecho y probado (bloque 11)
+- [ ] Bloque 10 bis: `nombresListas` en **Android**
+- [X] ~~Probar en **inglés y catalán** la hoja de notificaciones y Mis Listas~~ —
+      las 14 cadenas nuevas, correctas en los dos idiomas (iOS, 19 ago 2026)
+- [ ] **Subir la versión** de iOS: `MARKETING_VERSION` 1.2.0 y
+      `CURRENT_PROJECT_VERSION` 14 siguen sin tocar
+- [ ] Publicar
 
 ## Si algo falla
 

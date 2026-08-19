@@ -242,13 +242,28 @@ class UsersDataSource(
      */
     suspend fun shareListaCompra(nombre: String, listaId: String, email: String) {
         try {
+            // El nombre de la lista se resuelve aquí, donde sí hay permiso: quien
+            // comparte lo tiene en su propio documento. El destinatario no puede
+            // leer la lista ajena, así que viaja con la invitación.
+            val userUID = auth.currentUser?.uid.orEmpty()
+            val userDoc = firebase.collection("usuarios").document(userUID).get()
+            @Suppress("UNCHECKED_CAST")
+            val nombresListas = (userDoc.get("nombresListas") as? Map<String, String>) ?: emptyMap()
+            val listaNombre = nombresListas[listaId] ?: try {
+                firebase.collection("lista-compra").document(listaId).get()
+                    .get("nombre") as? String
+            } catch (e: Exception) {
+                null
+            }
+
             // Crear la notificación en la colección notifications
             firebase.collection("notifications")
                 .add(
                     mapOf(
                         "nombre" to nombre,
                         "email" to email.trim().lowercase(),
-                        "listaId" to listaId
+                        "listaId" to listaId,
+                        "listaNombre" to listaNombre.orEmpty()
                     )
                 )
         } catch (e: Exception) {
@@ -256,7 +271,7 @@ class UsersDataSource(
         }
     }
 
-    suspend fun addSharedList(listaId: String): UserResponse {
+    suspend fun addSharedList(listaId: String, listaNombre: String): UserResponse {
         val uid = auth.currentUser?.uid.orEmpty()
         val userDoc = firebase.collection("usuarios").document(uid).get()
         val currentListas = (userDoc.get("listas") as? List<String>) ?: emptyList()
@@ -265,11 +280,19 @@ class UsersDataSource(
         } else {
             currentListas + listaId
         }
+        @Suppress("UNCHECKED_CAST")
+        val currentNombres = (userDoc.get("nombresListas") as? Map<String, String>) ?: emptyMap()
+        val updatedNombres = if (listaNombre.isBlank()) {
+            currentNombres
+        } else {
+            currentNombres + (listaId to listaNombre)
+        }
         firebase.collection("usuarios")
             .document(uid)
             .set(
                 data = mapOf(
-                    "listas" to updatedListas
+                    "listas" to updatedListas,
+                    "nombresListas" to updatedNombres
                 ),
                 merge = true
             )

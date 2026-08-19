@@ -2,16 +2,22 @@
 
 **Rama:** `feature/onboarding-sin-registro` (creada desde `develop` el 17 ago 2026)
 
-**Estado a 18 ago 2026** (todo sin commitear, en el árbol de trabajo):
+**Estado a 19 ago 2026:**
 
 | Fase | Estado |
 |---|---|
-| 1 — Sesión anónima y arranque condicional | Implementada, revisada y **probada en Android**. Pendiente iOS. |
-| 1 bis — Salidas hacia el login | Implementada, revisada y **probada en Android**. Pendiente iOS. |
-| 2 — Desconectar el intersticial | Implementada (vía `AdConstants.INTERSTITIAL_ENABLED`). |
-| 3 — Vincular cuenta anónima | Implementada y revisada, **solo por correo**. Google bloqueado (ver abajo). **Sin probar.** |
-| 3 bis — Arreglar listas compartidas | Implementada y revisada. **Sin probar.** |
-| 4 — Idiomas | Auditada y cerrada. 19 cadenas nuevas, completas en los tres idiomas. |
+| 1 — Sesión anónima y arranque condicional | **Probada en Android y en iOS.** |
+| 1 bis — Salidas hacia el login | **Probada en Android y en iOS.** |
+| 2 — Desconectar el intersticial | **Probada en Android y en iOS.** |
+| 3 — Vincular cuenta anónima | **Probada en Android y en iOS**, solo por correo. Google sigue bloqueado (ver abajo). |
+| 3 bis — Arreglar listas compartidas | **Probada en Android y en iOS**, incluido rechazar y aceptar. |
+| 4 — Idiomas | Auditada, cerrada y probada en los tres idiomas. |
+| 5 — Arreglos de iOS (sección 23) | **Probados**: banner sin negro ni espera, botón en una línea, arranque blanco. |
+
+**Los 44 pasos de `PRUEBAS-ONBOARDING.md` están en verde**, y el punto 3 del arreglo
+de la sección 10 — el nombre de la lista compartida en `nombresListas` — quedó
+implementado y **probado en iOS** el 19 ago 2026, al tercer intento. Falta repetirlo
+en Android (bloque 10 bis) y, después, publicar.
 
 **Pendiente y bloqueante para cerrar la rama:**
 - **Habilitar el proveedor "Anonymous" en Firebase Console → Authentication →
@@ -608,7 +614,47 @@ leer-modificar-escribir. `addSharedList()` es el único que no.
    `deleteAccount()` (línea 263), donde sí procede.
 3. **Guardar el nombre de la lista compartida en `nombresListas`.** Si no,
    `getListas()` intenta leer `lista-compra/{listaId}.nombre` y cae al fallback
-   "Lista N" en cuanto las reglas no dejen leer el documento ajeno.
+   en cuanto las reglas no dejen leer el documento ajeno.
+   > **HECHO el 19 ago 2026, y corregido el mismo día.** La primera versión leía el
+   > nombre **antes** de escribir el array `listas`, y en iOS no guardaba nada en el
+   > mapa. El motivo estaba ya documentado en `acceptSharedList()`: *"los permisos de
+   > Firestore están propagados"* después de esa escritura. El usuario gana acceso al
+   > documento de la lista ajena **porque** su id entra en `listas`, así que leerlo
+   > antes falla, el `catch` devuelve `null` y no se escribe nada. En silencio,
+   > además: el datasource no tiene `crashReporter`.
+   >
+   > Orden correcto, ya aplicado: escribir `listas` → leer el nombre → escribir
+   > `nombresListas`. Son dos escrituras en vez de una, y la segunda se salta si el
+   > id ya estaba en el mapa. El fallback real del código es `"Lista de la compra"`,
+   > no `"Lista N"` como decía este plan.
+   >
+   > **Segundo intento fallido, y diagnóstico definitivo.** Reordenar no bastó: en
+   > iOS seguía saliendo `"Lista de la compra"`. Y eso es la prueba de que no era un
+   > problema de orden — si el fallback aparece, es que **`getListas()` tampoco puede
+   > leer el documento de la lista ajena**. El destinatario no tiene permiso de
+   > lectura sobre `lista-compra/{listaId}`, ni antes ni después de entrar en el
+   > array. Cualquier solución que pase por leer esa lista desde quien la recibe
+   > está condenada.
+   >
+   > **Solución aplicada: el nombre viaja con la invitación.**
+   > `shareListaCompra()` lo resuelve del documento propio de quien comparte —
+   > `usuarios/{uid}.nombresListas[listaId]`, con lectura de `lista-compra` como
+   > respaldo, que ahí sí está permitida— y lo escribe como `listaNombre` en el
+   > documento de `notifications`. De ahí baja por el DTO, el modelo de dominio, el
+   > de UI y el evento, hasta `addSharedList(listaId, listaNombre)`, que vuelve a
+   > escribir `listas` y `nombresListas` en una sola operación. **Sin lectura
+   > cruzada y sin depender de las reglas.**
+   >
+   > Ficheros tocados: `UsersDataSource`, `UserRepository`, `AddSharedListUseCase`,
+   > `ListaCompraViewModel`, `ListaCompraEvent`, `ShowNotificationsBottomSheet`,
+   > `NotificationsReponse`, `Notifications`, `NotificationsUI` y los dos mappers.
+   >
+   > **Dos consecuencias que hay que tener presentes:**
+   > - Las invitaciones **ya enviadas** no llevan `listaNombre`: llegan vacías, no se
+   >   escribe nada en el mapa y la lista sigue mostrando el fallback. Para probar
+   >   hay que compartir de nuevo.
+   > - Las listas compartidas **ya aceptadas** tampoco tienen entrada en el mapa y
+   >   seguirán con el fallback. Si molesta, hay que repararlas a mano en Firestore.
 4. **Devolver el `UserResponse` con el array real**, no con `listOf(listaId)`.
    Hoy la respuesta miente aunque Firestore estuviera bien, y
    `acceptSharedList()` (`ListaCompraViewModel.kt:245`) la usa para pintar.
@@ -1455,3 +1501,319 @@ localización y del cambio de targets. Este lo cubre todo.
 
 Logcat filtrado por el paquete, y Crashlytics para las excepciones: los repositorios
 registran todas con `recordException` antes de devolver el fallo.
+
+
+---
+
+## 23. Lo que salió en iOS: el banner negro y el botón partido
+
+Probado en el Mac el 18 ago 2026. Compila y enlaza sin problemas tras quitar
+`iosX64()` — el Mac es Apple Silicon, así que perder el simulador Intel no cuesta
+nada. La persistencia de sesión en Keychain (criterio 6) también quedó validada:
+la app entra directa sin teclear la contraseña.
+
+Salieron dos cosas.
+
+### 23.1 El banner tarda 10-15 s y mientras se ve un rectángulo negro
+
+Dos problemas distintos que se veían como uno.
+
+**El negro.** `BannerAd` de iOS fuerza `height(50.dp)` sobre un `UIKitView` para
+que Compose le reserve sitio (un `UIView` plano no tiene `intrinsicContentSize`).
+Ese hueco lo pinta UIKit, no Compose, y el contenedor no tenía `backgroundColor`,
+así que hasta que el anuncio llega se ve negro. En Android no pasa porque el
+`AdView` va sin altura forzada y el espacio simplemente no existe hasta que carga.
+
+Arreglo: dar al contenedor el color de fondo de la pantalla (`SecondaryBlue`, el
+mismo del `Box` de `HomeContent` y del espaciador que va justo debajo). El hueco
+sigue reservado — así no salta la lista cuando entra el anuncio — pero pasa a
+leerse como margen en vez de como un agujero.
+
+**La espera al ir y volver.** El `factory` de `UIKitView` se ejecuta cada vez que
+el composable entra en composición. Cada regreso a la lista creaba un `UIView`
+nuevo, mandaba `AdMobLoadBannerRequested` otra vez y arrancaba una petición de red
+desde cero. De paso registraba dos observers más, que solo se retiran cuando llega
+la notificación correspondiente.
+
+Arreglo: un mapa `bannerContainers` a nivel de fichero, indexado por unidad de
+anuncio. Si ya hay contenedor, se reutiliza (con `removeFromSuperview()` antes,
+porque la instancia anterior de `UIKitView` lo dejó colgando de su jerarquía). Si
+la carga falla se borra del mapa, de forma que la siguiente navegación reintenta
+en vez de quedarse con un hueco vacío para siempre.
+
+> **Efecto secundario a tener presente:** en el camino de reutilización no se
+> registran observers nuevos, así que `onAdLoaded` y `onAdFailedToLoad` de esa
+> segunda composición no se llaman. Hoy da igual — `HomeContent` los deja por
+> defecto y mide la altura con `onSizeChanged` —, pero si alguien empieza a
+> depender de esos callbacks, esto hay que revisarlo.
+
+**Lo que no arregla ninguno de los dos:** la espera de la primera carga en frío.
+`USE_TEST_ADS = false`, así que son unidades de producción, y con el tráfico que
+tiene la app el *fill* de AdMob tarda lo que tarda. Lo que se corrige es que la
+espera no se vea como un rectángulo negro y que no se repita en cada navegación.
+
+### 23.2 "Crear cuenta" partido en dos líneas en un iPhone X
+
+En `ShareRequiresAccountDialog` los dos botones van con `weight(1f)` dentro de una
+`Row` con 20.dp de padding y 8.dp de separación. Con el `contentPadding` por
+defecto de Material3 (24.dp por lado) al texto le quedan unos 90 dp en una
+pantalla de 375 pt, y "Crear cuenta" no cabe. En inglés, "Create account", menos
+todavía.
+
+Es el mismo problema del paso 9 en Android, donde "Continuar" se arregló con
+`maxLines = 1`. Aquí `maxLines = 1` a secas no basta: recortaría el texto. Así que
+va con `contentPadding = PaddingValues(horizontal = 8.dp)` **y** `maxLines = 1` en
+los dos botones, que deja unos 130 dp de ancho útil — sitio de sobra para las tres
+traducciones.
+
+### 23.3 El arranque de iOS empezaba en negro
+
+`iosApp/iosApp/Info.plist` tenía `UILaunchScreen` como diccionario vacío. Sin
+`UIColorName`, iOS pinta el *launch screen* con `systemBackground`, que **sigue la
+apariencia del sistema**: blanco en modo claro y **negro en modo oscuro**. Con el
+móvil en oscuro se veía un negro y, justo después, el splash de Compose con logo y
+spinner sobre blanco. El salto de negro a blanco cantaba.
+
+En Android esto ya estaba resuelto por el otro lado: tema propio con
+`windowBackground` blanco antes de que arranque nada.
+
+Arreglo: un colorset `LaunchBackground` en `Assets.xcassets`, blanco fijo y sin
+variante oscura, y `UILaunchScreen` apuntando a él con `UIColorName`. El arranque
+queda blanco en las dos apariencias y enlaza con el splash sin salto.
+
+> Se descartó `UIUserInterfaceStyle = Light` en `Info.plist`, que también lo
+> arreglaría. Fuerza la apariencia clara en **toda** la app, incluido el teclado,
+> las alertas del sistema y la hoja de compartir. Es una decisión de producto más
+> grande que un color de arranque, y la interfaz ya es clara por sus propios
+> colores. Si algún día molesta ver componentes del sistema en oscuro, esa es la
+> palanca.
+
+Queda **pendiente de decidir**: el *launch screen* sigue sin logo. El logo lo pone
+el splash de Compose, ya en marcha la app. Si se quiere que aparezca desde el
+primer fotograma, hay que añadir un imageset y `UIImageName` al mismo diccionario.
+
+
+---
+
+## 24. Graphify en el Mac: instalado, y lo que hay que saber
+
+Instalado el 19 ago 2026 en el Mac. Tres cosas cambiaron respecto a lo que hay en
+Windows, y conviene tenerlas presentes antes de tocar nada allí.
+
+**El paquete y el directorio se renombraron.** El paquete de npm es ahora
+`@sentropic/graphify` (el antiguo `graphifyy` solo redirige), y el estado ya no va
+en `graphify-out/` sino en **`.graphify/`**. La propia herramienta llama "legacy" al
+directorio viejo y trae `graphify migrate-state` para convertirlo. En Windows hay
+que actualizar el paquete y migrar, o el `CLAUDE.md` nuevo buscará una ruta que
+allí no existe. Ambos directorios están en `.gitignore`: la herramienta considera
+`.graphify` estado de ejecución y recomienda no commitearlo.
+
+**Tree-sitter no sabe leer este proyecto.** La versión 0.17.1 trae gramáticas para
+C, C++, Go, Java, JS, PHP, Python, Ruby, Rust y TypeScript. **Kotlin y Swift no
+están.** De los 136 ficheros de código del repo, la extracción AST resuelve dos —
+el plugin JS de OpenCode — y falla en los otros 134. Un `graphify update .` a secas
+produce un grafo de 242 nodos de los que 240 son commits de git: inservible.
+
+Por eso el grafo bueno se construye por el **pase semántico**, metiendo el Kotlin y
+el Swift en los lotes que normalmente solo llevan documentos. Son subagentes
+leyendo el código, no un parser. Resultado: **439 nodos, 840 aristas, 20
+comunidades**, con `graph.json` en 724 KB. Las 24 imágenes del corpus se dejaron
+fuera a propósito: son el mismo icono de launcher a distintas resoluciones.
+
+**Consecuencia de que lo escriba un modelo y no un parser: hay que verificar.** Al
+revisar el grafo apareció una arista falsa, `addSharedList -> deleteOwnerList`
+marcada como `EXTRACTED` y con origen en este mismo plan. El subagente había leído
+la descripción del bug **ya arreglado** y la codificó como comportamiento actual.
+Se eliminó y se comprobó que no había más aristas de código afirmadas desde
+documentación. Si alguna vez el grafo dice algo raro sobre el código, esa es la
+sospecha primera.
+
+> **Orden que importa, aprendido rompiéndolo:** las descripciones se ingieren
+> **después** de la última reconstrucción del grafo. `graphify describe` borra los
+> ficheros de respuesta al ingerirlos, y reconstruir `graph.json` después las
+> descarta: se pierden las dos copias a la vez. Reconstruir primero, describir
+> después.
+
+### 24.1 Cómo se actualiza el grafo tras tocar código
+
+`scripts/graphify-refresh.sh`, en dos pasos:
+
+```
+./scripts/graphify-refresh.sh plan     # qué ficheros han cambiado
+./scripts/graphify-refresh.sh build    # fusiona, reconstruye y restaura descripciones
+```
+
+Entre uno y otro, el asistente extrae los ficheros que liste `plan` y deja un
+fragmento en `.graphify/chunks/out-00.json`.
+
+**Cuándo se lanza: al terminar una feature, o cuando el usuario lo pida.** No tras
+cada cambio de código. La extracción incremental es barata, pero cada
+reconstrucción renumera las comunidades y obliga a repasar sus nombres a mano —
+en la sesión del 19 ago 2026 se pagó ese peaje cuatro veces seguidas. Entre
+actualizaciones el grafo va por detrás del código, y eso es aceptable siempre que
+se diga cuando la respuesta depende de algo recién tocado.
+
+La caché semántica va por **hash de contenido**, así que la actualización es
+incremental de verdad: en la prueba, 145 de 148 ficheros salieron de caché y solo
+se re-extrajeron los 3 editados. Un cambio de un par de ficheros es un subagente,
+no siete.
+
+El script resuelve además las dos trampas que costaron caras el 19 ago 2026:
+
+- **Guarda las descripciones antes de reconstruir** en
+  `.graphify/descriptions-cache.json` y las repone en los lotes de respuesta
+  después. Sin eso cada reconstrucción obliga a reescribir 439 descripciones,
+  porque `graphify describe` borra los ficheros de respuesta al ingerirlos.
+- **Detecta que `graph.json` no se ha actualizado.** Si el grafo nuevo tiene menos
+  nodos que el guardado, graphify se niega a sobrescribir — red de seguridad útil,
+  pero sin comprobarlo el script cantaría victoria mientras el fichero sigue igual.
+  Ahora sale por código 2 con el aviso.
+
+Lo que no se automatiza: las descripciones de nodos nuevos (quedan listados en
+`.graphify/descripciones-pendientes.txt`) y los nombres de comunidad, que hay que
+revisar porque **Louvain las renumera en cada reconstrucción**.
+
+### 24.2 Trampa de `file_type`: `concept` y `rationale` se descartan en silencio
+
+El esquema que documenta la skill de graphify admite
+`code|document|paper|image|concept|rationale`. Es mentira a medias:
+`validateSemanticFragment` acepta los seis, pero **`sanitizeSemanticFragment`
+descarta `concept` y `rationale` sin decir nada**. Comprobado uno a uno el 19 ago
+2026.
+
+Eso explica los 59 nodos que se evaporaron en la primera fusión (496 → 437): eran
+los conceptos que los subagentes habían creado siguiendo el esquema documentado.
+
+**Un concepto sacado de un documento va como `document`.** Con ese cambio, los 13
+nodos de decisiones del plan — sesión anónima, cuenta solo al compartir, el bug
+destructivo, el pendiente de `nombresListas`, el orden de despliegue, los arreglos
+de iOS — entraron sin problema y quedaron enlazados al código que explican.
+
+El grafo pasó de 439 a **447 nodos, 858 aristas y 19 comunidades**, con las 447
+descripciones puestas.
+
+> **Segunda trampa, ya resuelta en el script:** la caché no puede reproducir los
+> nodos del AST ni los que no tienen fichero de origen válido — colores del tema
+> cuyo `source_file` era un directorio, composables sin ruta. Desaparecían en cada
+> reconstrucción. El script los conserva en `.graphify/nodes-extra.json` y los
+> vuelve a inyectar; fueron 11.
+
+### 24.3 Por qué dejamos de mantener descripciones y etiquetas
+
+Decidido el 19 ago 2026, con los números delante.
+
+**Lo que costó construir el grafo:** los siete subagentes de extracción reportaron
+**515.717 tokens**. Sumando los agentes de descripciones que murieron a medias y
+las 449 descripciones escritas —y reescritas tras perderlas—, el día se fue en
+algo entre 700.000 y 900.000 tokens.
+
+**Lo que ahorra consultarlo:** `graphify explain` devuelve 44 palabras; una `query`
+con presupuesto 700, unas 175. Pero la comparación justa no es contra leer el
+fichero entero, sino contra lo que se hace de verdad:
+
+```
+sed -n '/suspend fun addSharedList/,/^    }$/p' UsersDataSource.kt
+```
+
+Eso son 20 líneas, unos 250 tokens. **Lo mismo que la consulta al grafo.**
+
+**El dato que zanjó la discusión:** el proyecto son 9.358 líneas de Kotlin y Swift,
+y en toda la sesión del 19 ago el grafo no aportó ni un hallazgo. El banner negro,
+el botón partido, el arranque en negro y el pendiente de `nombresListas` salieron
+de `grep` y `sed`. Para amortizar 516.000 tokens a ~3.000 ahorrados por consulta
+harían falta unas 170 consultas útiles, y en un código de este tamaño no se dan.
+
+**Decisión: se conserva el grafo, se deja de mantener la capa cara.** Descripciones
+y etiquetas eran el 80% del coste recurrente y solo alimentan el studio visual, que
+no se usa. `query`, `path` y `explain` funcionan igual sin ellas. Las 449
+descripciones ya escritas se reponen gratis en cada reconstrucción desde
+`.graphify/descriptions-cache.json` — es copia de ficheros, no cuesta tokens — y
+los nodos nuevos se quedan sin ella a propósito.
+
+Los nombres de comunidad se pierden en cada reconstrucción porque Louvain las
+renumera; reutilizarlos a ciegas pegaría el nombre a un grupo distinto. Salen como
+`Community N` salvo que alguien los escriba a mano con
+`./scripts/graphify-refresh.sh etiquetas`.
+
+### 24.4 Corrección: el criterio anterior estaba mal planteado
+
+La primera versión de 24.3 decía que si en unas semanas no se lanzaba ninguna
+consulta, tocaba quitar el grafo. **Ese criterio es circular**: en la sesión del 19
+ago no se consultó el grafo porque se tiró de `grep` por costumbre, no porque el
+grafo fallara. Medir una herramienta sin usarla y concluir que no sirve no vale.
+
+Así que se midió de verdad, con las preguntas reales de esa sesión:
+
+| Consulta | Resultado |
+|---|---|
+| `query "por que el banner se ve negro en iOS"` | **Falla.** Devuelve `HomeContent`, `MisListasContent`, `PrimaryBlue`. No aparecen `bannerContainers` ni `createAdMobBannerView`, que son la respuesta. |
+| `query "donde se guarda el nombre de las listas"` | **Falla.** Devuelve ViewModels genéricos, no `getListas()` ni `addNewLista()`. |
+| `query "nombresListas"` (término exacto) | **Acierta.** El nodo correcto sale el tercero. |
+| `path "addSharedList()" "getListas()"` | **Acierta**, en una línea: `--shares_data_with-->`. |
+| `explain "<nodo conocido>"` | **Acierta**, 44 palabras con todas sus conexiones. |
+
+**Conclusión: `query` ordena por conectividad, no por significado.** Es una
+herramienta de recorrido de grafo, no un buscador semántico. Para llegar a un nodo
+hace falta saber ya cómo se llama — la misma habilidad que elegir un buen patrón de
+`grep`, y con un coste parecido.
+
+**El reparto correcto, y lo que está escrito en `CLAUDE.md`:**
+
+- *"¿Qué toca X? ¿Qué se rompe si lo cambio? ¿Cómo conecta con Y?"* → grafo, sin
+  discusión. `explain` y `path` contestan lo que `grep` no puede.
+- *"¿Por qué pasa esto?"*, o cuando aún no sabes el nombre de lo que buscas →
+  `grep` de entrada, grafo para expandir.
+
+El criterio para decidir si el grafo se queda no es cuántas veces se consulta, sino
+**cuántas veces contesta sin tener que caer en leer ficheros**. Eso solo se sabe
+usándolo primero, que es lo que ahora manda `CLAUDE.md`.
+
+### 24.5 Erosión de aristas al refrescar, y cómo se frenó
+
+Detectado el 19 ago 2026 al refrescar el grafo tras tocar once ficheros de código:
+los nodos subieron a 453 pero las aristas **cayeron de 851 a 755**.
+
+**Causa:** cuando el fragmento de re-extracción se reconstruye a partir del propio
+`graph.json` — el atajo que se usa cuando la estructura no ha cambiado, solo el
+contenido —, es fácil incluir únicamente las aristas cuyos **dos extremos** están en
+los ficheros re-extraídos. Las que cruzaban hacia ficheros sin tocar se quedaban
+fuera y desaparecían. Cada refresco erosionaba un poco más el grafo.
+
+Las cadenas importantes aguantaron — `path "ListaCompraViewModel"
+"UsersDataSource.addSharedList()"` sigue resolviendo en 3 saltos — pero aparecieron
+tres nodos huérfanos nuevos, todos duplicados de baja importancia.
+
+**Arreglo:** el paso de rescate del script conserva ahora también las aristas del
+grafo anterior entre nodos que siguen existiendo, no solo las de los nodos
+rescatados.
+
+> **Contrapartida, a sabiendas:** una arista que desaparezca de verdad del código no
+> se borra sola; sobrevive mientras sus dos extremos existan. Para limpiar de raíz
+> hace falta una extracción completa. Es el intercambio correcto: erosionar el grafo
+> en cada refresco es peor que arrastrar alguna arista de más.
+
+### 24.6 Las reglas endurecidas funcionan: mi análisis fue demasiado pesimista
+
+Publicadas y validadas en iOS el 19 ago 2026, con la versión estricta.
+
+Yo había avisado de un riesgo alto: `getNotifications()` no lee un documento, hace
+una **query** con listener (`where email == userEmail`), y en Firestore las reglas
+no filtran — el motor tiene que demostrar que la restricción de la query garantiza
+la regla. Como la regla aplica `resource.data.email.lower().trim()`, di por probable
+que no supiera casarlo con una igualdad exacta y denegara la query entera. Con el
+agravante de que `notificationsFlow()` tiene un `.catch { emit(emptyList()) }`, así
+que el fallo habría sido **silencioso**: invitaciones que dejan de aparecer, sin
+error, para todo el mundo.
+
+**No ocurrió.** Las cuatro comprobaciones pasaron: la invitación llega sola, se
+acepta y desaparece, y un usuario anónimo no ve ninguna. El motor de reglas sí
+resuelve la comparación con transformaciones sobre este tipo de query.
+
+Queda escrito para que nadie "arregle" un problema que no existe: **la regla
+estricta con `.lower().trim()` es la que está en producción y funciona.** La versión
+simplificada, con comparación exacta, sigue siendo una alternativa válida si algún
+día las transformaciones dan guerra, pero no hace falta.
+
+> Y una lección de método: el fallo previsto era plausible y bien razonado, pero la
+> prueba costaba dos minutos y la especulación habría costado un cambio de reglas
+> innecesario. Con producción delante, medir antes que deducir.

@@ -229,7 +229,7 @@ class ListaCompraViewModel(
             is ListaCompraEvent.ShareList -> shareList(event.email)
             is ListaCompraEvent.OnShareTextFieldChange -> setState { updateShareTextField(event.text) }
             is ListaCompraEvent.ShowNotificationsBottomSheet -> setState { showNotificationBottomSheet(event.show) }
-            is ListaCompraEvent.OnAcceptSharedList -> acceptSharedList(event.listaId)
+            is ListaCompraEvent.OnAcceptSharedList -> acceptSharedList(event.listaId, event.listaNombre)
             is ListaCompraEvent.OnCancelSharedList -> cancelSharedList(event.listaId)
             is ListaCompraEvent.OnDeleteAccountClick -> setState { showDeleteAccountDialog(true) }
             is ListaCompraEvent.DismissDeleteAccountDialog -> setState { showDeleteAccountDialog(false) }
@@ -373,9 +373,9 @@ class ListaCompraViewModel(
         }
     }
 
-    private fun acceptSharedList(listaId: String) {
+    private fun acceptSharedList(listaId: String, listaNombre: String) {
         viewModelScope.launch {
-            addSharedListUseCase(listaId).fold(
+            addSharedListUseCase(listaId, listaNombre).fold(
                 onSuccess = {
                     deleteNotificationUseCase(listaId)
                     setState { showNotificationBottomSheet(false) }

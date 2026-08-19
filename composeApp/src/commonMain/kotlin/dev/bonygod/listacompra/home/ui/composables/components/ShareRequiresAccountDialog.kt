@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -96,19 +97,25 @@ fun ShareRequiresAccountDialog(
                     Button(
                         onClick = { setEvent(ListaCompraEvent.OnShareAccountRequiredCancel) },
                         modifier = Modifier.weight(1f).height(48.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
                     ) {
                         Text(
                             text = stringResource(Res.string.share_requires_account_dialog_cancel_button),
-                            color = Color.White
+                            color = Color.White,
+                            maxLines = 1
                         )
                     }
                     Button(
                         onClick = { setEvent(ListaCompraEvent.OnShareAccountRequiredConfirm) },
                         modifier = Modifier.weight(1f).height(48.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
                     ) {
-                        Text(text = stringResource(Res.string.share_requires_account_dialog_confirm_button))
+                        Text(
+                            text = stringResource(Res.string.share_requires_account_dialog_confirm_button),
+                            maxLines = 1
+                        )
                     }
                 }
             }

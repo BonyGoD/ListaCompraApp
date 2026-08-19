@@ -94,4 +94,20 @@
     <string name="home_alert_error_delete_account_title">Error al borrar la cuenta</string>
     <string name="home_alert_share_rate_limit_message">Debes esperar 5 minutos para volver a intentarlo.</string>
 
+
+    <!-- Notificaciones y Mis Listas -->
+    <string name="notifications_sheet_title">Notificaciones</string>
+    <string name="notifications_sheet_shared_suffix"> te ha compartido su lista</string>
+    <string name="notifications_sheet_accept_button">Aceptar</string>
+    <string name="notifications_sheet_cancel_button">Cancelar</string>
+    <string name="mislistas_screen_title">Mis listas</string>
+    <string name="mislistas_back_description">Volver</string>
+    <string name="mislistas_empty_message">No tienes listas disponibles</string>
+    <string name="mislistas_default_badge">Predeterminada</string>
+    <string name="mislistas_name_field_label">Nombre</string>
+    <string name="mislistas_dialog_cancel_button">Cancelar</string>
+    <string name="mislistas_new_dialog_title">Nueva lista</string>
+    <string name="mislistas_new_dialog_confirm_button">Crear</string>
+    <string name="mislistas_rename_dialog_title">Renombrar lista</string>
+    <string name="mislistas_rename_dialog_confirm_button">Renombrar</string>
 </resources>

@@ -94,4 +94,20 @@
     <string name="home_alert_error_delete_account_title">Error deleting account</string>
     <string name="home_alert_share_rate_limit_message">You must wait 5 minutes before trying again.</string>
 
+
+    <!-- Notificaciones y Mis Listas -->
+    <string name="notifications_sheet_title">Notifications</string>
+    <string name="notifications_sheet_shared_suffix"> shared their list with you</string>
+    <string name="notifications_sheet_accept_button">Accept</string>
+    <string name="notifications_sheet_cancel_button">Cancel</string>
+    <string name="mislistas_screen_title">My lists</string>
+    <string name="mislistas_back_description">Back</string>
+    <string name="mislistas_empty_message">You have no lists available</string>
+    <string name="mislistas_default_badge">Default</string>
+    <string name="mislistas_name_field_label">Name</string>
+    <string name="mislistas_dialog_cancel_button">Cancel</string>
+    <string name="mislistas_new_dialog_title">New list</string>
+    <string name="mislistas_new_dialog_confirm_button">Create</string>
+    <string name="mislistas_rename_dialog_title">Rename list</string>
+    <string name="mislistas_rename_dialog_confirm_button">Rename</string>
 </resources>

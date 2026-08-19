@@ -33,7 +33,10 @@ sealed class ListaCompraEvent {
     data object DismissCustomDialog : ListaCompraEvent()
     data object DismissDeleteAccountDialog : ListaCompraEvent()
     data class OnShareTextFieldChange(val text: TextFieldValue) : ListaCompraEvent()
-    data class OnAcceptSharedList(val listaId: String) : ListaCompraEvent()
+    data class OnAcceptSharedList(
+        val listaId: String,
+        val listaNombre: String
+    ) : ListaCompraEvent()
     data class OnCancelSharedList(val listaId: String) : ListaCompraEvent()
     data object OnDeleteAccountClick: ListaCompraEvent()
     data object OnDeleteAccountConfirm: ListaCompraEvent()
@@ -41,4 +44,16 @@ sealed class ListaCompraEvent {
     data object OnMisListasClick : ListaCompraEvent()
     data object OnForceCrashClick : ListaCompraEvent()
     data object OnForceNonFatalClick : ListaCompraEvent()
+    data object OnLoginFromMenuClick : ListaCompraEvent()
+    data object OnConfirmLoginDataLoss : ListaCompraEvent()
+    data object OnCancelLoginDataLoss : ListaCompraEvent()
+    data object OnLoginFromEmptyListClick : ListaCompraEvent()
+    data object OnShareAccountRequiredConfirm : ListaCompraEvent()
+    data object OnShareAccountRequiredCancel : ListaCompraEvent()
+    data class OnLinkEmailChange(val text: TextFieldValue) : ListaCompraEvent()
+    data class OnLinkPasswordChange(val text: TextFieldValue) : ListaCompraEvent()
+    data object OnLinkAccountConfirm : ListaCompraEvent()
+    data object OnDismissLinkAccountDialog : ListaCompraEvent()
+    data object OnConfirmLinkCredentialInUse : ListaCompraEvent()
+    data object OnCancelLinkCredentialInUse : ListaCompraEvent()
 }

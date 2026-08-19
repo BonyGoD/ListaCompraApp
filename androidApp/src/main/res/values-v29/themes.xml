@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        `android:forceDarkAllowed` existe a partir de API 29, y minSdk es 24, así que
+        vive en su propio values-v29 en lugar de en el tema base.
+
+        Sin esto, capas como MIUI aplican su modo oscuro forzado y ennegrecen el
+        windowBackground, que es exactamente el fogonazo que se quiere evitar. La app
+        pinta su propia interfaz clara con MaterialTheme, así que no necesita que el
+        sistema le invierta nada.
+    -->
+    <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/splash_background</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+</resources>

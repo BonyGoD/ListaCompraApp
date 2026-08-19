@@ -50,9 +50,20 @@ import dev.bonygod.listacompra.mislistas.ui.composables.interactions.MisListasEv
 import dev.bonygod.listacompra.mislistas.ui.composables.interactions.MisListasState
 import dev.bonygod.listacompra.mislistas.ui.model.ListaInfoUI
 import listacompra.composeapp.generated.resources.Res
+import listacompra.composeapp.generated.resources.mislistas_rename_dialog_title
+import listacompra.composeapp.generated.resources.mislistas_rename_dialog_confirm_button
+import listacompra.composeapp.generated.resources.mislistas_new_dialog_title
+import listacompra.composeapp.generated.resources.mislistas_new_dialog_confirm_button
+import listacompra.composeapp.generated.resources.mislistas_screen_title
+import listacompra.composeapp.generated.resources.mislistas_back_description
+import listacompra.composeapp.generated.resources.mislistas_empty_message
+import listacompra.composeapp.generated.resources.mislistas_name_field_label
+import listacompra.composeapp.generated.resources.mislistas_dialog_cancel_button
+import listacompra.composeapp.generated.resources.mislistas_default_badge
 import listacompra.composeapp.generated.resources.back_button
 import listacompra.composeapp.generated.resources.listas
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,9 +74,9 @@ fun MisListasContent(
     // Rename dialog
     if (state.renameDialogListaId != null) {
         NombreDialog(
-            title = "Renombrar lista",
+            title = stringResource(Res.string.mislistas_rename_dialog_title),
             initialNombre = state.renameDialogCurrentNombre,
-            confirmLabel = "Renombrar",
+            confirmLabel = stringResource(Res.string.mislistas_rename_dialog_confirm_button),
             onConfirm = { nombre -> onEvent(MisListasEvent.ConfirmRename(state.renameDialogListaId, nombre)) },
             onDismiss = { onEvent(MisListasEvent.DismissDialog) }
         )
@@ -74,9 +85,9 @@ fun MisListasContent(
     // Create dialog
     if (state.showCreateDialog) {
         NombreDialog(
-            title = "Nueva lista",
+            title = stringResource(Res.string.mislistas_new_dialog_title),
             initialNombre = "",
-            confirmLabel = "Crear",
+            confirmLabel = stringResource(Res.string.mislistas_new_dialog_confirm_button),
             onConfirm = { nombre -> onEvent(MisListasEvent.ConfirmCreate(nombre)) },
             onDismiss = { onEvent(MisListasEvent.DismissDialog) }
         )
@@ -89,7 +100,7 @@ fun MisListasContent(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = SecondaryBlue),
                 title = {
                     Text(
-                        text = "Mis listas",
+                        text = stringResource(Res.string.mislistas_screen_title),
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
@@ -98,7 +109,7 @@ fun MisListasContent(
                     IconButton(onClick = { onEvent(MisListasEvent.GoBack) }) {
                         Icon(
                             painter = painterResource(Res.drawable.back_button),
-                            contentDescription = "Volver",
+                            contentDescription = stringResource(Res.string.mislistas_back_description),
                             tint = PrimaryBlue
                         )
                     }
@@ -140,7 +151,7 @@ fun MisListasContent(
                     modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "No tienes listas disponibles", color = Color.Gray)
+                    Text(text = stringResource(Res.string.mislistas_empty_message), color = Color.Gray)
                 }
             }
 
@@ -181,7 +192,7 @@ private fun NombreDialog(
             OutlinedTextField(
                 value = nombre,
                 onValueChange = { nombre = it },
-                label = { Text("Nombre") },
+                label = { Text(stringResource(Res.string.mislistas_name_field_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -200,7 +211,7 @@ private fun NombreDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = Color.Gray)
+                Text(stringResource(Res.string.mislistas_dialog_cancel_button), color = Color.Gray)
             }
         }
     )
@@ -245,7 +256,7 @@ private fun ListaItem(
             )
             if (lista.isDefault) {
                 Text(
-                    text = "Predeterminada",
+                    text = stringResource(Res.string.mislistas_default_badge),
                     fontSize = 12.sp,
                     color = PrimaryBlue
                 )

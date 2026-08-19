@@ -13,6 +13,10 @@ object InterstitialAdPreloader {
         return AdConstants.getInterstitialAdUnitId()
     }
 
+    fun isInterstitialEnabled(): Boolean {
+        return AdConstants.INTERSTITIAL_ENABLED
+    }
+
     /**
      * Inicia la precarga del anuncio intersticial desde Kotlin
      * Esta función debe ser llamada desde Swift al iniciar la app

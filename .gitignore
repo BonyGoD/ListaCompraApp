@@ -110,4 +110,11 @@ opencode.json
 
 # Graphify (outputs y caché generados localmente)
 graphify-out/
+.graphify/
+
+# Claude Code: la skill de graphify la instala `graphify install claude --project`,
+# va atada a la versión local de la herramienta y son 84 KB regenerables
+.claude/skills/
+.claude/CLAUDE.md
+.claude/settings.local.json
 

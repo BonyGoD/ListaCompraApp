@@ -5,37 +5,55 @@ import dev.bonygod.listacompra.login.data.model.UserResponse
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
 import dev.bonygod.listacompra.login.domain.model.Notifications
 import dev.bonygod.listacompra.mislistas.domain.model.ListaInfo
+import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.seconds
 
 class UsersDataSource(
     private val auth: FirebaseAuth,
     private val firebase: FirebaseFirestore
 ) {
+    private suspend fun createUserDocument(
+        uid: String,
+        nombre: String,
+        email: String,
+        merge: Boolean = false
+    ): String {
+        val newLista = createNewListaCompra()
+        firebase.collection("usuarios")
+            .document(uid)
+            .set(
+                data = mapOf(
+                    "nombre" to nombre,
+                    "email" to email,
+                    "apiKey" to "",
+                    "listas" to listOf(newLista)
+                ),
+                merge = merge
+            )
+        return newLista
+    }
+
     /**
      * Registrar un nuevo usuario con email y contraseña e incluirlo en la tabla usuarios
      */
     suspend fun userRegister(email: String, password: String): UserResponse {
         val result = auth.createUserWithEmailAndPassword(email, password)
-        val newLista = createNewListaCompra()
-        firebase.collection("usuarios")
-            .document(result.user?.uid.orEmpty())
-            .set(
-                data = mapOf(
-                    "nombre" to result.user?.email?.substringBefore("@").orEmpty(),
-                    "email" to result.user?.email.orEmpty(),
-                    "apiKey" to "",
-                    "listas" to listOf(newLista)
-                )
-            )
+        val nombre = result.user?.email?.substringBefore("@").orEmpty()
+        val userEmail = result.user?.email.orEmpty()
+        createUserDocument(result.user?.uid.orEmpty(), nombre, userEmail)
         return UserResponse(
             uid = result.user?.uid.orEmpty(),
-            nombre = result.user?.email?.substringBefore("@").orEmpty(),
-            email = result.user?.email.orEmpty(),
+            nombre = nombre,
+            email = userEmail,
             apiKey = "",
             listas = listOf()
         )
@@ -55,23 +73,76 @@ class UsersDataSource(
                 listas = userDoc.get("listas") as List<String>
             )
         }
-        val newLista = createNewListaCompra()
-        firebase.collection("usuarios")
-            .document(uid)
-            .set(
-                data = mapOf(
-                    "nombre" to displayName,
-                    "email" to email,
-                    "apiKey" to "",
-                    "listas" to listOf(newLista)
-                )
-            )
+        val newLista = createUserDocument(uid, displayName, email)
         return UserResponse(
             uid = uid,
             nombre = displayName,
             email = email,
             apiKey = "",
             listas = listOf(newLista)
+        )
+    }
+
+    suspend fun hasActiveSession(): Boolean {
+        val restoredUser = withTimeoutOrNull(3.seconds) {
+            auth.authStateChanged.first()
+        }
+        return (restoredUser ?: auth.currentUser) != null
+    }
+
+    fun isAnonymous(): Boolean = auth.currentUser?.isAnonymous == true
+
+    suspend fun signInAnonymously(): UserResponse {
+        val result = auth.signInAnonymously()
+        val uid = result.user?.uid.orEmpty()
+        val newLista = createUserDocument(uid, "", "")
+        return UserResponse(
+            uid = uid,
+            nombre = "",
+            email = "",
+            apiKey = "",
+            listas = listOf(newLista)
+        )
+    }
+
+    suspend fun repairUserDocument(uid: String, nombre: String, email: String): UserResponse {
+        val newLista = createUserDocument(uid, nombre, email, merge = true)
+        return UserResponse(
+            uid = uid,
+            nombre = nombre,
+            email = email,
+            apiKey = "",
+            listas = listOf(newLista)
+        )
+    }
+
+    private suspend fun updateUserProfile(uid: String, nombre: String, email: String) {
+        firebase.collection("usuarios")
+            .document(uid)
+            .set(
+                data = mapOf(
+                    "nombre" to nombre,
+                    "email" to email
+                ),
+                merge = true
+            )
+    }
+
+    suspend fun linkWithEmail(email: String, password: String): UserResponse {
+        val currentUser = auth.currentUser
+            ?: throw IllegalStateException("No hay una sesión activa que vincular.")
+        val credential = EmailAuthProvider.credential(email, password)
+        val result = currentUser.linkWithCredential(credential)
+        val uid = result.user?.uid.orEmpty()
+        val nombre = email.substringBefore("@")
+        updateUserProfile(uid, nombre, email)
+        val userDoc = firebase.collection("usuarios").document(uid).get()
+        return UserResponse(
+            uid = uid,
+            nombre = nombre,
+            email = email,
+            apiKey = userDoc.get("apiKey") as? String ?: "",
+            listas = (userDoc.get("listas") as? List<String>) ?: emptyList()
         )
     }
 
@@ -151,6 +222,9 @@ class UsersDataSource(
      */
     fun getNotifications(): Flow<Notifications> {
         val userEmail = auth.currentUser?.email.orEmpty()
+        if (userEmail.isEmpty()) {
+            return flowOf(Notifications(emptyList()))
+        }
         return firebase
             .collection("notifications")
             .where { "email".equalTo(userEmail) }
@@ -168,13 +242,28 @@ class UsersDataSource(
      */
     suspend fun shareListaCompra(nombre: String, listaId: String, email: String) {
         try {
+            // El nombre de la lista se resuelve aquí, donde sí hay permiso: quien
+            // comparte lo tiene en su propio documento. El destinatario no puede
+            // leer la lista ajena, así que viaja con la invitación.
+            val userUID = auth.currentUser?.uid.orEmpty()
+            val userDoc = firebase.collection("usuarios").document(userUID).get()
+            @Suppress("UNCHECKED_CAST")
+            val nombresListas = (userDoc.get("nombresListas") as? Map<String, String>) ?: emptyMap()
+            val listaNombre = nombresListas[listaId] ?: try {
+                firebase.collection("lista-compra").document(listaId).get()
+                    .get("nombre") as? String
+            } catch (e: Exception) {
+                null
+            }
+
             // Crear la notificación en la colección notifications
             firebase.collection("notifications")
                 .add(
                     mapOf(
                         "nombre" to nombre,
-                        "email" to email,
-                        "listaId" to listaId
+                        "email" to email.trim().lowercase(),
+                        "listaId" to listaId,
+                        "listaNombre" to listaNombre.orEmpty()
                     )
                 )
         } catch (e: Exception) {
@@ -182,23 +271,37 @@ class UsersDataSource(
         }
     }
 
-    suspend fun addSharedList(listaId: String): UserResponse {
+    suspend fun addSharedList(listaId: String, listaNombre: String): UserResponse {
         val uid = auth.currentUser?.uid.orEmpty()
+        val userDoc = firebase.collection("usuarios").document(uid).get()
+        val currentListas = (userDoc.get("listas") as? List<String>) ?: emptyList()
+        val updatedListas = if (currentListas.contains(listaId)) {
+            currentListas
+        } else {
+            currentListas + listaId
+        }
+        @Suppress("UNCHECKED_CAST")
+        val currentNombres = (userDoc.get("nombresListas") as? Map<String, String>) ?: emptyMap()
+        val updatedNombres = if (listaNombre.isBlank()) {
+            currentNombres
+        } else {
+            currentNombres + (listaId to listaNombre)
+        }
         firebase.collection("usuarios")
             .document(uid)
             .set(
                 data = mapOf(
-                    "listas" to listOf(listaId)
+                    "listas" to updatedListas,
+                    "nombresListas" to updatedNombres
                 ),
                 merge = true
             )
-        deleteOwnerList()
         return UserResponse(
             uid = uid,
             nombre = auth.currentUser?.displayName.orEmpty(),
             email = auth.currentUser?.email.orEmpty(),
             apiKey = "",
-            listas = listOf(listaId)
+            listas = updatedListas
         )
     }
 
@@ -207,8 +310,7 @@ class UsersDataSource(
         firebase
             .collection("notifications")
             .where {
-                "email".equalTo(userEmail)
-                "listaId".equalTo(listaId)
+                "email".equalTo(userEmail) and "listaId".equalTo(listaId)
             }
             .get()
             .documents
@@ -288,12 +390,12 @@ class UsersDataSource(
         @Suppress("UNCHECKED_CAST")
         val nombresListas = (userDoc.get("nombresListas") as? Map<String, String>) ?: emptyMap()
 
-        return listaIds.mapIndexed { index, listaId ->
+        return listaIds.map { listaId ->
             val nombre = nombresListas[listaId] ?: try {
                 val listaDoc = firebase.collection("lista-compra").document(listaId).get()
-                listaDoc.get("nombre") as? String ?: "Lista ${index + 1}"
+                listaDoc.get("nombre") as? String ?: "Lista de la compra"
             } catch (e: Exception) {
-                "Lista ${index + 1}"
+                "Lista de la compra"
             }
             ListaInfo(id = listaId, nombre = nombre, isDefault = listaId == defaultListaId)
         }

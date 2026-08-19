@@ -4,6 +4,11 @@
     <string name="login_register_screen_email">EMAIL</string>
     <string name="login_register_screen_password">PASSWORD</string>
 
+    <!-- Splash -->
+    <string name="splash_screen_error_message">Something went wrong. Check your connection and try again.</string>
+    <string name="splash_screen_retry_button">Retry</string>
+    <string name="splash_screen_login_button">Log in</string>
+
     <!-- Login -->
     <string name="login_screen_title">Welcome to ListaCompra!</string>
     <string name="login_screen_subtitle">Let’s manage the food we’re missing</string>
@@ -37,15 +42,72 @@
     <string name="home_notification_dialog_subtitle">Enter the email address of the person you want to share your list with</string>
     <string name="home_notification_dialog_button">Share</string>
 
+    <!-- Home content -->
+    <string name="home_content_menu_description">Open menu</string>
+    <string name="home_content_delete_list_button">Clear list</string>
+    <string name="home_content_add_product_button">Add product</string>
+    <string name="home_content_delete_confirm_title">Are you sure you want to delete all the products?</string>
+    <string name="home_content_delete_confirm_message">This action cannot be undone.</string>
+
     <!-- Side menu -->
+    <string name="menu_lateral_my_lists">My lists</string>
     <string name="menu_lateral_share_list">Share list</string>
     <string name="menu_lateral_logout">Log out</string>
     <string name="menu_lateral_delete_account">Delete account</string>
+    <string name="menu_lateral_login_or_register">Log in / Create account</string>
+    <string name="menu_lateral_data_loss_message">If you log in with another account, the list you created here will not be kept.</string>
+    <string name="menu_lateral_version_label">Version</string>
     <string name="delete_account_title">Delete account permanently?</string>
     <string name="delete_account_subtitle">This action is irreversible. All your data and shopping lists will be deleted.</string>
     <string name="delete_account_button">Delete account</string>
 
+    <!-- Data loss warning dialog -->
+    <string name="data_loss_dialog_title">Log in with another account?</string>
+    <string name="data_loss_dialog_confirm_button">Continue</string>
+    <string name="data_loss_dialog_cancel_button">Cancel</string>
+
+    <!-- Home empty state -->
+    <string name="home_empty_list_login_prompt">Already had an account? Log in</string>
+
+    <!-- Link anonymous account (share entry point) -->
+    <string name="share_requires_account_dialog_title">Sharing needs an account</string>
+    <string name="share_requires_account_dialog_message">To share a list you need a real account. Your current list will move to your new account.</string>
+    <string name="share_requires_account_dialog_confirm_button">Create account</string>
+    <string name="share_requires_account_dialog_cancel_button">Cancel</string>
+    <string name="link_account_dialog_title">Create your account</string>
+    <string name="link_account_dialog_subtitle">Add an email and a password. Your current list will move to your new account.</string>
+    <string name="link_account_dialog_confirm_button">Continue</string>
+    <string name="link_account_dialog_cancel_button">Cancel</string>
+    <string name="link_account_credential_in_use_title">This email already has an account</string>
+    <string name="link_account_credential_in_use_message">If you sign in with it, you will lose the list you have created so far.</string>
+
+    <!-- Home alerts (ViewModel) -->
+    <string name="home_alert_error_get_user_title">Error loading user</string>
+    <string name="home_alert_error_accept_invitation_title">Error accepting invitation</string>
+    <string name="home_alert_error_share_title">Error sharing</string>
+    <string name="home_alert_error_update_title">Error updating</string>
+    <string name="home_alert_error_add_product_title">Error adding product</string>
+    <string name="home_alert_error_delete_product_title">Error deleting</string>
+    <string name="home_alert_error_delete_list_title">Error deleting list</string>
+    <string name="home_alert_error_link_account_title">Error linking account</string>
+    <string name="home_alert_error_login_title">Error signing in</string>
+    <string name="home_alert_error_delete_account_title">Error deleting account</string>
+    <string name="home_alert_share_rate_limit_message">You must wait 5 minutes before trying again.</string>
 
 
-
+    <!-- Notificaciones y Mis Listas -->
+    <string name="notifications_sheet_title">Notifications</string>
+    <string name="notifications_sheet_shared_suffix"> shared their list with you</string>
+    <string name="notifications_sheet_accept_button">Accept</string>
+    <string name="notifications_sheet_cancel_button">Cancel</string>
+    <string name="mislistas_screen_title">My lists</string>
+    <string name="mislistas_back_description">Back</string>
+    <string name="mislistas_empty_message">You have no lists available</string>
+    <string name="mislistas_default_badge">Default</string>
+    <string name="mislistas_name_field_label">Name</string>
+    <string name="mislistas_dialog_cancel_button">Cancel</string>
+    <string name="mislistas_new_dialog_title">New list</string>
+    <string name="mislistas_new_dialog_confirm_button">Create</string>
+    <string name="mislistas_rename_dialog_title">Rename list</string>
+    <string name="mislistas_rename_dialog_confirm_button">Rename</string>
 </resources>

@@ -6,7 +6,7 @@ import dev.bonygod.listacompra.login.domain.model.Usuario
 class AddSharedListUseCase(
     private val userRepo: UserRepository
 ) {
-    suspend operator fun invoke(listaId: String): Result<Usuario> {
-        return userRepo.addSharedList(listaId)
+    suspend operator fun invoke(listaId: String, listaNombre: String): Result<Usuario> {
+        return userRepo.addSharedList(listaId, listaNombre)
     }
 }

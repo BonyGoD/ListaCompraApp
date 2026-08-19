@@ -29,11 +29,51 @@ data class ListaCompraState(
     val shareTextField: TextFieldValue = TextFieldValue(""),
     val notifications: List<NotificationsUI> = emptyList(),
     val showNotifications: Boolean = false,
-    val showDeleteAccount: Boolean = false
+    val showDeleteAccount: Boolean = false,
+    val isAnonymous: Boolean = false,
+    val showDataLossWarning: Boolean = false,
+    val showShareRequiresAccount: Boolean = false,
+    val showLinkAccount: Boolean = false,
+    val linkEmail: TextFieldValue = TextFieldValue(""),
+    val linkPassword: TextFieldValue = TextFieldValue(""),
+    val showLinkCredentialInUse: Boolean = false
 ) {
     fun showDeleteAccountDialog(show: Boolean): ListaCompraState {
         return copy(showDeleteAccount = show)
     }
+
+    fun setAnonymous(isAnonymous: Boolean): ListaCompraState {
+        return copy(isAnonymous = isAnonymous)
+    }
+
+    fun showDataLossWarningDialog(show: Boolean): ListaCompraState {
+        return copy(showDataLossWarning = show)
+    }
+
+    fun showShareRequiresAccountDialog(show: Boolean): ListaCompraState {
+        return copy(showShareRequiresAccount = show)
+    }
+
+    fun showLinkAccountDialog(show: Boolean): ListaCompraState {
+        return copy(showLinkAccount = show)
+    }
+
+    fun updateLinkEmail(text: TextFieldValue): ListaCompraState {
+        return copy(linkEmail = text)
+    }
+
+    fun updateLinkPassword(text: TextFieldValue): ListaCompraState {
+        return copy(linkPassword = text)
+    }
+
+    fun clearLinkFields(): ListaCompraState {
+        return copy(linkEmail = TextFieldValue(""), linkPassword = TextFieldValue(""))
+    }
+
+    fun showLinkCredentialInUseDialog(show: Boolean): ListaCompraState {
+        return copy(showLinkCredentialInUse = show)
+    }
+
     fun showNotificationBottomSheet(show: Boolean): ListaCompraState {
         return copy(showNotifications = show)
     }

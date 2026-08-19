@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class NotificationsReponse(
     val nombre: String = "",
     val email: String = "",
-    val listaId: String = ""
+    val listaId: String = "",
+    val listaNombre: String = ""
 )

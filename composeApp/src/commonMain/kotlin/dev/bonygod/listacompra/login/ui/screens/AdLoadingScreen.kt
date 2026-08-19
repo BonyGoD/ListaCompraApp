@@ -3,8 +3,10 @@ package dev.bonygod.listacompra.login.ui.screens
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import dev.bonygod.listacompra.ads.AdConstants
 import dev.bonygod.listacompra.common.ui.FullScreenLoading
 import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.navigation.Routes
@@ -19,6 +21,13 @@ fun AdLoadingScreen(userId: String) {
         contentAlignment = Alignment.Center
     ) {
         FullScreenLoading()
+    }
+
+    if (!AdConstants.INTERSTITIAL_ENABLED) {
+        LaunchedEffect(userId) {
+            navigator.clearAndNavigateTo(Routes.Home(userId))
+        }
+        return
     }
 
     ShowPreloadedInterstitial(

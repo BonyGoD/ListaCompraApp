@@ -30,6 +30,7 @@ fun NotificationsReponse.toDomain(): NotificationItem {
     return NotificationItem(
         nombre = nombre,
         email = email,
-        listaId = listaId
+        listaId = listaId,
+        listaNombre = listaNombre
     )
 }

@@ -8,5 +8,7 @@ sealed class LoginFailure(message: String) : Exception(message) {
     class EmailInUse : LoginFailure("El correo electrónico ya está en uso")
     class BlankPassword : LoginFailure("Debes introducir una contraseña")
     class BlankUserName : LoginFailure("Debes introducir un nombre de usuario")
+
+    class CredentialAlreadyInUse : LoginFailure("Ese correo ya tiene una cuenta")
     class UnknownError : LoginFailure("Uknown login error")
 }

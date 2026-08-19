@@ -7,5 +7,6 @@ data class Notifications(
 data class NotificationItem(
     val nombre: String,
     val email: String,
-    val listaId: String
+    val listaId: String,
+    val listaNombre: String = ""
 )

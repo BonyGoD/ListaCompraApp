@@ -22,6 +22,8 @@ object AdConstants {
     // Modo de operación: true = usar IDs de prueba, false = usar IDs de producción
     private const val USE_TEST_ADS = false  // ⚠️ CAMBIAR A true SOLO PARA DESARROLLO
 
+    const val INTERSTITIAL_ENABLED = false
+
     // IDs activos (cambian según el modo)
     val BANNER_AD_UNIT_ID_ANDROID = if (USE_TEST_ADS) TEST_BANNER_AD_UNIT_ID_ANDROID else PROD_BANNER_AD_UNIT_ID_ANDROID
     val INTERSTITIAL_AD_UNIT_ID_ANDROID = if (USE_TEST_ADS) TEST_INTERSTITIAL_AD_UNIT_ID_ANDROID else PROD_INTERSTITIAL_AD_UNIT_ID_ANDROID

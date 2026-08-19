@@ -32,7 +32,12 @@ import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
 import dev.bonygod.listacompra.common.ui.theme.SecondaryBlue
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
+import listacompra.composeapp.generated.resources.notifications_sheet_cancel_button
+import listacompra.composeapp.generated.resources.notifications_sheet_accept_button
+import listacompra.composeapp.generated.resources.notifications_sheet_shared_suffix
+import listacompra.composeapp.generated.resources.notifications_sheet_title
 import org.jetbrains.compose.resources.Font
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +54,7 @@ fun ShowNotificationsBottomSheet(
         sheetState = sheetState
     ) {
         Text(
-            text = "Notificaciones",
+            text = stringResource(Res.string.notifications_sheet_title),
             fontSize = 25.sp,
             fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
             fontWeight = FontWeight.ExtraBold,
@@ -74,7 +79,7 @@ fun ShowNotificationsBottomSheet(
                                 fontWeight = FontWeight.ExtraBold
                             )
                             Text(
-                                text = " te ha compartido su lista",
+                                text = stringResource(Res.string.notifications_sheet_shared_suffix),
                                 fontSize = 18.sp,
                                 fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
                                 fontWeight = FontWeight.Normal
@@ -86,12 +91,19 @@ fun ShowNotificationsBottomSheet(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Button(
-                                onClick = { onEvent(ListaCompraEvent.OnAcceptSharedList(state.notifications[item].listaId)) },
+                                onClick = {
+                                    onEvent(
+                                        ListaCompraEvent.OnAcceptSharedList(
+                                            state.notifications[item].listaId,
+                                            state.notifications[item].listaNombre
+                                        )
+                                    )
+                                },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = PrimaryBlue
                                 )
                             ) {
-                                Text("Aceptar")
+                                Text(stringResource(Res.string.notifications_sheet_accept_button))
                             }
                             Button(
                                 onClick = { onEvent(ListaCompraEvent.OnCancelSharedList(state.notifications[item].listaId)) },
@@ -100,7 +112,7 @@ fun ShowNotificationsBottomSheet(
                                 ),
                                 modifier = Modifier.padding(start = 10.dp)
                             ) {
-                                Text("Cancelar")
+                                Text(stringResource(Res.string.notifications_sheet_cancel_button))
                             }
                         }
                     }

@@ -145,8 +145,9 @@ la invitación (`notifications.listaNombre`), resuelto por quien comparte.
 El bloque 10 se validó solo en iOS. El código es de `commonMain`, pero el resto de
 la rama se probó primero en Android, así que falta cerrar el círculo.
 
-- [ ] 49. Repetir **45, 46 y 48 en Android**, compartiendo de nuevo *(las
+- [X] 49. Repetir **45, 46 y 48 en Android**, compartiendo de nuevo *(las
       invitaciones anteriores al cambio no llevan `listaNombre`)*
+      → **HECHO** el 20 ago 2026, en el bloque 12.2.
 
 ## Bloque 11 — Reglas endurecidas de `notifications`
 
@@ -167,15 +168,101 @@ normaliza con `.lower().trim()` en la propia regla.
 
 ---
 
+## Bloque 12 — Android tras el cierre de iOS
+
+Probado el 20 ago 2026, con las **reglas estrictas ya en producción** y sobre el
+código de `8f1b185`. Cierra los dos huecos de la tanda anterior de Android: se
+había probado con las reglas permisivas y antes del último commit de `commonMain`.
+
+### 12.1 Aceptar y rechazar, ahora con las reglas estrictas
+
+Los pasos 21-22 se probaron con las permisivas. El crash de la sección 16 del plan
+solo aparecía con las estrictas, así que esto no es una repetición: es el camino
+que se rompió, nunca ejercitado en Android bajo las reglas de hoy.
+
+- [X] 54. Desde **B**, compartir una lista con el correo de **A**
+- [X] 55. En **A**, la invitación **aparece sola**, sin reiniciar
+- [X] 56. **Rechazar** → desaparece de la hoja y **no crashea**
+- [X] 57. Compartir otra vez y **aceptar** → **no crashea**, y la invitación desaparece
+- [X] 58. **A se queda con TRES listas**, las dos suyas con sus productos intactos
+- [X] 59. Con sesión **anónima** (instalación limpia): **no se ve ninguna notificación**
+
+### 12.2 El nombre de la lista compartida — cierra el ítem 49
+
+- [X] 60. Tras aceptar, `usuarios/{uid}.nombresListas` contiene **también la lista
+      compartida**, con su nombre real
+- [X] 61. En Mis Listas, la compartida se ve **con su nombre**, no "Lista de la compra"
+- [X] 62. **Renombrar una lista propia** sigue funcionando *(toca el mismo mapa)*
+
+### 12.3 Las 14 cadenas nuevas
+
+Antes estaban en duro; `8f1b185` las pasó a `stringResource`. Estaban validadas
+solo en iOS.
+
+- [X] 63. En **inglés**, hoja de Notificaciones: "Notifications", "… shared their
+      list with you", "Accept", "Cancel"
+- [X] 64. En **catalán**: "Notificacions", "… t'ha compartit la seva llista",
+      "Acceptar", "Cancel·lar"
+- [X] 65. En **inglés**, Mis Listas: "My lists" y el badge "Default"
+- [X] 66. En **inglés**, diálogo de lista nueva: "New list", "Name", "Create", "Cancel"
+- [X] 67. En **inglés**, diálogo de renombrar: "Rename list" / "Rename"
+- [X] 68. Repetido en **catalán**: "Les meves llistes", "Predeterminada", "Llista
+      nova", "Nom", "Crear", "Cancel·lar", "Reanomenar llista", "Reanomenar"
+
+> `mislistas_empty_message` no es alcanzable por interfaz: siempre hay una lista
+> predeterminada. Sin probar a propósito.
+
+### 12.4 Regresión del diálogo "Compartir necesita una cuenta"
+
+Es el paso 9, pero el botón cambió después: los **dos** botones llevan ahora
+`contentPadding = 8.dp` y `maxLines = 1`, ajustados para un iPhone X.
+
+- [X] 69. Con sesión anónima → menú lateral → Compartir lista → sale el diálogo
+- [X] 70. **"Cancelar" y "Continuar" en una línea cada uno, sin recortar**, en
+      **es**, **en** y **ca**
+
+### 12.5 Arranque, por ser APK nuevo
+
+- [X] 71. Desinstalar e instalar → entra **directo a una lista vacía**, sin login ni
+      anuncio, con el logo sobre fondo blanco
+- [X] 72. Añadir dos productos → cerrar del todo → reabrir → **siguen ahí**
+
+### 12.6 Humo sobre el build de release
+
+Todo lo anterior se probó en debug. El release lleva `isMinifyEnabled` e
+`isShrinkResources` activados, y los caminos nuevos —sesión anónima, splash,
+`linkWithCredential`, `listaNombre` en la invitación— no habían corrido nunca bajo
+R8. **No hizo falta ninguna regla nueva**: los modelos `@Serializable` ya caen bajo
+el `-keep` de `**.data.model.**`, Koin registra por constructor y no por reflexión,
+y Firebase Auth está protegido entero.
+
+- [X] 73. Instalación limpia del **release firmado** → entra directo a la lista
+      vacía, con sesión anónima
+- [X] 74. Compartir → vincular cuenta con correo → se abre el diálogo de compartir
+- [X] 75. Aceptar una invitación → la lista aparece **con su nombre**
+
+---
+
 ## Pendiente antes de publicar
 
 - [X] ~~Endurecer las reglas de `notifications`~~ — hecho y probado (bloque 11)
-- [ ] Bloque 10 bis: `nombresListas` en **Android**
+- [X] ~~Bloque 10 bis: `nombresListas` en **Android**~~ — hecho en el bloque 12.2
+      (20 ago 2026)
 - [X] ~~Probar en **inglés y catalán** la hoja de notificaciones y Mis Listas~~ —
-      las 14 cadenas nuevas, correctas en los dos idiomas (iOS, 19 ago 2026)
-- [ ] **Subir la versión** de iOS: `MARKETING_VERSION` 1.2.0 y
-      `CURRENT_PROJECT_VERSION` 14 siguen sin tocar
+      las 14 cadenas nuevas, correctas en los dos idiomas (iOS 19 ago, Android 20 ago 2026)
+- [X] ~~**Subir la versión** de iOS~~ — `MARKETING_VERSION` 1.3.0 y
+      `CURRENT_PROJECT_VERSION` 15
+- [X] ~~**Subir la versión** de Android~~ — `versionCode` 23 y `versionName` 1.3.0
+- [X] ~~**Humo sobre el release firmado**~~ — ver 12.6
 - [ ] Publicar
+
+> **Urgencia, no es una preferencia.** Las reglas estrictas se publicaron el 19 ago
+> y están vivas; en Play sigue **1.2.0**, cuyo `deleteNotification()` lleva el
+> `where { }` que descarta el filtro de correo y cuyo repositorio hacía `throw` en
+> vez de devolver `Result`. Cualquier usuario en 1.2.0 que acepte o rechace una
+> invitación **crashea ahora mismo**. Es la sección 16 del plan repetida. Si la
+> publicación se va a demorar días, devolver mientras el bloque de `notifications`
+> a `allow read, write, delete: if request.auth != null;`.
 
 ## Si algo falla
 

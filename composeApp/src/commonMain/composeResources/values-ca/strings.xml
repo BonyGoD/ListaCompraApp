@@ -52,6 +52,8 @@
     <!-- Menú lateral -->
     <string name="menu_lateral_my_lists">Les meves llistes</string>
     <string name="menu_lateral_share_list">Compartir llista</string>
+    <string name="menu_lateral_alexa_linked">Alexa · Vinculada</string>
+    <string name="menu_lateral_alexa_not_linked">Alexa · Sense vincular</string>
     <string name="menu_lateral_logout">Tancar sessió</string>
     <string name="menu_lateral_delete_account">Eliminar compte</string>
     <string name="menu_lateral_login_or_register">Inicia sessió / Crea un compte</string>
@@ -123,4 +125,7 @@
     <string name="mislistas_alexa_howto_oneshot">«Alexa, pídele a compras pendientes que añada leche»</string>
     <string name="mislistas_alexa_howto_oneshot_hint">De cop, sense obrir-la abans.</string>
     <string name="mislistas_alexa_howto_warning">Compte: «añade leche a la lista de la compra» va a la llista pròpia de l'Alexa. Perquè arribi aquí, anomena compras pendientes.</string>
+
+    <!-- Pantalla Alexa (pròpia, accessible des del menú lateral) -->
+    <string name="alexa_screen_title">Alexa</string>
 </resources>

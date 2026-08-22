@@ -31,6 +31,7 @@ data class ListaCompraState(
     val showNotifications: Boolean = false,
     val showDeleteAccount: Boolean = false,
     val isAnonymous: Boolean = false,
+    val alexaVinculada: Boolean = false,
     val showDataLossWarning: Boolean = false,
     val showShareRequiresAccount: Boolean = false,
     val showLinkAccount: Boolean = false,
@@ -44,6 +45,10 @@ data class ListaCompraState(
 
     fun setAnonymous(isAnonymous: Boolean): ListaCompraState {
         return copy(isAnonymous = isAnonymous)
+    }
+
+    fun setAlexaVinculada(alexaVinculada: Boolean): ListaCompraState {
+        return copy(alexaVinculada = alexaVinculada)
     }
 
     fun showDataLossWarningDialog(show: Boolean): ListaCompraState {

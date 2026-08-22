@@ -142,7 +142,13 @@ class ListaCompraViewModel(
             getUserUseCase().fold(
                 onSuccess = { usuario ->
                     setState { setUser(usuario.toUI()) }
-                    setState { setAnonymous(isAnonymousUserUseCase()) }
+                    val anonymous = isAnonymousUserUseCase()
+                    setState { setAnonymous(anonymous) }
+                    // El menú lateral muestra el estado de vinculación de Alexa. No hace
+                    // falta pedirlo aparte: `usuario` ya lo trae, porque getActualUser lee
+                    // el mismo documento de `usuarios/{uid}` donde vive el campo. Los
+                    // anónimos no pueden vincular, así que se fuerza a false.
+                    setState { setAlexaVinculada(!anonymous && usuario.alexaVinculada) }
                     analyticsService.setUserId(usuario.uid)
 
                         // Obtiene el nombre de la lista activa
@@ -190,6 +196,7 @@ class ListaCompraViewModel(
         }
     }
 
+
     fun onEvent(event: ListaCompraEvent) {
         when (event) {
             is ListaCompraEvent.BorrarProducto -> borrarProducto(event.productId)
@@ -236,6 +243,7 @@ class ListaCompraViewModel(
             is ListaCompraEvent.OnDeleteAccountConfirm -> deleteAccount()
             is ListaCompraEvent.TogglePurchased -> togglePurchased(event.productId)
             is ListaCompraEvent.OnMisListasClick -> navigator.navigateTo(Routes.MisListas)
+            is ListaCompraEvent.OnAlexaClick -> navigator.navigateTo(Routes.Alexa)
             is ListaCompraEvent.OnForceCrashClick -> crashReporter.forceCrash()
             is ListaCompraEvent.OnForceNonFatalClick -> crashReporter.recordException(
                 Exception("Non-fatal de prueba desde el menú lateral"),

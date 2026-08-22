@@ -3,6 +3,7 @@ package dev.bonygod.listacompra.core.di
 import dev.bonygod.crashlytics.kmp.core.CrashReporter
 import dev.bonygod.crashlytics.kmp.core.CrashlyticsKMP
 import dev.bonygod.listacompra.BuildConfig
+import dev.bonygod.listacompra.alexa.ui.AlexaViewModel
 import dev.bonygod.listacompra.common.ui.state.SharedState
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.navigation.Navigator
@@ -67,6 +68,7 @@ val viewModelsModule = module {
     viewModelOf(::AuthViewModel)
     viewModelOf(::MisListasViewModel)
     viewModelOf(::SplashViewModel)
+    viewModelOf(::AlexaViewModel)
 }
 
 val dataModule = module {

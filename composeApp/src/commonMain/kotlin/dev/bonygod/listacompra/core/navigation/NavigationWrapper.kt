@@ -14,6 +14,7 @@ import dev.bonygod.listacompra.login.ui.screens.ForgotPasswordScreen
 import dev.bonygod.listacompra.login.ui.screens.LoginScreen
 import dev.bonygod.listacompra.login.ui.screens.RegisterScreen
 import dev.bonygod.listacompra.login.ui.screens.SplashScreen
+import dev.bonygod.listacompra.alexa.ui.screens.AlexaScreen
 import dev.bonygod.listacompra.mislistas.ui.screens.MisListasScreen
 import org.koin.compose.koinInject
 
@@ -50,6 +51,9 @@ fun NavigationWrapper(snackbarHostState: SnackbarHostState) {
             }
             entry<Routes.MisListas> {
                 MisListasScreen()
+            }
+            entry<Routes.Alexa> {
+                AlexaScreen()
             }
         },
         transitionSpec = {

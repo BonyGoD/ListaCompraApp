@@ -25,6 +25,8 @@ import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.basura_black
 import listacompra.composeapp.generated.resources.listas
 import listacompra.composeapp.generated.resources.logout
+import listacompra.composeapp.generated.resources.menu_lateral_alexa_linked
+import listacompra.composeapp.generated.resources.menu_lateral_alexa_not_linked
 import listacompra.composeapp.generated.resources.menu_lateral_delete_account
 import listacompra.composeapp.generated.resources.menu_lateral_login_or_register
 import listacompra.composeapp.generated.resources.menu_lateral_logout
@@ -34,6 +36,7 @@ import listacompra.composeapp.generated.resources.menu_lateral_version_label
 import listacompra.composeapp.generated.resources.notification_blank
 import listacompra.composeapp.generated.resources.notification_with_noti
 import listacompra.composeapp.generated.resources.share_list
+import listacompra.composeapp.generated.resources.microfono
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -116,6 +119,33 @@ fun MenuLateral(
                 fontWeight = FontWeight.Bold,
                 color = Color.Gray,
                 text = stringResource(Res.string.menu_lateral_share_list)
+            )
+        }
+        val alexaLabel = if (state.alexaVinculada) {
+            stringResource(Res.string.menu_lateral_alexa_linked)
+        } else {
+            stringResource(Res.string.menu_lateral_alexa_not_linked)
+        }
+        Row(
+            modifier = Modifier.padding(start = 10.dp, top = 30.dp)
+                .clickable {
+                    setEvent(ListaCompraEvent.OnAlexaClick)
+                    onCloseDrawer()
+                },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.microfono),
+                tint = Color.Gray,
+                contentDescription = alexaLabel,
+            )
+            Text(
+                modifier = Modifier.padding(start = 5.dp),
+                fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray,
+                text = alexaLabel
             )
         }
         val logoutOrLoginEvent = if (state.isAnonymous) {

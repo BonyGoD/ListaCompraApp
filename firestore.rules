@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ======================
+    // Usuarios
+    // ======================
+    match /usuarios/{userId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == userId;
+    }
+
+    // ======================
+    // Listas de compra
+    // ======================
+    match /lista-compra/{listaId} {
+      allow create: if request.auth != null
+        && request.resource.data.owner == request.auth.uid;
+
+      allow read, update, delete: if request.auth != null
+        && (usuarioTieneAccesoALista(listaId)
+            || resource.data.owner == request.auth.uid);
+
+      match /productos/{productoId} {
+        allow read, write: if request.auth != null
+          && (usuarioTieneAccesoALista(listaId)
+              || get(/databases/$(database)/documents/lista-compra/$(listaId)).data.owner == request.auth.uid);
+      }
+    }
+
+    // ======================
+    // Notificaciones
+    // ======================
+    // Crear una invitación lo puede hacer cualquiera autenticado (es el acto de
+    // compartir), pero leerla o borrarla solo el destinatario. Antes bastaba con
+    // estar autenticado para leer y borrar las de todo el mundo, y la invitación
+    // lleva el listaId dentro; con la sesión anónima ese agujero pasaba a ser
+    // trivial de explotar.
+    //
+    // La comparación normaliza a minúsculas y sin espacios: el correo del
+    // documento lo teclea a mano quien comparte, así que "Bony@Gmail.com" y
+    // "bony@gmail.com" tienen que seguir siendo la misma persona.
+    //
+    // El chequeo de que el token trae email es explícito: un usuario anónimo no
+    // tiene `email` en su token.
+    match /notifications/{notificationId} {
+      allow create: if request.auth != null;
+
+      allow read, delete: if request.auth != null
+        && request.auth.token.email != null
+        && resource.data.email is string
+        && resource.data.email.lower().trim() == request.auth.token.email.lower().trim();
+    }
+
+    // ======================
+    // Account linking de Alexa
+    // ======================
+    // Ningún cliente toca estas colecciones: guardan códigos de autorización de
+    // un solo uso y hashes de refresh tokens. `if false` NO bloquea a la API —
+    // el Admin SDK se salta las reglas de seguridad — solo cierra la puerta a la
+    // app, al navegador y a cualquiera con la apiKey web.
+    match /alexa_oauth_codes/{code} {
+      allow read, write: if false;
+    }
+
+    match /alexa_refresh_tokens/{tokenHash} {
+      allow read, write: if false;
+    }
+
+    // ======================
+    // Función auxiliar
+    // ======================
+    function usuarioTieneAccesoALista(listaId) {
+      let userData = get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+      return userData.keys().hasAll(['listas']) && listaId in userData.listas;
+    }
+  }
+}

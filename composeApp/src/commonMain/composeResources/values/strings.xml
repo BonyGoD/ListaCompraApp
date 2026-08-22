@@ -117,4 +117,10 @@
     <string name="mislistas_alexa_selector_title">List Alexa writes to</string>
     <string name="mislistas_alexa_default_hint">If you don\'t pick one, Alexa adds to your default list.</string>
     <string name="mislistas_alexa_active_badge">Active in Alexa</string>
+    <string name="mislistas_alexa_howto_title">What to say to Alexa</string>
+    <string name="mislistas_alexa_howto_open">"Alexa, open compras pendientes"</string>
+    <string name="mislistas_alexa_howto_open_hint">Then dictate products one by one.</string>
+    <string name="mislistas_alexa_howto_oneshot">"Alexa, pídele a compras pendientes que añada leche"</string>
+    <string name="mislistas_alexa_howto_oneshot_hint">All in one go, without opening it first.</string>
+    <string name="mislistas_alexa_howto_warning">Note: saying "add milk to the shopping list" goes to Alexa's own list. To reach this app, name compras pendientes.</string>
 </resources>

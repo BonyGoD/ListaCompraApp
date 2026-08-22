@@ -28,6 +28,12 @@ import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.mislistas_alexa_active_badge
 import listacompra.composeapp.generated.resources.mislistas_alexa_anonymous_message
 import listacompra.composeapp.generated.resources.mislistas_alexa_default_hint
+import listacompra.composeapp.generated.resources.mislistas_alexa_howto_title
+import listacompra.composeapp.generated.resources.mislistas_alexa_howto_open
+import listacompra.composeapp.generated.resources.mislistas_alexa_howto_open_hint
+import listacompra.composeapp.generated.resources.mislistas_alexa_howto_oneshot
+import listacompra.composeapp.generated.resources.mislistas_alexa_howto_oneshot_hint
+import listacompra.composeapp.generated.resources.mislistas_alexa_howto_warning
 import listacompra.composeapp.generated.resources.mislistas_alexa_link_account_button
 import listacompra.composeapp.generated.resources.mislistas_alexa_not_linked_message
 import listacompra.composeapp.generated.resources.mislistas_alexa_section_title
@@ -119,8 +125,60 @@ fun AlexaSection(
                         onSelect = { onEvent(MisListasEvent.SelectListaAlexa(lista.id)) }
                     )
                 }
+                Spacer(modifier = Modifier.height(20.dp))
+                AlexaHowTo()
             }
         }
+    }
+}
+
+/**
+ * Qué frases funcionan. No es adorno: el nombre de invocación hay que decirlo tal cual,
+ * y si se dice de otra forma Alexa resuelve por su lista nativa **sin dar error**, así que
+ * el producto acaba en un sitio que el usuario no ve y parece que la app ha fallado.
+ * Este es el sitio donde más gente lo va a leer: acaban de vincular la cuenta aquí.
+ */
+@Composable
+private fun AlexaHowTo() {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(Res.string.mislistas_alexa_howto_title),
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.Black
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+
+        AlexaFrase(
+            frase = stringResource(Res.string.mislistas_alexa_howto_open),
+            pista = stringResource(Res.string.mislistas_alexa_howto_open_hint)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        AlexaFrase(
+            frase = stringResource(Res.string.mislistas_alexa_howto_oneshot),
+            pista = stringResource(Res.string.mislistas_alexa_howto_oneshot_hint)
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = stringResource(Res.string.mislistas_alexa_howto_warning),
+            fontSize = 12.sp,
+            color = Color.Gray
+        )
+    }
+}
+
+@Composable
+private fun AlexaFrase(frase: String, pista: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Color(0xFFF2F5F8), shape = RoundedCornerShape(8.dp))
+            .padding(horizontal = 12.dp, vertical = 10.dp)
+    ) {
+        Text(text = frase, fontSize = 14.sp, color = Color.Black, fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(text = pista, fontSize = 12.sp, color = Color.Gray)
     }
 }
 

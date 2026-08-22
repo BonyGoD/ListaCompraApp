@@ -117,4 +117,10 @@
     <string name="mislistas_alexa_selector_title">Lista donde escribe Alexa</string>
     <string name="mislistas_alexa_default_hint">Si no eliges ninguna, Alexa añade a tu lista predeterminada.</string>
     <string name="mislistas_alexa_active_badge">Activa en Alexa</string>
+    <string name="mislistas_alexa_howto_title">Qué decirle a Alexa</string>
+    <string name="mislistas_alexa_howto_open">«Alexa, abre compras pendientes»</string>
+    <string name="mislistas_alexa_howto_open_hint">Y luego le dictas los productos uno a uno.</string>
+    <string name="mislistas_alexa_howto_oneshot">«Alexa, pídele a compras pendientes que añada leche»</string>
+    <string name="mislistas_alexa_howto_oneshot_hint">De una vez, sin abrirla antes.</string>
+    <string name="mislistas_alexa_howto_warning">Ojo: «añade leche a la lista de la compra» va a la lista propia de Alexa. Para que llegue aquí, nombra compras pendientes.</string>
 </resources>

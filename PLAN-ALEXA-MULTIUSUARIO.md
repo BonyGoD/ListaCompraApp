@@ -13,6 +13,27 @@ con un envelope bien formado y el `applicationId` correcto: sigue rechazando, lu
 lo hace la firma). El resto de rutas intactas: `/fotos` responde 200 y el formulario de
 `devware.es` envía correo. Siguiente: fase 2 (servidor OAuth2).
 
+**22 ago 2026 — el flujo completo funciona en producción.** Vinculación real desde la app de
+Alexa con correo, producto dictado y escrito en la lista del usuario (la predeterminada, vía
+el respaldo `listas[0]`, porque `listaAlexa` aún no existe hasta que se publique la fase 5).
+Fases 1, 2 y 3 validadas juntas. API en 1.2.0.
+
+**Fases 1 a 5 verificadas.** Vinculación real desde la app de Alexa con **correo y con
+Google** — `signInWithPopup` aguanta dentro del webview de Amazon, que era la duda abierta
+desde que se escribió la fase 2. **Multiusuario probado con dos móviles**: cada cuenta
+escribe en su lista y ninguna ve la de la otra (criterio nº7). Fase 5 compilada y
+funcionando.
+
+**Pendiente, todo en el console de Amazon:**
+1. **Renombrar la invocación.** La colisión está confirmada: *"añade leche a la lista de la
+   compra"* se lo queda la lista nativa de Alexa y no se recupera. Acordado: `lista del súper`.
+2. **Ampliar las sample utterances.** *"Pídele a X que **añada** leche"* tampoco funciona, y
+   la causa probable no es el nombre sino que el modelo solo cubre el indicativo: la
+   construcción one-shot necesita que la parte final case con una utterance, y `añada`,
+   `apunte`, `meta`, `agregue`, `ponga` no están.
+3. Volver a probar las frases 12 y 13 con el nombre nuevo y las utterances puestas.
+4. Certificar (6.6 a 6.8).
+
 **Fase 0 — hecho:** diagnóstico (0.3), URL de la API, app Web de Firebase (ya existía),
 Skill ID, redirect URIs, nombre de invocación, Authorized domains.
 
@@ -163,7 +184,7 @@ Requisitos de Amazon que condicionan el diseño:
 | Campo | Tipo | Quién lo escribe | Para qué |
 |---|---|---|---|
 | `listaAlexa` | `string` | La app | Id de la lista donde escribe Alexa. Si falta, se usa `listas[0]`. |
-| `alexaVinculada` | `boolean` | La API (Admin SDK) | Para que la app muestre el estado. |
+| `alexaVinculada` | `boolean` | La API (Admin SDK) | Para que la app muestre el estado. **Puede dar falsos positivos**, ver abajo. |
 | `alexaVinculadaEn` | `Timestamp` | La API (Admin SDK) | Informativo. |
 
 ### 3.2 Colecciones nuevas (solo Admin SDK, ningún cliente las toca)
@@ -178,6 +199,16 @@ codeChallenge  string      // PKCE, base64url del SHA-256
 expiraEn       Timestamp   // ahora + 10 min
 usado          boolean
 ```
+
+> **Por qué `alexaVinculada` daba falsos positivos (detectado el 22 ago 2026).** En el diseño
+> original lo escribía el endpoint de token al emitir las credenciales. Pero emitir un token
+> **no** significa que Amazon lo haya guardado: el flujo puede fallar después, en el
+> `accountLink/establish` del lado de Amazon, y la API nunca se entera. Pasó en la primera
+> prueba manual y dejó el campo en `true` sin vinculación real, con la app enseñando el
+> selector y la skill pidiendo vincular a la vez.
+> **Arreglo:** el campo lo escribe ahora el **endpoint de la skill**, la primera vez que
+> verifica con éxito un `accessToken`. Un token solo llega si Amazon lo guardó, así que esa
+> sí es prueba de que la vinculación existe de verdad.
 
 **`alexa_refresh_tokens/{sha256DelToken}`** — el id del documento es el **hash** del token,
 no el token. Si alguien se lleva un volcado de Firestore no se lleva credenciales válidas.

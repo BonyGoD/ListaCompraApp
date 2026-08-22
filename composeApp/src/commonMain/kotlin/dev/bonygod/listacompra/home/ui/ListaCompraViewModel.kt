@@ -261,6 +261,8 @@ class ListaCompraViewModel(
             is ListaCompraEvent.OnLinkEmailChange -> setState { updateLinkEmail(event.text) }
             is ListaCompraEvent.OnLinkPasswordChange -> setState { updateLinkPassword(event.text) }
             is ListaCompraEvent.OnLinkAccountConfirm -> linkAccountWithEmail()
+            is ListaCompraEvent.OnOpenLinkAccountDialog -> setState { showLinkAccountDialog(true) }
+
             is ListaCompraEvent.OnDismissLinkAccountDialog -> {
                 setState { showLinkAccountDialog(false) }
                 setState { clearLinkFields() }

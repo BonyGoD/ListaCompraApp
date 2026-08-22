@@ -13,7 +13,9 @@ fun UserResponse.toDomain(): Usuario {
         nombre = this.nombre,
         email = this.email,
         apiKey = this.apiKey,
-        listas = this.listas
+        listas = this.listas,
+        listaAlexa = this.listaAlexa,
+        alexaVinculada = this.alexaVinculada
     )
 }
 

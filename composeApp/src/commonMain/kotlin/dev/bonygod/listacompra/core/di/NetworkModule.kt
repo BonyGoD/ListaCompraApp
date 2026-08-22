@@ -35,9 +35,11 @@ import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
 import dev.bonygod.listacompra.login.ui.AuthViewModel
 import dev.bonygod.listacompra.login.ui.SplashViewModel
 import dev.bonygod.listacompra.mislistas.domain.usecase.AddNewListaUseCase
+import dev.bonygod.listacompra.mislistas.domain.usecase.GetAlexaConfigUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.GetListasUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.RenameListaUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.SetDefaultListaUseCase
+import dev.bonygod.listacompra.mislistas.domain.usecase.SetListaAlexaUseCase
 import dev.bonygod.listacompra.mislistas.ui.MisListasViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModelOf
@@ -89,6 +91,8 @@ val dataModule = module {
     single { SetDefaultListaUseCase(get()) }
     single { RenameListaUseCase(get()) }
     single { AddNewListaUseCase(get()) }
+    single { GetAlexaConfigUseCase(get()) }
+    single { SetListaAlexaUseCase(get()) }
     single { SignInAnonymouslyUseCase(get()) }
     single { ResolveSessionUseCase(get(), get(), get()) }
     single { IsAnonymousUserUseCase(get()) }

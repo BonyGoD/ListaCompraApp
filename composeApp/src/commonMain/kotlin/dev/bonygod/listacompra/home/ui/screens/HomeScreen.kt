@@ -29,7 +29,11 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreen(snackbarHostState: SnackbarHostState, userId: String) {
+fun HomeScreen(
+    snackbarHostState: SnackbarHostState,
+    userId: String,
+    openLinkAccount: Boolean = false
+) {
     val viewModel: ListaCompraViewModel = koinViewModel()
     val state = viewModel.state.collectAsState()
     val scope = rememberCoroutineScope()
@@ -37,6 +41,15 @@ fun HomeScreen(snackbarHostState: SnackbarHostState, userId: String) {
     // Llama a reloadUserData cada vez que cambia el userId
     LaunchedEffect(userId) {
         viewModel.loadUserData()
+    }
+
+    // Entrada desde la sección Alexa de MisListas: usuario anónimo que necesita vincular
+    // cuenta antes de poder usar Alexa. Reutiliza el mismo diálogo y flujo de linkWithEmail
+    // que ya existe para "compartir requiere cuenta", solo cambia cómo se abre.
+    LaunchedEffect(Unit) {
+        if (openLinkAccount) {
+            viewModel.onEvent(ListaCompraEvent.OnOpenLinkAccountDialog)
+        }
     }
 
     LaunchedEffect(Unit) {

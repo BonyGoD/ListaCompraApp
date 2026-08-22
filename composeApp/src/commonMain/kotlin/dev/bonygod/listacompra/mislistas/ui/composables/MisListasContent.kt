@@ -146,27 +146,32 @@ fun MisListasContent(
                 }
             }
 
-            state.listas.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = stringResource(Res.string.mislistas_empty_message), color = Color.Gray)
-                }
-            }
-
             else -> {
                 LazyColumn(
                     modifier = Modifier
                         .padding(paddingValues)
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    items(state.listas) { lista ->
-                        ListaItem(
-                            lista = lista,
-                            onSelect = { onEvent(MisListasEvent.SelectLista(lista.id)) },
-                            onRename = { onEvent(MisListasEvent.ShowRenameDialog(lista.id, lista.nombre)) }
-                        )
+                    item {
+                        AlexaSection(state = state, onEvent = onEvent)
+                    }
+                    if (state.listas.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = stringResource(Res.string.mislistas_empty_message), color = Color.Gray)
+                            }
+                        }
+                    } else {
+                        items(state.listas) { lista ->
+                            ListaItem(
+                                lista = lista,
+                                onSelect = { onEvent(MisListasEvent.SelectLista(lista.id)) },
+                                onRename = { onEvent(MisListasEvent.ShowRenameDialog(lista.id, lista.nombre)) }
+                            )
+                        }
                     }
                 }
             }

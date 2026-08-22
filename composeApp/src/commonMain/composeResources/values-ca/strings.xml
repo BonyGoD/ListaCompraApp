@@ -110,4 +110,11 @@
     <string name="mislistas_new_dialog_confirm_button">Crear</string>
     <string name="mislistas_rename_dialog_title">Reanomenar llista</string>
     <string name="mislistas_rename_dialog_confirm_button">Reanomenar</string>
+    <string name="mislistas_alexa_section_title">Alexa</string>
+    <string name="mislistas_alexa_anonymous_message">Per fer servir Alexa necessites un compte amb correu o Google. Les sessions anònimes no es poden vincular.</string>
+    <string name="mislistas_alexa_link_account_button">Vincula el compte</string>
+    <string name="mislistas_alexa_not_linked_message">La vinculació es fa des de l\'app d\'Alexa, no des d\'aquí. Obre l\'app d\'Alexa, ves a Més → Skills, cerca la skill i toca Vincula el compte.</string>
+    <string name="mislistas_alexa_selector_title">Llista on escriu Alexa</string>
+    <string name="mislistas_alexa_default_hint">Si no en tries cap, Alexa afegeix a la teva llista predeterminada.</string>
+    <string name="mislistas_alexa_active_badge">Activa a Alexa</string>
 </resources>

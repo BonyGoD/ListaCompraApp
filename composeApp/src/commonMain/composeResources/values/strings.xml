@@ -110,4 +110,11 @@
     <string name="mislistas_new_dialog_confirm_button">Create</string>
     <string name="mislistas_rename_dialog_title">Rename list</string>
     <string name="mislistas_rename_dialog_confirm_button">Rename</string>
+    <string name="mislistas_alexa_section_title">Alexa</string>
+    <string name="mislistas_alexa_anonymous_message">To use Alexa you need an account with email or Google. Anonymous sessions can\'t be linked.</string>
+    <string name="mislistas_alexa_link_account_button">Link account</string>
+    <string name="mislistas_alexa_not_linked_message">Linking happens from the Alexa app, not from here. Open the Alexa app, go to More → Skills, find the skill and tap Link account.</string>
+    <string name="mislistas_alexa_selector_title">List Alexa writes to</string>
+    <string name="mislistas_alexa_default_hint">If you don\'t pick one, Alexa adds to your default list.</string>
+    <string name="mislistas_alexa_active_badge">Active in Alexa</string>
 </resources>

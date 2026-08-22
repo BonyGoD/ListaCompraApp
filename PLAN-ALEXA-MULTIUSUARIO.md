@@ -364,7 +364,46 @@ Bloqueante para certificar. Se hizo primero porque es independiente de todo lo d
 
 ---
 
-### Fase 2 — Servidor OAuth2 (repo `api-devware`)
+### Fase 2 — Servidor OAuth2 (repo `api-devware`) — ✅ **HECHA**
+
+**Desplegada en producción y verificada de extremo a extremo el 22 ago 2026**, con un flujo
+completo lanzado a mano: página de authorize → login por correo → `POST /code` → canje del
+código contra `/token`.
+
+| Comprobación | Resultado |
+|---|---|
+| Canje del código (HTTP Basic + PKCE S256) | 200 con `access_token`, `refresh_token`, `expires_in: 3600` |
+| Payload del JWT | `{sub: <uid firebase>, typ: 'access'}`, vida de 3600 s exactos |
+| Replay del mismo código | `invalid_grant` / 400 — la transacción funciona |
+| Client secret incorrecto | `invalid_client` / 401 |
+| `grant_type=refresh_token` | 200, access token nuevo y refresh token **rotado** |
+
+Lo que se aprendió:
+
+- **El `readFileSync` de `authorize.html` no es un problema**: el `includeFiles` que se añadió
+  a `vercel.json` hace que Vercel empaquete la vista. La página se sirve correctamente.
+- **La corrección de CORS de `main` era imprescindible**, no aseo. El navegador manda
+  cabecera `Origin` incluso en POST del mismo origen, y `api-devware.vercel.app` no está en
+  `ACCEPTED_ORIGINS`. La versión de `main` responde `callback(null, false)` — sigue adelante
+  sin cabeceras CORS, que es lo correcto para una petición del mismo origen. La versión vieja
+  de `develop` hacía `callback(new Error(...))`, que habría dado un 500 en `POST /code` y roto
+  la vinculación entera con un error opaco.
+- **`markUserLinked` no puede tumbar la respuesta de token.** Se corrigió en revisión: iba
+  dentro de un `Promise.all` sin `catch`, y para cuando se ejecuta el código de autorización
+  ya está consumido. Un fallo de Firestore en un campo *cosmético* habría dejado la
+  vinculación rota sin reintento posible.
+- **Tiempos**: 1,85 s el primer canje (función tibia), 0,47 s el refresh. Dentro del límite de
+  4,5 s de Amazon, pero con menos margen del deseable en frío. Vigilar si aparecen fallos
+  intermitentes de vinculación.
+- Un flujo lanzado a mano **termina en un 400 de Amazon** en `accountLink/establish`, y es
+  lo esperado: Amazon no reconoce un `state` que no emitió él. Todo lo anterior sí es válido.
+
+**Pendiente de probar**: el login con Google (`signInWithPopup`) y la vinculación real desde
+la app de Alexa, que es donde el popup puede fallar por ser un navegador incrustado.
+
+---
+
+#### Diseño original
 
 Ficheros nuevos:
 
@@ -537,6 +576,13 @@ a nada. Se acepta y queda anotado.
 ---
 
 ### Fase 5 — App: elegir lista y ver estado (repo `ListaCompraApp`)
+
+> **Requisito heredado de la fase 3:** `AlexaModel.addProduct` escribe en
+> `lista-compra/{listaAlexa}/productos` **sin comprobar que esa lista siga existiendo** — en
+> Firestore una subcolección puede vivir bajo un documento borrado, así que apuntar a una
+> lista muerta haría que los productos dictados desaparecieran en silencio. Se decidió no
+> añadir una lectura extra en la ruta crítica (límite de 8 s de Alexa) y resolverlo aquí:
+> **cuando la app borre una lista, debe limpiar o repuntar `listaAlexa`** si apuntaba a ella.
 
 #### 5.1 Capa de datos
 
@@ -782,44 +828,74 @@ Rechazos más habituales, todos evitables:
 
 ## 9. Guion de pruebas
 
+**Decisión del 22 ago 2026:** las pruebas se acumulan y se pasan **todas de una vez al final**,
+con las fases 1 a 5 hechas y desplegadas. Este bloque es la lista definitiva de esa sesión.
+
+### Ya verificado sobre producción (no hace falta repetirlo)
+
+| # | Qué | Cuándo |
+|---|---|---|
+| ✅ | `POST /alexa` con `{}` → **401** (antes 200) | 22 ago |
+| ✅ | `POST /alexa` con envelope válido y `applicationId` correcto, **sin firma** → 401 → luego el corte lo hace la firma, no el body | 22 ago |
+| ✅ | Una petición **real de Alexa** atraviesa el middleware (la skill contesta al abrirla) → firma y `applicationId` válidos pasan | 22 ago |
+| ✅ | `/fotos` responde 200 y el formulario de `devware.es` envía correo → el body parser global no rompió nada | 22 ago |
+| ✅ | Página de authorize se sirve → Vercel empaqueta `authorize.html`, el `readFileSync` no es un problema | 22 ago |
+| ✅ | Login por **correo** en navegador de escritorio → `POST /code` devuelve `redirectTo` | 22 ago |
+| ✅ | Canje del código (HTTP Basic + PKCE S256) → 200 con `access_token`, `refresh_token`, `expires_in: 3600` | 22 ago |
+| ✅ | Payload del JWT: `{sub: <uid>, typ: 'access'}`, vida de 3600 s exactos | 22 ago |
+| ✅ | **Replay del mismo código** → `invalid_grant` / 400 | 22 ago |
+| ✅ | Client secret incorrecto → `invalid_client` / 401 | 22 ago |
+| ✅ | `grant_type=refresh_token` → access token nuevo y refresh token **rotado** | 22 ago |
+| ✅ | `usuarios/{uid}.alexaVinculada === true` tras el canje → `markUserLinked` funciona | 22 ago |
+
+Nota: un flujo lanzado a mano termina en un **400 de Amazon** en `accountLink/establish`.
+Es lo esperado —Amazon no reconoce un `state` que no emitió él— y no invalida lo anterior.
+
 ### Preparación
 - Dos cuentas de prueba distintas, cada una con al menos una lista.
 - Un dispositivo Echo o la app de Alexa en el móvil.
 - La consola de Firestore abierta.
+- Fases 1 a 5 desplegadas.
 
-### Bloque 1 — Seguridad (antes de vincular nada)
-1. `curl -X POST https://api-devware.vercel.app/alexa -d '{}'` → **401**.
-2. Mismo curl con un body de Alexa copiado del simulador, sin cabeceras de firma → **401**.
-3. Con `ALEXA_SKIP_VERIFY=true` en local, el mismo curl pasa → confirma que la escotilla
-   funciona. **Quitarla después.**
+### Bloque 1 — Vinculación real desde la app de Alexa
+1. Háblale a la skill **sin estar vinculado** → responde `NOT_LINKED` y **la app de Alexa
+   pinta el botón de vincular** (es el camino de usuario, no hay que buscar ningún menú).
+2. Pulsar ahí → sale la página de login → entrar con **correo** → "Cuenta vinculada correctamente".
+3. Firestore: hay un doc en `alexa_refresh_tokens` y el de `alexa_oauth_codes` está `usado: true`.
+4. Desvincular y repetir con **Google**. ⚠️ Es la prueba de `signInWithPopup` dentro del
+   navegador incrustado de Amazon: si falla aquí y el correo sí funciona, el problema es el
+   popup, y la alternativa es `signInWithRedirect`.
+5. Intentar vincular estando en **sesión anónima** → sale el aviso, no deja seguir.
 
-### Bloque 2 — Vinculación
-4. App de Alexa → Skills → tu skill → Vincular cuenta.
-5. Sale la página de login. Entrar con **correo** → "Cuenta vinculada correctamente".
-6. Firestore: `usuarios/{uid}.alexaVinculada === true`.
-7. Firestore: hay un doc en `alexa_refresh_tokens` y el de `alexa_oauth_codes` está `usado: true`.
-8. Desvincular y repetir con **Google**.
-9. Intentar vincular estando en sesión anónima → sale el aviso, no deja seguir.
+### Bloque 2 — Uso
+6. *"Alexa, abre lista de la compra"* → bienvenida (ya no la tarjeta de vincular).
+7. *"añade leche"* → confirma y aparece en la app **sin recargar**.
+8. Firestore: el producto está en `lista-compra/{listaAlexa}/productos` con `fecha` como
+   Timestamp, `isImportant: false` e `isPurchased: false`.
+9. Producto de dos palabras: *"añade papel de cocina"* → entra completo, no truncado.
+10. *"ayuda"*, *"para"* y *"cancela"* → responden y cierran bien (obligatorio para certificar).
 
-### Bloque 3 — Uso
-10. *"Alexa, abre lista del súper"* → bienvenida.
-11. *"añade leche"* → confirma y aparece en la app **sin recargar**.
-12. *"Alexa, añade pan a la lista de la compra"* (one-shot, sin abrir antes) → igual.
-13. Producto de dos palabras: *"añade papel de cocina"* → entra completo, no truncado.
-14. *"ayuda"* → responde algo útil. *"para"* → cierra limpio.
+### Bloque 3 — Colisión del nombre de invocación (6.2 bis)
+11. *"Alexa, añade leche a la lista de la compra"* **en frío** → ¿contesta tu skill o la lista
+    nativa de Amazon? Se distingue por el texto y por dónde acaba el producto (Firestore vs.
+    app de Alexa → Listas).
+12. *"Alexa, pídele a lista de la compra que añada leche"* → si esta sí funciona y la 11 no,
+    el problema es la gramática one-shot, no el nombre, y cambiarlo no arreglaría nada.
 
 ### Bloque 4 — Multiusuario (lo importante)
-15. Vincular la **segunda cuenta** en otro dispositivo/cuenta de Amazon.
-16. Añadir un producto desde cada una.
-17. **Cada producto en su lista. Ninguna cuenta ve el de la otra.**
+13. Vincular la **segunda cuenta** en otro dispositivo/cuenta de Amazon.
+14. Añadir un producto desde cada una.
+15. **Cada producto en su lista. Ninguna cuenta ve el de la otra.**
 
 ### Bloque 5 — Lista y caducidad
-18. En la app, cambiar la lista de Alexa a una segunda lista.
-19. *"añade huevos"* → va a la nueva.
-20. Esperar a que caduque el access token (>1 h) y volver a añadir → funciona sin intervención.
+16. En la app, cambiar la lista de Alexa a una segunda lista.
+17. *"añade huevos"* → va a la nueva.
+18. Borrar en la app la lista a la que apunta `listaAlexa` y volver a dictar → **no debe
+    perderse en silencio** (ver el requisito heredado en la fase 5).
+19. Esperar a que caduque el access token (>1 h) y volver a añadir → funciona sin intervención.
 
 ### Bloque 6 — iOS
-21. Repetir 11, 18 y 19 con la app de iOS.
+20. Repetir 7, 16 y 17 con la app de iOS.
 
 ---
 

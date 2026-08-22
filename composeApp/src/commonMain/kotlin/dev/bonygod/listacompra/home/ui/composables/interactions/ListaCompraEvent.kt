@@ -56,4 +56,9 @@ sealed class ListaCompraEvent {
     data object OnDismissLinkAccountDialog : ListaCompraEvent()
     data object OnConfirmLinkCredentialInUse : ListaCompraEvent()
     data object OnCancelLinkCredentialInUse : ListaCompraEvent()
+
+    /** Abre el diálogo de vinculación de cuenta directamente, sin pasar por el aviso
+     *  de "compartir requiere cuenta". Lo usa la sección Alexa de MisListas, que llega
+     *  aquí navegando a Home con `openLinkAccount = true`. */
+    data object OnOpenLinkAccountDialog : ListaCompraEvent()
 }

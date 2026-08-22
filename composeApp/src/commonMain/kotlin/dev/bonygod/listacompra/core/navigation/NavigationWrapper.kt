@@ -42,8 +42,11 @@ fun NavigationWrapper(snackbarHostState: SnackbarHostState) {
                 AdLoadingScreen(userId)
             }
             entry<Routes.Home> { entry ->
-                val userId = entry.userId
-                HomeScreen(snackbarHostState = snackbarHostState, userId)
+                HomeScreen(
+                    snackbarHostState = snackbarHostState,
+                    userId = entry.userId,
+                    openLinkAccount = entry.openLinkAccount
+                )
             }
             entry<Routes.MisListas> {
                 MisListasScreen()

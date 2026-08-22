@@ -4,6 +4,7 @@ import dev.bonygod.listacompra.login.data.model.NotificationsReponse
 import dev.bonygod.listacompra.login.data.model.UserResponse
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
 import dev.bonygod.listacompra.login.domain.model.Notifications
+import dev.bonygod.listacompra.mislistas.domain.model.AlexaConfig
 import dev.bonygod.listacompra.mislistas.domain.model.ListaInfo
 import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FirebaseAuth
@@ -70,7 +71,9 @@ class UsersDataSource(
                 nombre = userDoc.get("nombre") as? String ?: "",
                 email = userDoc.get("email") as? String ?: "",
                 apiKey = "",
-                listas = userDoc.get("listas") as List<String>
+                listas = userDoc.get("listas") as List<String>,
+                listaAlexa = userDoc.get("listaAlexa") as? String ?: "",
+                alexaVinculada = userDoc.get("alexaVinculada") as? Boolean ?: false
             )
         }
         val newLista = createUserDocument(uid, displayName, email)
@@ -142,7 +145,9 @@ class UsersDataSource(
             nombre = nombre,
             email = email,
             apiKey = userDoc.get("apiKey") as? String ?: "",
-            listas = (userDoc.get("listas") as? List<String>) ?: emptyList()
+            listas = (userDoc.get("listas") as? List<String>) ?: emptyList(),
+            listaAlexa = userDoc.get("listaAlexa") as? String ?: "",
+            alexaVinculada = userDoc.get("alexaVinculada") as? Boolean ?: false
         )
     }
 
@@ -163,7 +168,9 @@ class UsersDataSource(
             nombre = userDoc.get("nombre") as? String ?: "",
             email = result.user?.email.orEmpty(),
             apiKey = userDoc.get("apiKey") as? String ?: "",
-            listas = (userDoc.get("listas") as? List<String>) ?: emptyList()
+            listas = (userDoc.get("listas") as? List<String>) ?: emptyList(),
+            listaAlexa = userDoc.get("listaAlexa") as? String ?: "",
+            alexaVinculada = userDoc.get("alexaVinculada") as? Boolean ?: false
         )
     }
 
@@ -195,7 +202,9 @@ class UsersDataSource(
             nombre = userDoc.get("nombre") as? String ?: "",
             email = userDoc.get("email") as? String ?: "",
             apiKey = userDoc.get("apiKey") as? String ?: "",
-            listas = (userDoc.get("listas") as? List<String>) ?: emptyList()
+            listas = (userDoc.get("listas") as? List<String>) ?: emptyList(),
+            listaAlexa = userDoc.get("listaAlexa") as? String ?: "",
+            alexaVinculada = userDoc.get("alexaVinculada") as? Boolean ?: false
         )
     }
 
@@ -412,6 +421,37 @@ class UsersDataSource(
         val reordered = listOf(listaId) + currentListas.filter { it != listaId }
         firebase.collection("usuarios").document(userUID).set(
             data = mapOf("listas" to reordered),
+            merge = true
+        )
+    }
+
+    /**
+     * Leer la configuración de Alexa del usuario: a qué lista escribe (`listaAlexa`,
+     * la escribe la app) y si la cuenta está vinculada (`alexaVinculada`, la escribe la
+     * API vía Admin SDK; aquí solo se lee).
+     */
+    suspend fun getConfigAlexa(): AlexaConfig {
+        val userUID = auth.currentUser?.uid.orEmpty()
+        val userDoc = firebase.collection("usuarios").document(userUID).get()
+        return AlexaConfig(
+            listaAlexa = userDoc.get("listaAlexa") as? String ?: "",
+            alexaVinculada = userDoc.get("alexaVinculada") as? Boolean ?: false
+        )
+    }
+
+    /**
+     * Establecer a qué lista escribe Alexa.
+     * Mismo patrón que setDefaultLista sobre el mismo documento: se comprueba que la
+     * lista siga siendo del usuario antes de escribir, y merge = true para no pisar
+     * el resto de campos.
+     */
+    suspend fun setListaAlexa(listaId: String) {
+        val userUID = auth.currentUser?.uid.orEmpty()
+        val userDoc = firebase.collection("usuarios").document(userUID).get()
+        val currentListas = (userDoc.get("listas") as? List<String>) ?: emptyList()
+        if (!currentListas.contains(listaId)) return
+        firebase.collection("usuarios").document(userUID).set(
+            data = mapOf("listaAlexa" to listaId),
             merge = true
         )
     }

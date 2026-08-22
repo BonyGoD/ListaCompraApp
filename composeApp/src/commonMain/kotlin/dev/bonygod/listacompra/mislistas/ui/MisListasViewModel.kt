@@ -5,10 +5,13 @@ import androidx.lifecycle.viewModelScope
 import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.navigation.Routes
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
+import dev.bonygod.listacompra.login.domain.usecase.IsAnonymousUserUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.AddNewListaUseCase
+import dev.bonygod.listacompra.mislistas.domain.usecase.GetAlexaConfigUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.GetListasUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.RenameListaUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.SetDefaultListaUseCase
+import dev.bonygod.listacompra.mislistas.domain.usecase.SetListaAlexaUseCase
 import dev.bonygod.listacompra.mislistas.ui.composables.interactions.MisListasEvent
 import dev.bonygod.listacompra.mislistas.ui.composables.interactions.MisListasState
 import dev.bonygod.listacompra.mislistas.ui.model.ListaInfoUI
@@ -22,7 +25,10 @@ class MisListasViewModel(
     private val setDefaultListaUseCase: SetDefaultListaUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val renameListaUseCase: RenameListaUseCase,
-    private val addNewListaUseCase: AddNewListaUseCase
+    private val addNewListaUseCase: AddNewListaUseCase,
+    private val isAnonymousUserUseCase: IsAnonymousUserUseCase,
+    private val getAlexaConfigUseCase: GetAlexaConfigUseCase,
+    private val setListaAlexaUseCase: SetListaAlexaUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MisListasState())
@@ -33,6 +39,7 @@ class MisListasViewModel(
     fun loadListas() {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
+            val anonymous = isAnonymousUserUseCase()
             getUserUseCase().fold(
                 onSuccess = { user ->
                     userId = user.uid
@@ -42,8 +49,13 @@ class MisListasViewModel(
                                 listas = listas.map {
                                     ListaInfoUI(id = it.id, nombre = it.nombre, isDefault = it.isDefault)
                                 },
-                                isLoading = false
+                                isLoading = false,
+                                isAnonymous = anonymous
                             )
+                            // Los anónimos no pueden vincular Alexa (no hay sesión que
+                            // reproducir en la página de authorize), así que no hace
+                            // falta ni leer su configuración.
+                            if (!anonymous) loadAlexaConfig()
                         },
                         onFailure = { e ->
                             _state.value = _state.value.copy(
@@ -58,6 +70,22 @@ class MisListasViewModel(
                         isLoading = false,
                         error = e.message ?: "Error al obtener el usuario"
                     )
+                }
+            )
+        }
+    }
+
+    private fun loadAlexaConfig() {
+        viewModelScope.launch {
+            getAlexaConfigUseCase().fold(
+                onSuccess = { config ->
+                    _state.value = _state.value.copy(
+                        alexaVinculada = config.alexaVinculada,
+                        listaAlexa = config.listaAlexa
+                    )
+                },
+                onFailure = {
+                    // No bloquea el resto de la pantalla: las listas ya están cargadas.
                 }
             )
         }
@@ -78,6 +106,20 @@ class MisListasViewModel(
                 renameDialogListaId = null,
                 renameDialogCurrentNombre = "",
                 showCreateDialog = false
+            )
+            is MisListasEvent.SelectListaAlexa -> selectListaAlexa(event.listaId)
+            is MisListasEvent.OnLinkAccountForAlexaClick ->
+                navigator.clearAndNavigateTo(Routes.Home(userId, openLinkAccount = true))
+        }
+    }
+
+    private fun selectListaAlexa(listaId: String) {
+        viewModelScope.launch {
+            setListaAlexaUseCase(listaId).fold(
+                onSuccess = { _state.value = _state.value.copy(listaAlexa = listaId) },
+                onFailure = { e ->
+                    _state.value = _state.value.copy(error = e.message ?: "Error al cambiar la lista de Alexa")
+                }
             )
         }
     }

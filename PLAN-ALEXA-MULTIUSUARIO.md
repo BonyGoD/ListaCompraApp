@@ -206,9 +206,18 @@ usado          boolean
 > `accountLink/establish` del lado de Amazon, y la API nunca se entera. Pasó en la primera
 > prueba manual y dejó el campo en `true` sin vinculación real, con la app enseñando el
 > selector y la skill pidiendo vincular a la vez.
-> **Arreglo:** el campo lo escribe ahora el **endpoint de la skill**, la primera vez que
-> verifica con éxito un `accessToken`. Un token solo llega si Amazon lo guardó, así que esa
-> sí es prueba de que la vinculación existe de verdad.
+> **Arreglo (22 ago), y su reversión (23 ago).** Primero se movió la escritura al endpoint
+> de la skill, para que solo la marcara un `accessToken` realmente recibido. **Fue un error
+> y se ha revertido.** El falso positivo solo puede darse lanzando el flujo a mano con un
+> `state` que Amazon no ha emitido: cuando el usuario pulsa "Vincular" en la app de Alexa es
+> Amazon quien lo inicia y quien lo completa. A cambio, aquel cambio provocaba que la app
+> dijera **"Alexa · Sin vincular" justo después de vincular con éxito**, hasta que el usuario
+> dictara un producto. Se cambió un fallo imposible por uno que sufría todo el mundo.
+>
+> **Estado definitivo:** lo marca el endpoint de token al emitir las credenciales, y
+> `AlexaModel.addProduct` lo confirma al llegar el primer `accessToken` válido — red de
+> seguridad, idempotente y sin lectura extra, porque el documento ya está leído.
+> **No lo vuelvas a mover** sin releer esto.
 
 **`alexa_refresh_tokens/{sha256DelToken}`** — el id del documento es el **hash** del token,
 no el token. Si alguien se lleva un volcado de Firestore no se lleva credenciales válidas.

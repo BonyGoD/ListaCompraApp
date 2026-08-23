@@ -34,6 +34,7 @@ rechazado, el `invalid_client`, la rotación del refresh token y el
 | 2 | Pulsar ese botón → entrar con **correo** | "Cuenta vinculada correctamente" | ✅ |
 | 3 | Firestore | Hay doc en `alexa_refresh_tokens`; el de `alexa_oauth_codes` está `usado: true` | ✅ |
 | 4 | Desvincular y repetir con **Google** | Igual que con correo | ✅ |
+| 4b | Desvincular y repetir con **Apple** | Igual que con correo | ✅ |
 | 5 | Intentar vincular en **sesión anónima** | Sale el aviso, no deja seguir | ⊘ |
 
 > **Paso 1 — con matiz.** Se vincula, pero por Skill → Configuración → Vincular cuenta.
@@ -48,6 +49,31 @@ rechazado, el `invalid_client`, la rotación del refresh token y el
 >
 > **Se decide en el paso 14**, con la segunda cuenta de Amazon, que nunca vio la
 > configuración rota.
+
+> **Pasos 4 y 4b — los tres proveedores vinculan en iOS, pero hubo un susto.** Correo,
+> Google y Apple verificados el 23 ago 2026, todo en iPhone.
+>
+> Ese mismo día, vincular con Google devolvió una vez *"Unable to process request due to
+> missing initial state ... storage-partitioned browser environment"*, y a los minutos, con
+> el mismo código y la misma cuenta, vinculó bien. **No está arreglado: no ha vuelto a
+> salir, que no es lo mismo.**
+>
+> Amazon abre la página en un navegador incrustado donde `window.open` no abre ventana:
+> navega en la misma vista. El handler de `firebaseapp.com` deja su estado en el
+> `sessionStorage` de **su** origen, y al volver del proveedor puede caer en otra partición
+> y no encontrarlo. Que pase o no depende de si el navegador reutiliza la vista, y eso no
+> se controla desde el código.
+>
+> **Lo grave no es el fallo, es que no tiene salida:** para entonces nuestra página ya no
+> existe, así que el error no se puede capturar ni hay forma de devolver al usuario. Se
+> queda en una pantalla en inglés sin botón de volver.
+>
+> Si reaparece durante la certificación, el arreglo de raíz es proxear `/__/auth/*` para
+> que el handler sea del mismo origen, o vincular desde la app con **App-to-App account
+> linking** y no pasar por ningún navegador.
+>
+> Reducir el riesgo antes de certificar cuesta poco: repetir Google y Apple cinco o seis
+> veces seguidas, desvinculando entre medias, y anotar si falla alguna.
 
 > **Paso 5 — no se puede probar por Alexa.** No hay forma de meter una sesión anónima en
 > la app de Alexa: la vinculación empieza siempre desde una cuenta de Amazon. Lo que sí se

@@ -8,4 +8,5 @@ sealed class Routes {
     data class Home(val userId: String) : Routes()
     data class AdLoading(val userId: String) : Routes()
     data object MisListas : Routes()
+    data object Alexa : Routes()
 }

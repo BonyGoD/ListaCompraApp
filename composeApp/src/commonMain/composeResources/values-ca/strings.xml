@@ -5,7 +5,7 @@
     <string name="login_register_screen_password">CONTRASENYA</string>
 
     <!-- Splash -->
-    <string name="splash_screen_error_message">S\'ha produït un error. Comprova la teva connexió i torna-ho a provar.</string>
+    <string name="splash_screen_error_message">S'ha produït un error. Comprova la teva connexió i torna-ho a provar.</string>
     <string name="splash_screen_retry_button">Tornar-ho a provar</string>
     <string name="splash_screen_login_button">Inicia sessió</string>
 
@@ -25,7 +25,7 @@
 
     <!-- ForgotPassword -->
     <string name="forgot_password_screen_title">Recuperar la contrasenya</string>
-    <string name="forgot_password_screen_subtitle">T\'enviarem un correu de recuperació</string>
+    <string name="forgot_password_screen_subtitle">T'enviarem un correu de recuperació</string>
     <string name="forgot_password_screen_button">Enviar</string>
 
     <!-- Register -->
@@ -52,13 +52,15 @@
     <!-- Menú lateral -->
     <string name="menu_lateral_my_lists">Les meves llistes</string>
     <string name="menu_lateral_share_list">Compartir llista</string>
+    <string name="menu_lateral_alexa_linked">Alexa · Vinculada</string>
+    <string name="menu_lateral_alexa_not_linked">Alexa · Sense vincular</string>
     <string name="menu_lateral_logout">Tancar sessió</string>
     <string name="menu_lateral_delete_account">Eliminar compte</string>
     <string name="menu_lateral_login_or_register">Inicia sessió / Crea un compte</string>
     <string name="menu_lateral_data_loss_message">Si inicies sessió amb un altre compte, la llista que has creat aquí no es conservarà.</string>
     <string name="menu_lateral_version_label">Versió</string>
     <string name="delete_account_title">Eliminar compte permanentment?</string>
-    <string name="delete_account_subtitle">Aquesta acció és irreversible. S\'eliminaran totes les teves dades i llistes de la compra.</string>
+    <string name="delete_account_subtitle">Aquesta acció és irreversible. S'eliminaran totes les teves dades i llistes de la compra.</string>
     <string name="delete_account_button">Elimina compte</string>
 
     <!-- Diàleg d'avís de pèrdua de dades -->
@@ -82,7 +84,7 @@
     <string name="link_account_credential_in_use_message">Si inicies sessió amb ell, perdràs la llista que has creat fins ara.</string>
 
     <!-- Alertes del Home (ViewModel) -->
-    <string name="home_alert_error_get_user_title">Error en obtenir l\'usuari</string>
+    <string name="home_alert_error_get_user_title">Error en obtenir l'usuari</string>
     <string name="home_alert_error_accept_invitation_title">Error en acceptar la invitació</string>
     <string name="home_alert_error_share_title">Error en compartir</string>
     <string name="home_alert_error_update_title">Error en actualitzar</string>
@@ -92,7 +94,7 @@
     <string name="home_alert_error_link_account_title">Error en vincular el compte</string>
     <string name="home_alert_error_login_title">Error en iniciar sessió</string>
     <string name="home_alert_error_delete_account_title">Error en eliminar el compte</string>
-    <string name="home_alert_share_rate_limit_message">Has d\'esperar 5 minuts abans de tornar-ho a provar.</string>
+    <string name="home_alert_share_rate_limit_message">Has d'esperar 5 minuts abans de tornar-ho a provar.</string>
 
 
     <!-- Notificaciones y Mis Listas -->
@@ -110,4 +112,20 @@
     <string name="mislistas_new_dialog_confirm_button">Crear</string>
     <string name="mislistas_rename_dialog_title">Reanomenar llista</string>
     <string name="mislistas_rename_dialog_confirm_button">Reanomenar</string>
+    <string name="mislistas_alexa_section_title">Alexa</string>
+    <string name="mislistas_alexa_anonymous_message">Per fer servir Alexa has de crear un compte. Les sessions anònimes no es poden vincular.</string>
+    <string name="mislistas_alexa_link_account_button">Crea el compte</string>
+    <string name="mislistas_alexa_not_linked_message">La vinculació es fa des de l'app d'Alexa, no des d'aquí. Ves a Skills i jocs → Les meves skills, tria aquesta skill i toca Configuració → Vincula el compte. Si encara no la tens, cerca-la a Skills i jocs i instal·la-la primer.</string>
+    <string name="mislistas_alexa_selector_title">Llista on escriu Alexa</string>
+    <string name="mislistas_alexa_default_hint">Si no en tries cap, Alexa afegeix a la teva llista predeterminada.</string>
+    <string name="mislistas_alexa_active_badge">Activa a Alexa</string>
+    <string name="mislistas_alexa_howto_title">Què dir-li a l'Alexa</string>
+    <string name="mislistas_alexa_howto_open">«Alexa, abre compras pendientes»</string>
+    <string name="mislistas_alexa_howto_open_hint">I després li dictes els productes un a un.</string>
+    <string name="mislistas_alexa_howto_oneshot">«Alexa, pídele a compras pendientes que añada leche»</string>
+    <string name="mislistas_alexa_howto_oneshot_hint">De cop, sense obrir-la abans.</string>
+    <string name="mislistas_alexa_howto_warning">Compte: «añade leche a la lista de la compra» va a la llista pròpia de l'Alexa. Perquè arribi aquí, anomena compras pendientes.</string>
+
+    <!-- Pantalla Alexa (pròpia, accessible des del menú lateral) -->
+    <string name="alexa_screen_title">Alexa</string>
 </resources>

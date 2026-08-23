@@ -7,6 +7,7 @@ import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
 import dev.bonygod.listacompra.login.domain.model.Notifications
 import dev.bonygod.listacompra.login.domain.model.Usuario
+import dev.bonygod.listacompra.mislistas.domain.model.AlexaConfig
 import dev.bonygod.listacompra.mislistas.domain.model.ListaInfo
 import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.flow.Flow
@@ -178,6 +179,25 @@ class UserRepository(
             Result.success(Unit)
         } catch (e: Exception) {
             crashReporter.recordException(e, "UserRepository.setDefaultLista")
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun getConfigAlexa(): Result<AlexaConfig> {
+        return try {
+            Result.success(usersDS.getConfigAlexa())
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.getConfigAlexa")
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun setListaAlexa(listaId: String): Result<Unit> {
+        return try {
+            usersDS.setListaAlexa(listaId)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.setListaAlexa")
             Result.failure(e.toUserFailure())
         }
     }

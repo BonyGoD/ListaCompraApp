@@ -14,6 +14,7 @@ import dev.bonygod.listacompra.home.domain.usecase.DeleteAllProductosUseCase
 import dev.bonygod.listacompra.home.domain.usecase.DeleteProductoUseCase
 import dev.bonygod.listacompra.home.domain.usecase.GetProductosUseCase
 import dev.bonygod.listacompra.home.domain.usecase.UpdateProductoUseCase
+import dev.bonygod.listacompra.home.ui.composables.interactions.LinkAccountOrigin
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEffect
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
@@ -142,7 +143,13 @@ class ListaCompraViewModel(
             getUserUseCase().fold(
                 onSuccess = { usuario ->
                     setState { setUser(usuario.toUI()) }
-                    setState { setAnonymous(isAnonymousUserUseCase()) }
+                    val anonymous = isAnonymousUserUseCase()
+                    setState { setAnonymous(anonymous) }
+                    // El menú lateral muestra el estado de vinculación de Alexa. No hace
+                    // falta pedirlo aparte: `usuario` ya lo trae, porque getActualUser lee
+                    // el mismo documento de `usuarios/{uid}` donde vive el campo. Los
+                    // anónimos no pueden vincular, así que se fuerza a false.
+                    setState { setAlexaVinculada(!anonymous && usuario.alexaVinculada) }
                     analyticsService.setUserId(usuario.uid)
 
                         // Obtiene el nombre de la lista activa
@@ -190,6 +197,7 @@ class ListaCompraViewModel(
         }
     }
 
+
     fun onEvent(event: ListaCompraEvent) {
         when (event) {
             is ListaCompraEvent.BorrarProducto -> borrarProducto(event.productId)
@@ -236,6 +244,7 @@ class ListaCompraViewModel(
             is ListaCompraEvent.OnDeleteAccountConfirm -> deleteAccount()
             is ListaCompraEvent.TogglePurchased -> togglePurchased(event.productId)
             is ListaCompraEvent.OnMisListasClick -> navigator.navigateTo(Routes.MisListas)
+            is ListaCompraEvent.OnAlexaClick -> navigator.navigateTo(Routes.Alexa)
             is ListaCompraEvent.OnForceCrashClick -> crashReporter.forceCrash()
             is ListaCompraEvent.OnForceNonFatalClick -> crashReporter.recordException(
                 Exception("Non-fatal de prueba desde el menú lateral"),
@@ -252,6 +261,7 @@ class ListaCompraViewModel(
 
             is ListaCompraEvent.OnShareAccountRequiredConfirm -> {
                 setState { showShareRequiresAccountDialog(false) }
+                setState { setLinkAccountOrigin(LinkAccountOrigin.SHARE) }
                 setState { showLinkAccountDialog(true) }
             }
 
@@ -261,6 +271,11 @@ class ListaCompraViewModel(
             is ListaCompraEvent.OnLinkEmailChange -> setState { updateLinkEmail(event.text) }
             is ListaCompraEvent.OnLinkPasswordChange -> setState { updateLinkPassword(event.text) }
             is ListaCompraEvent.OnLinkAccountConfirm -> linkAccountWithEmail()
+            is ListaCompraEvent.OnOpenLinkAccountDialog -> {
+                setState { setLinkAccountOrigin(LinkAccountOrigin.ALEXA) }
+                setState { showLinkAccountDialog(true) }
+            }
+
             is ListaCompraEvent.OnDismissLinkAccountDialog -> {
                 setState { showLinkAccountDialog(false) }
                 setState { clearLinkFields() }
@@ -292,7 +307,12 @@ class ListaCompraViewModel(
                     setState { clearLinkFields() }
                     stopNotificationsListener()
                     loadUserDataSuspending()
-                    setState { showCustomDialog(true) }
+                    // Solo abre el diálogo de compartir si se vino de ahí. Desde la
+                    // pantalla de Alexa el usuario no ha pedido compartir nada, y le
+                    // salía de la nada nada más crear la cuenta.
+                    if (state.value.linkAccountOrigin == LinkAccountOrigin.SHARE) {
+                        setState { showCustomDialog(true) }
+                    }
                 },
                 onFailure = { error ->
                     if (error is LoginFailure.CredentialAlreadyInUse) {
@@ -323,7 +343,12 @@ class ListaCompraViewModel(
                     setState { showLinkAccountDialog(false) }
                     setState { clearLinkFields() }
                     loadUserDataSuspending()
-                    setState { showCustomDialog(true) }
+                    // Solo abre el diálogo de compartir si se vino de ahí. Desde la
+                    // pantalla de Alexa el usuario no ha pedido compartir nada, y le
+                    // salía de la nada nada más crear la cuenta.
+                    if (state.value.linkAccountOrigin == LinkAccountOrigin.SHARE) {
+                        setState { showCustomDialog(true) }
+                    }
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? Exception)?.message ?: "Error desconocido"

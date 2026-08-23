@@ -42,6 +42,7 @@ sealed class ListaCompraEvent {
     data object OnDeleteAccountConfirm: ListaCompraEvent()
     data class TogglePurchased(val productId: String) : ListaCompraEvent()
     data object OnMisListasClick : ListaCompraEvent()
+    data object OnAlexaClick : ListaCompraEvent()
     data object OnForceCrashClick : ListaCompraEvent()
     data object OnForceNonFatalClick : ListaCompraEvent()
     data object OnLoginFromMenuClick : ListaCompraEvent()
@@ -56,4 +57,9 @@ sealed class ListaCompraEvent {
     data object OnDismissLinkAccountDialog : ListaCompraEvent()
     data object OnConfirmLinkCredentialInUse : ListaCompraEvent()
     data object OnCancelLinkCredentialInUse : ListaCompraEvent()
+
+    /** Abre el diálogo de vinculación de cuenta directamente, sin pasar por el aviso
+     *  de "compartir requiere cuenta". Lo usa la pantalla Alexa, que deja la petición
+     *  en `PendingHomeAction` antes de navegar a Home. */
+    data object OnOpenLinkAccountDialog : ListaCompraEvent()
 }

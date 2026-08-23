@@ -1,12 +1,14 @@
 package dev.bonygod.listacompra.login.data.repository
 
 import dev.bonygod.crashlytics.kmp.core.CrashReporter
+import dev.bonygod.listacompra.core.CustomFailures.LoginFailure
 import dev.bonygod.listacompra.core.CustomFailures.toUserFailure
 import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
 import dev.bonygod.listacompra.login.domain.model.Notifications
 import dev.bonygod.listacompra.login.domain.model.Usuario
 import dev.bonygod.listacompra.mislistas.domain.model.ListaInfo
+import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.flow.Flow
 
 class UserRepository(
@@ -61,12 +63,53 @@ class UserRepository(
         }
     }
 
+    suspend fun hasActiveSession(): Boolean {
+        return usersDS.hasActiveSession()
+    }
+
+    fun isAnonymous(): Boolean {
+        return usersDS.isAnonymous()
+    }
+
+    suspend fun signInAnonymously(): Result<Usuario> {
+        return try {
+            val userResponse = usersDS.signInAnonymously()
+            Result.success(userResponse.toDomain())
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.signInAnonymously")
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun repairUserDocument(uid: String, nombre: String, email: String): Result<Usuario> {
+        return try {
+            val userResponse = usersDS.repairUserDocument(uid, nombre, email)
+            Result.success(userResponse.toDomain())
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.repairUserDocument")
+            Result.failure(e.toUserFailure())
+        }
+    }
+
     suspend fun googleRegister(uid: String, displayName: String, email: String): Result<Usuario> {
         return try {
             val userResponse = usersDS.userGoogleRegister(uid, displayName, email)
             Result.success(userResponse.toDomain())
         } catch (e: Exception) {
             crashReporter.recordException(e, "UserRepository.googleRegister")
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun linkWithEmail(email: String, password: String): Result<Usuario> {
+        return try {
+            val userResponse = usersDS.linkWithEmail(email, password)
+            Result.success(userResponse.toDomain())
+        } catch (e: FirebaseAuthUserCollisionException) {
+            crashReporter.recordException(e, "UserRepository.linkWithEmail")
+            Result.failure(LoginFailure.CredentialAlreadyInUse())
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.linkWithEmail")
             Result.failure(e.toUserFailure())
         }
     }
@@ -90,9 +133,9 @@ class UserRepository(
         }
     }
 
-    suspend fun addSharedList(listaId: String): Result<Usuario> {
+    suspend fun addSharedList(listaId: String, listaNombre: String): Result<Usuario> {
         return try {
-            val userResponse = usersDS.addSharedList(listaId)
+            val userResponse = usersDS.addSharedList(listaId, listaNombre)
             Result.success(userResponse.toDomain())
         } catch (e: Exception) {
             crashReporter.recordException(e, "UserRepository.addSharedList")
@@ -100,21 +143,23 @@ class UserRepository(
         }
     }
 
-    suspend fun deleteNotification(listaId: String) {
+    suspend fun deleteNotification(listaId: String): Result<Unit> {
         return try {
             usersDS.deleteNotification(listaId)
+            Result.success(Unit)
         } catch (e: Exception) {
             crashReporter.recordException(e, "UserRepository.deleteNotification")
-            throw e.toUserFailure()
+            Result.failure(e.toUserFailure())
         }
     }
 
-    suspend fun deleteAccount() {
+    suspend fun deleteAccount(): Result<Unit> {
         return try {
             usersDS.deleteAccount()
+            Result.success(Unit)
         } catch (e: Exception) {
             crashReporter.recordException(e, "UserRepository.deleteAccount")
-            throw e.toUserFailure()
+            Result.failure(e.toUserFailure())
         }
     }
 

@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.bonygod.listacompra.core.AppConstants
 import dev.bonygod.listacompra.getPlatform
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
@@ -24,11 +25,18 @@ import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.basura_black
 import listacompra.composeapp.generated.resources.listas
 import listacompra.composeapp.generated.resources.logout
+import listacompra.composeapp.generated.resources.menu_lateral_delete_account
+import listacompra.composeapp.generated.resources.menu_lateral_login_or_register
+import listacompra.composeapp.generated.resources.menu_lateral_logout
+import listacompra.composeapp.generated.resources.menu_lateral_my_lists
+import listacompra.composeapp.generated.resources.menu_lateral_share_list
+import listacompra.composeapp.generated.resources.menu_lateral_version_label
 import listacompra.composeapp.generated.resources.notification_blank
 import listacompra.composeapp.generated.resources.notification_with_noti
 import listacompra.composeapp.generated.resources.share_list
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -78,14 +86,14 @@ fun MenuLateral(
             Icon(
                 painter = painterResource(Res.drawable.listas),
                 tint = Color.Gray,
-                contentDescription = "Mis listas",
+                contentDescription = stringResource(Res.string.menu_lateral_my_lists),
             )
             Text(
                 modifier = Modifier.padding(start = 5.dp),
                 fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
                 fontWeight = FontWeight.Bold,
                 color = Color.Gray,
-                text = "Mis listas"
+                text = stringResource(Res.string.menu_lateral_my_lists)
             )
         }
         Row(
@@ -107,13 +115,23 @@ fun MenuLateral(
                 fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
                 fontWeight = FontWeight.Bold,
                 color = Color.Gray,
-                text = "Compartir lista"
+                text = stringResource(Res.string.menu_lateral_share_list)
             )
+        }
+        val logoutOrLoginEvent = if (state.isAnonymous) {
+            ListaCompraEvent.OnLoginFromMenuClick
+        } else {
+            ListaCompraEvent.OnLogoutClick
+        }
+        val logoutOrLoginText = if (state.isAnonymous) {
+            stringResource(Res.string.menu_lateral_login_or_register)
+        } else {
+            stringResource(Res.string.menu_lateral_logout)
         }
         Row(
             modifier = Modifier.padding(start = 10.dp, top = 30.dp)
                 .clickable {
-                    setEvent(ListaCompraEvent.OnLogoutClick)
+                    setEvent(logoutOrLoginEvent)
                     onCloseDrawer()
                 },
             horizontalArrangement = Arrangement.Center,
@@ -129,7 +147,7 @@ fun MenuLateral(
                 fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
                 fontWeight = FontWeight.Bold,
                 color = Color.Gray,
-                text = "Cerrar sesión"
+                text = logoutOrLoginText
             )
         }
         Row(
@@ -151,47 +169,49 @@ fun MenuLateral(
                 fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
                 fontWeight = FontWeight.Bold,
                 color = Color.Gray,
-                text = "Eliminar cuenta"
+                text = stringResource(Res.string.menu_lateral_delete_account)
             )
         }
-        Row(
-            modifier = Modifier.padding(start = 10.dp, top = 30.dp)
-                .clickable {
-                    setEvent(ListaCompraEvent.OnForceCrashClick)
-                    onCloseDrawer()
-                },
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                modifier = Modifier.padding(start = 10.dp),
-                fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
-                fontWeight = FontWeight.Bold,
-                color = Color.Red,
-                text = "Forzar crash (test)"
-            )
-        }
-        Row(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp)
-                .clickable {
-                    setEvent(ListaCompraEvent.OnForceNonFatalClick)
-                    onCloseDrawer()
-                },
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                modifier = Modifier.padding(start = 10.dp),
-                fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
-                fontWeight = FontWeight.Bold,
-                color = Color.Red,
-                text = "Forzar non-fatal (test)"
-            )
+        if (state.user.email == AppConstants.DEVELOPER_EMAIL) {
+            Row(
+                modifier = Modifier.padding(start = 10.dp, top = 30.dp)
+                    .clickable {
+                        setEvent(ListaCompraEvent.OnForceCrashClick)
+                        onCloseDrawer()
+                    },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.padding(start = 10.dp),
+                    fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red,
+                    text = "Forzar crash (test)"
+                )
+            }
+            Row(
+                modifier = Modifier.padding(start = 10.dp, top = 10.dp)
+                    .clickable {
+                        setEvent(ListaCompraEvent.OnForceNonFatalClick)
+                        onCloseDrawer()
+                    },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.padding(start = 10.dp),
+                    fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red,
+                    text = "Forzar non-fatal (test)"
+                )
+            }
         }
         Spacer(Modifier.weight(1f))
         Text(
             modifier = Modifier.align(Alignment.End),
-            text = "Version v${getPlatform().appVersion}",
+            text = "${stringResource(Res.string.menu_lateral_version_label)} v${getPlatform().appVersion}",
             color = Color.Black,
             fontSize = 10.sp,
             fontFamily = FontFamily(Font(Res.font.Inter_Italic)),

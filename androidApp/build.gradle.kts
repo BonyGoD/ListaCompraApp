@@ -19,8 +19,8 @@ android {
         applicationId = "dev.bonygod.listacompra"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 22
-        versionName = "1.2.0"
+        versionCode = 23
+        versionName = "1.3.0"
 
         // Leer AdMob App ID desde local.properties (mismo patrón que composeApp)
         val properties = Properties()
@@ -39,11 +39,14 @@ android {
             val properties = Properties()
             val localPropertiesFile = project.rootProject.file("local.properties")
 
-            val keystoreFile = project.rootProject.file("app-keystore.jks")
+            if (localPropertiesFile.exists()) {
+                properties.load(localPropertiesFile.reader())
+            }
+            val storeFilePath = properties.getProperty("STORE_FILE", "")
+            val keystoreFile = project.rootProject.file(storeFilePath.ifBlank { "app-keystore.jks" })
             val hasKeystoreConfig = localPropertiesFile.exists() && keystoreFile.exists()
 
             if (hasKeystoreConfig) {
-                properties.load(localPropertiesFile.reader())
                 val keystorePassword = properties.getProperty("KEYSTORE_PASSWORD")
                 val keyAlias = properties.getProperty("KEY_ALIAS")
                 val keyPassword = properties.getProperty("KEY_PASSWORD")

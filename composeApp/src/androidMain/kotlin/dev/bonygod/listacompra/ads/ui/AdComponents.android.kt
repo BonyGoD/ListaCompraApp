@@ -1,6 +1,12 @@
 package dev.bonygod.listacompra.ads.ui
 
-import androidx.compose.runtime.*
+import android.annotation.SuppressLint
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
@@ -8,7 +14,6 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
-import android.annotation.SuppressLint
 
 @SuppressLint("MissingPermission")
 @Composable
@@ -19,6 +24,7 @@ actual fun BannerAd(
     onAdFailedToLoad: (String) -> Unit
 ) {
     val context = LocalContext.current
+
     AndroidView(
         modifier = modifier,
         factory = { ctx ->

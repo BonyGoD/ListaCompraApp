@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Fondo de la ventana de arranque. Tiene que coincidir con el fondo del
+        composable SplashScreen: si son el mismo color, el usuario no percibe
+        ninguna transición entre la ventana que pinta el sistema y la primera
+        pantalla de Compose.
+    -->
+    <color name="splash_background">#FFFFFFFF</color>
+</resources>

@@ -42,9 +42,6 @@ import listacompra.composeapp.generated.resources.app_icon
 import listacompra.composeapp.generated.resources.delete_account_button
 import listacompra.composeapp.generated.resources.delete_account_subtitle
 import listacompra.composeapp.generated.resources.delete_account_title
-import listacompra.composeapp.generated.resources.home_notification_dialog_button
-import listacompra.composeapp.generated.resources.home_notification_dialog_subtitle
-import listacompra.composeapp.generated.resources.home_notification_dialog_title
 import listacompra.composeapp.generated.resources.mail_icon
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource

@@ -1,11 +1,16 @@
 package dev.bonygod.listacompra.login.domain.usecase
 
+import dev.bonygod.listacompra.core.CustomFailures.LoginFailure
 import dev.bonygod.listacompra.login.data.repository.UserRepository
+import dev.bonygod.listacompra.util.isValidEmail
 
 class ShareListaCompraUseCase(
     private val userRepo: UserRepository
 ) {
-    suspend operator fun invoke(nombre: String, email: String, listaId: String): Result<Unit> {
-        return userRepo.shareListaCompra(nombre, email, listaId)
+    suspend operator fun invoke(nombre: String, listaId: String, email: String): Result<Unit> {
+        if (!email.isValidEmail()) {
+            return Result.failure(LoginFailure.IncorrectEmail())
+        }
+        return userRepo.shareListaCompra(nombre, listaId, email)
     }
 }

@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bonygod.listacompra.ads.AdConstants
@@ -53,8 +54,15 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.home.ui.model.ListaCompraUI
 import dev.bonygod.listacompra.home.ui.model.ProductoUI
 import listacompra.composeapp.generated.resources.Res
+import listacompra.composeapp.generated.resources.home_content_add_product_button
+import listacompra.composeapp.generated.resources.home_content_delete_confirm_message
+import listacompra.composeapp.generated.resources.home_content_delete_confirm_title
+import listacompra.composeapp.generated.resources.home_content_delete_list_button
+import listacompra.composeapp.generated.resources.home_content_menu_description
+import listacompra.composeapp.generated.resources.home_empty_list_login_prompt
 import listacompra.composeapp.generated.resources.menu_hamburguesa
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,7 +93,7 @@ fun HomeContent(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.menu_hamburguesa),
-                            contentDescription = "Abrir menú",
+                            contentDescription = stringResource(Res.string.home_content_menu_description),
                             tint = PrimaryBlue
                         )
                     }
@@ -100,7 +108,7 @@ fun HomeContent(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Borrar lista",
+                            text = stringResource(Res.string.home_content_delete_list_button),
                             fontSize = 15.sp,
                             fontWeight = Bold,
                             color = PrimaryBlue
@@ -109,6 +117,24 @@ fun HomeContent(
                 }
             )
             Column(modifier = Modifier.weight(1f)) {
+                if (data.productos.isEmpty() && state.isAnonymous) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp)
+                            .clickable {
+                                onEvent(ListaCompraEvent.OnLoginFromEmptyListClick)
+                            },
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.home_empty_list_login_prompt),
+                            fontWeight = Bold,
+                            color = PrimaryBlue,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
                 LazyColumn(modifier = Modifier.padding(10.dp)) {
                     items(data.productos) { producto ->
                         if (state.editingProductId == producto.id) {
@@ -137,7 +163,7 @@ fun HomeContent(
                     Text(
                         fontWeight = Bold,
                         fontSize = 15.sp,
-                        text = "Agregar producto"
+                        text = stringResource(Res.string.home_content_add_product_button)
                     )
                 },
                 onClick = {
@@ -180,8 +206,8 @@ fun HomeContent(
 
     if (state.dialogState) {
         ConfirmDialog(
-            title = "¿Estás seguro de borrar todos los productos?",
-            message = "Esta acción no se puede deshacer.",
+            title = stringResource(Res.string.home_content_delete_confirm_title),
+            message = stringResource(Res.string.home_content_delete_confirm_message),
             onConfirm = { onEvent(ListaCompraEvent.ConfirmDelete) },
             onCancel = { onEvent(ListaCompraEvent.CancelDialog) }
         )

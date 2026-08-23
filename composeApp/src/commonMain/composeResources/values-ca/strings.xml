@@ -1,7 +1,13 @@
 <resources>
     <!-- Common -->
+    <string name="app_name">ListaCompra</string>
     <string name="login_register_screen_email">CORREU ELECTRÒNIC</string>
     <string name="login_register_screen_password">CONTRASENYA</string>
+
+    <!-- Splash -->
+    <string name="splash_screen_error_message">S\'ha produït un error. Comprova la teva connexió i torna-ho a provar.</string>
+    <string name="splash_screen_retry_button">Tornar-ho a provar</string>
+    <string name="splash_screen_login_button">Inicia sessió</string>
 
     <!-- Login -->
     <string name="login_screen_title">Benvingut a ListaCompra!</string>
@@ -19,7 +25,7 @@
 
     <!-- ForgotPassword -->
     <string name="forgot_password_screen_title">Recuperar la contrasenya</string>
-    <string name="forgot_password_screen_subtitle">T'enviarem un correu de recuperació</string>
+    <string name="forgot_password_screen_subtitle">T\'enviarem un correu de recuperació</string>
     <string name="forgot_password_screen_button">Enviar</string>
 
     <!-- Register -->
@@ -36,13 +42,72 @@
     <string name="home_notification_dialog_subtitle">Introdueix el correu electrònic de la persona amb qui vols compartir la teva llista</string>
     <string name="home_notification_dialog_button">Comparteix</string>
 
+    <!-- Contingut del Home -->
+    <string name="home_content_menu_description">Obre el menú</string>
+    <string name="home_content_delete_list_button">Buida la llista</string>
+    <string name="home_content_add_product_button">Afegeix producte</string>
+    <string name="home_content_delete_confirm_title">Segur que vols eliminar tots els productes?</string>
+    <string name="home_content_delete_confirm_message">Aquesta acció no es pot desfer.</string>
+
     <!-- Menú lateral -->
+    <string name="menu_lateral_my_lists">Les meves llistes</string>
     <string name="menu_lateral_share_list">Compartir llista</string>
     <string name="menu_lateral_logout">Tancar sessió</string>
     <string name="menu_lateral_delete_account">Eliminar compte</string>
+    <string name="menu_lateral_login_or_register">Inicia sessió / Crea un compte</string>
+    <string name="menu_lateral_data_loss_message">Si inicies sessió amb un altre compte, la llista que has creat aquí no es conservarà.</string>
+    <string name="menu_lateral_version_label">Versió</string>
     <string name="delete_account_title">Eliminar compte permanentment?</string>
     <string name="delete_account_subtitle">Aquesta acció és irreversible. S\'eliminaran totes les teves dades i llistes de la compra.</string>
     <string name="delete_account_button">Elimina compte</string>
 
+    <!-- Diàleg d'avís de pèrdua de dades -->
+    <string name="data_loss_dialog_title">Iniciar sessió amb un altre compte?</string>
+    <string name="data_loss_dialog_confirm_button">Continua</string>
+    <string name="data_loss_dialog_cancel_button">Cancel·lar</string>
 
+    <!-- Estat buit del Home -->
+    <string name="home_empty_list_login_prompt">Ja tenies compte? Inicia sessió</string>
+
+    <!-- Vincular compte anònim (punt d'entrada de compartir) -->
+    <string name="share_requires_account_dialog_title">Compartir necessita un compte</string>
+    <string name="share_requires_account_dialog_message">Per compartir una llista cal un compte real. La teva llista actual es traslladarà al teu compte nou.</string>
+    <string name="share_requires_account_dialog_confirm_button">Crear compte</string>
+    <string name="share_requires_account_dialog_cancel_button">Cancel·lar</string>
+    <string name="link_account_dialog_title">Crea el teu compte</string>
+    <string name="link_account_dialog_subtitle">Afegeix un correu i una contrasenya. La teva llista actual es traslladarà al teu compte nou.</string>
+    <string name="link_account_dialog_confirm_button">Continua</string>
+    <string name="link_account_dialog_cancel_button">Cancel·lar</string>
+    <string name="link_account_credential_in_use_title">Aquest correu ja té un compte</string>
+    <string name="link_account_credential_in_use_message">Si inicies sessió amb ell, perdràs la llista que has creat fins ara.</string>
+
+    <!-- Alertes del Home (ViewModel) -->
+    <string name="home_alert_error_get_user_title">Error en obtenir l\'usuari</string>
+    <string name="home_alert_error_accept_invitation_title">Error en acceptar la invitació</string>
+    <string name="home_alert_error_share_title">Error en compartir</string>
+    <string name="home_alert_error_update_title">Error en actualitzar</string>
+    <string name="home_alert_error_add_product_title">Error en afegir producte</string>
+    <string name="home_alert_error_delete_product_title">Error en eliminar</string>
+    <string name="home_alert_error_delete_list_title">Error en eliminar la llista</string>
+    <string name="home_alert_error_link_account_title">Error en vincular el compte</string>
+    <string name="home_alert_error_login_title">Error en iniciar sessió</string>
+    <string name="home_alert_error_delete_account_title">Error en eliminar el compte</string>
+    <string name="home_alert_share_rate_limit_message">Has d\'esperar 5 minuts abans de tornar-ho a provar.</string>
+
+
+    <!-- Notificaciones y Mis Listas -->
+    <string name="notifications_sheet_title">Notificacions</string>
+    <string name="notifications_sheet_shared_suffix"> t'ha compartit la seva llista</string>
+    <string name="notifications_sheet_accept_button">Acceptar</string>
+    <string name="notifications_sheet_cancel_button">Cancel·lar</string>
+    <string name="mislistas_screen_title">Les meves llistes</string>
+    <string name="mislistas_back_description">Tornar</string>
+    <string name="mislistas_empty_message">No tens cap llista disponible</string>
+    <string name="mislistas_default_badge">Predeterminada</string>
+    <string name="mislistas_name_field_label">Nom</string>
+    <string name="mislistas_dialog_cancel_button">Cancel·lar</string>
+    <string name="mislistas_new_dialog_title">Llista nova</string>
+    <string name="mislistas_new_dialog_confirm_button">Crear</string>
+    <string name="mislistas_rename_dialog_title">Reanomenar llista</string>
+    <string name="mislistas_rename_dialog_confirm_button">Reanomenar</string>
 </resources>

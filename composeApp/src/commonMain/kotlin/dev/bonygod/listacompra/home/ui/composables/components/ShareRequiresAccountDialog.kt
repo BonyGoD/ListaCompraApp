@@ -4,12 +4,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -26,26 +30,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
-import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
+import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.app_icon
-import listacompra.composeapp.generated.resources.home_notification_dialog_button
-import listacompra.composeapp.generated.resources.home_notification_dialog_subtitle
-import listacompra.composeapp.generated.resources.home_notification_dialog_title
+import listacompra.composeapp.generated.resources.share_requires_account_dialog_cancel_button
+import listacompra.composeapp.generated.resources.share_requires_account_dialog_confirm_button
+import listacompra.composeapp.generated.resources.share_requires_account_dialog_message
+import listacompra.composeapp.generated.resources.share_requires_account_dialog_title
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun NotificationsDialog(
-    state: ListaCompraState,
-    setEvent: (ListaCompraEvent) -> Unit
+fun ShareRequiresAccountDialog(
+    setEvent: (ListaCompraEvent) -> Unit = {}
 ) {
     Dialog(
-        onDismissRequest = { setEvent(ListaCompraEvent.DismissCustomDialog) },
+        onDismissRequest = { setEvent(ListaCompraEvent.OnShareAccountRequiredCancel) },
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
     ) {
         Card(
@@ -55,19 +58,19 @@ fun NotificationsDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(350.dp),
+                    .verticalScroll(rememberScrollState())
+                    .padding(vertical = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Spacer(modifier = Modifier.weight(1f))
                 Image(
                     painter = painterResource(Res.drawable.app_icon),
-                    contentDescription = "Confirmación",
+                    contentDescription = null,
                     modifier = Modifier.size(70.dp)
                 )
-                Spacer(modifier = Modifier.weight(0.3f))
+
                 Text(
-                    text = stringResource(Res.string.home_notification_dialog_title),
+                    text = stringResource(Res.string.share_requires_account_dialog_title),
                     fontSize = 16.sp,
                     color = Color.Black,
                     fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
@@ -75,25 +78,45 @@ fun NotificationsDialog(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                Spacer(modifier = Modifier.weight(0.3f))
+
                 Text(
-                    text = stringResource(Res.string.home_notification_dialog_subtitle),
+                    text = stringResource(Res.string.share_requires_account_dialog_message),
                     fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
                     fontSize = 15.sp,
                     color = Color.Gray,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                Spacer(modifier = Modifier.weight(0.7f))
-                Button(
-                    onClick = {
-                        setEvent(ListaCompraEvent.ShareList(state.shareTextField.text))
-                        setEvent(ListaCompraEvent.DismissCustomDialog)
-                    },
-                    modifier = Modifier.padding(bottom = 20.dp, top = 20.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(text = stringResource(Res.string.home_notification_dialog_button))
+                    Button(
+                        onClick = { setEvent(ListaCompraEvent.OnShareAccountRequiredCancel) },
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.share_requires_account_dialog_cancel_button),
+                            color = Color.White,
+                            maxLines = 1
+                        )
+                    }
+                    Button(
+                        onClick = { setEvent(ListaCompraEvent.OnShareAccountRequiredConfirm) },
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.share_requires_account_dialog_confirm_button),
+                            maxLines = 1
+                        )
+                    }
                 }
             }
         }

@@ -6,7 +6,7 @@ import dev.bonygod.crashlytics.kmp.core.CrashReporter
 import dev.bonygod.crashlytics.kmp.core.CrashlyticsKeys
 
 class Navigator(private val crashReporter: CrashReporter) {
-    private val _backStack: SnapshotStateList<Any> = mutableStateListOf(Routes.Login)
+    private val _backStack: SnapshotStateList<Any> = mutableStateListOf(Routes.Splash)
 
     val backStack: SnapshotStateList<Any>
         get() = _backStack

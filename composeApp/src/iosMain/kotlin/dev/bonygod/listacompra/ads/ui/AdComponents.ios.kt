@@ -4,13 +4,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.bonygod.listacompra.common.ui.theme.SecondaryBlue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import platform.CoreGraphics.CGRectMake
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSNotification
 import platform.Foundation.NSOperationQueue
+import platform.UIKit.UIColor
 import platform.UIKit.UIView
 import platform.UIKit.UIScreen
 import platform.darwin.NSObject
@@ -34,27 +37,44 @@ actual fun BannerAd(
         factory = {
             // Crear el AdMobBannerView directamente
             // Swift lo expone como una clase accesible desde Kotlin
-            createAdMobBannerView(adUnitId, onAdLoaded, onAdFailedToLoad)
+            createAdMobBannerView(adUnitId, SecondaryBlue, onAdLoaded, onAdFailedToLoad)
         }
     )
 }
+
+private val bannerContainers = mutableMapOf<String, UIView>()
 
 // Función que crea el banner usando la clase Swift
 @OptIn(ExperimentalForeignApi::class)
 private fun createAdMobBannerView(
     adUnitId: String,
+    backgroundColor: Color,
     onAdLoaded: () -> Unit,
     onAdFailedToLoad: (String) -> Unit
 ): UIView {
+    bannerContainers[adUnitId]?.let { cached ->
+        cached.removeFromSuperview()
+        return cached
+    }
+
     // Enviar notificación para crear el banner de forma síncrona
     val bannerId = "banner_${adUnitId.hashCode()}"
     val containerView = UIView()
     containerView.setTag(bannerId.hashCode().toLong())
 
+    containerView.backgroundColor = UIColor.colorWithRed(
+        red = backgroundColor.red.toDouble(),
+        green = backgroundColor.green.toDouble(),
+        blue = backgroundColor.blue.toDouble(),
+        alpha = backgroundColor.alpha.toDouble()
+    )
+
     // IMPORTANTE: Configurar un frame inicial para que el banner sea visible
     // El tamaño estándar de un banner de AdMob es 320x50
     val screenWidth = UIScreen.mainScreen.bounds.useContents { this.size.width }
     containerView.setFrame(CGRectMake(0.0, 0.0, screenWidth, 50.0))
+
+    bannerContainers[adUnitId] = containerView
 
     // Configurar observers antes de enviar la solicitud
     var loadedObserver: Any? = null
@@ -83,6 +103,7 @@ private fun createAdMobBannerView(
             val id = notification?.userInfo?.get("bannerId") as? String
             if (id == bannerId) {
                 val error = notification?.userInfo?.get("error") as? String ?: "Unknown error"
+                bannerContainers.remove(adUnitId)
                 onAdFailedToLoad(error)
                 loadedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
                 failedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }

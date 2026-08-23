@@ -3,10 +3,10 @@ package dev.bonygod.listacompra.login.domain.usecase
 import dev.bonygod.listacompra.login.data.repository.UserRepository
 import dev.bonygod.listacompra.login.domain.model.Usuario
 
-class AddSharedListUseCase(
+class SignInAnonymouslyUseCase(
     private val userRepo: UserRepository
 ) {
-    suspend operator fun invoke(listaId: String, listaNombre: String): Result<Usuario> {
-        return userRepo.addSharedList(listaId, listaNombre)
+    suspend operator fun invoke(): Result<Usuario> {
+        return userRepo.signInAnonymously()
     }
 }

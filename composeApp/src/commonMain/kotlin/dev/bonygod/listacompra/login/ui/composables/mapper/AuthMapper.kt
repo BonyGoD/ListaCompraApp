@@ -20,6 +20,7 @@ fun NotificationItem.toUI(): NotificationsUI {
     return NotificationsUI(
         nombre = this.nombre,
         email = this.email,
-        listaId = this.listaId
+        listaId = this.listaId,
+        listaNombre = this.listaNombre
     )
 }

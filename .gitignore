@@ -118,3 +118,10 @@ graphify-out/
 .claude/CLAUDE.md
 .claude/settings.local.json
 
+# Documentos de trabajo de la raiz: planes, guiones de pruebas y handoffs.
+# Son notas de proceso, no del producto: se escriben mientras se construye algo
+# y dejan de valer en cuanto se termina. Se quedan en local.
+# Las versiones que llegaron a subirse siguen en el historial de git.
+/PLAN*
+/PRUEBA*
+/HANDOFF-*

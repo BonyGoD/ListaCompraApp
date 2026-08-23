@@ -8,12 +8,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import dev.bonygod.listacompra.common.ui.DataLossWarningDialog
+import dev.bonygod.listacompra.core.navigation.PendingHomeAction
 import dev.bonygod.listacompra.home.ui.ListaCompraViewModel
 import dev.bonygod.listacompra.home.ui.composables.HomeContent
 import dev.bonygod.listacompra.home.ui.composables.components.DeleteAccountDialog
@@ -30,15 +27,16 @@ import listacompra.composeapp.generated.resources.link_account_credential_in_use
 import listacompra.composeapp.generated.resources.link_account_credential_in_use_title
 import listacompra.composeapp.generated.resources.menu_lateral_data_loss_message
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
     snackbarHostState: SnackbarHostState,
-    userId: String,
-    openLinkAccount: Boolean = false
+    userId: String
 ) {
     val viewModel: ListaCompraViewModel = koinViewModel()
+    val pendingHomeAction: PendingHomeAction = koinInject()
     val state = viewModel.state.collectAsState()
     val scope = rememberCoroutineScope()
 
@@ -47,19 +45,14 @@ fun HomeScreen(
         viewModel.loadUserData()
     }
 
-    // Entrada desde la pantalla propia de Alexa: usuario anónimo que necesita vincular
+    // Entrada desde la pantalla propia de Alexa: usuario anónimo que necesita crear una
     // cuenta antes de poder usar Alexa. Reutiliza el mismo diálogo y flujo de linkWithEmail
     // que ya existe para "compartir requiere cuenta", solo cambia cómo se abre.
     //
-    // El flag openLinkAccount vive dentro de Routes.Home (data class) y por tanto queda
-    // grabado para siempre en esa entrada del backstack, no se limpia solo. NavDisplay
-    // descompone y recompone esa entrada cada vez que se navega fuera y se vuelve, así
-    // que sin el guard de rememberSaveable este LaunchedEffect(Unit) volvía a lanzarse y
-    // reabría el diálogo en cada regreso a Home, aunque el usuario no lo hubiera pedido.
-    var linkAccountDialogRequested by rememberSaveable { mutableStateOf(false) }
+    // La petición viaja por PendingHomeAction y no dentro de la ruta: ahí se consume sola.
+    // Léete el porqué en PendingHomeAction, que salió de dos bugs seguidos.
     LaunchedEffect(Unit) {
-        if (openLinkAccount && !linkAccountDialogRequested) {
-            linkAccountDialogRequested = true
+        if (pendingHomeAction.consumeLinkAccount()) {
             viewModel.onEvent(ListaCompraEvent.OnOpenLinkAccountDialog)
         }
     }

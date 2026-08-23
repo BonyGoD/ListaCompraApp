@@ -45,8 +45,7 @@ fun NavigationWrapper(snackbarHostState: SnackbarHostState) {
             entry<Routes.Home> { entry ->
                 HomeScreen(
                     snackbarHostState = snackbarHostState,
-                    userId = entry.userId,
-                    openLinkAccount = entry.openLinkAccount
+                    userId = entry.userId
                 )
             }
             entry<Routes.MisListas> {

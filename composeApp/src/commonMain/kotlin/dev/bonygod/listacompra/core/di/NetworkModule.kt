@@ -7,6 +7,7 @@ import dev.bonygod.listacompra.alexa.ui.AlexaViewModel
 import dev.bonygod.listacompra.common.ui.state.SharedState
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.navigation.Navigator
+import dev.bonygod.listacompra.core.navigation.PendingHomeAction
 import dev.bonygod.listacompra.core.network.NetworkProvider
 import dev.bonygod.listacompra.home.data.datasource.ListaCompraDataSource
 import dev.bonygod.listacompra.home.data.repository.ProductosRepository
@@ -51,6 +52,7 @@ import org.koin.dsl.module
 val appModule = module {
     single<CrashReporter> { CrashlyticsKMP.reporter }
     single { Navigator(get()) }
+    single { PendingHomeAction() }
     single { NetworkProvider().provideFirebaseClient() }
     single { NetworkProvider().provideAnalytics() }
     single { NetworkProvider().provideAuth() }

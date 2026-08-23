@@ -68,6 +68,15 @@ rechazado, el `invalid_client`, la rotación del refresh token y el
 
 > Los pasos 10 y 11 son **obligatorios para certificar**: Amazon los prueba siempre.
 
+> **`AMAZON.Food` sirve para lo que no es comida. Verificado el 23 ago 2026.** Entraron
+> completos y sin deformarse: *tornillos*, *bombillas*, *papel de lija*, *pilas AA*,
+> *ibuprofeno* y *arena del gato*.
+>
+> Se dio por bloqueante durante la sesión, y era falso: los slots predefinidos de Alexa
+> funcionan como **datos de entrenamiento, no como lista cerrada**. Sesgan el
+> reconocimiento hacia su dominio, pero no rechazan lo de fuera. La ficha puede seguir
+> prometiendo ferretería y farmacia, y **no hace falta slot personalizado**.
+
 ## Bloque 3 — Colisión del nombre de invocación
 
 **Superado por el propio cambio de nombre.** El bloque existía para decidir si había que
@@ -116,17 +125,17 @@ justo lo que avisa el bloque de frases de la pantalla de Alexa en la app.
 | # | Paso | Esperado | OK |
 |---|---|---|---|
 | 21 | **Android**: pantalla de Alexa con cuenta vinculada | Selector visible, lista activa marcada | ✅ |
-| 22 | **Android**: la misma pantalla en sesión anónima | Aviso, sin selector, y el botón lleva a crear cuenta | ✅ |
+| 22 | **Android**: la misma pantalla en sesión anónima | Aviso, sin selector, y el botón lleva a crear cuenta | ⚠️ |
 | 23 | **Android**: cuenta sin vincular | Explica que se vincula desde la app de Alexa | ✅ |
 | 24 | **Android**: usuario **sin ninguna lista** | Se ve la pantalla de Alexa **y** en MisListas el mensaje de "no tienes listas" | ✅ |
 | 25 | **iOS**: repetir 21, 17 y 18 | Igual que en Android | ✅ |
-| 26 | Los tres idiomas: español, catalán e inglés | Ningún texto sin traducir ni mal escrito | ❌ |
+| 26 | Los tres idiomas: español, catalán e inglés | Ningún texto sin traducir ni mal escrito | ✅ |
 
 ---
 
 ## Qué salió mal — 23 ago 2026
 
-Cinco cosas. Cuatro son de texto y presentación; la cuarta es un bug de navegación real.
+Seis cosas. Cuatro son de texto y presentación; la cuarta y la sexta son bugs de verdad.
 
 ### 1. El saludo de la skill nombraba a la competencia
 
@@ -147,9 +156,11 @@ pulsable, no un botón.
 más el `TextButton` de `AlexaSection.kt`.
 
 **El destino del botón NO cambia**, aunque diga "Crear cuenta": sigue abriendo el diálogo
-de vinculación. `Routes.Register` crearía una cuenta nueva y **tiraría las listas del
-anónimo**; `linkAccountWithEmailUseCase` las conserva. Por eso el menú lateral ya enseña un
-`DataLossWarningDialog` antes de mandar a Login.
+de vinculación. Decisión tomada con las tres opciones sobre la mesa el 23 ago 2026, porque
+`UsersDataSource.userRegister()` llama a `createUserWithEmailAndPassword` y devuelve
+`listas = listOf()` — o sea, `Routes.Register` crea una cuenta nueva y **abandona las listas
+del anónimo**, mientras que `linkAccountWithEmailUseCase` las conserva. Por eso el menú
+lateral ya enseña un `DataLossWarningDialog` antes de mandar a Login.
 
 ### 3. El camino dentro de la app de Alexa estaba mal descrito
 
@@ -166,12 +177,23 @@ cuenta"*. El circuito real, comprobado:
 Entrar en la pantalla de Alexa y volver atrás hacía salir el diálogo de "Crea tu cuenta"
 sin pedirlo. En Android y en iOS.
 
-`AlexaViewModel` navega con `Routes.Home(userId, openLinkAccount = true)`, y ese flag se
-queda grabado **para siempre** en esa entrada del backstack. `HomeScreen` lo lee en un
+`AlexaViewModel` navegaba con `Routes.Home(userId, openLinkAccount = true)`, y ese flag se
+quedaba grabado **para siempre** en esa entrada del backstack. `HomeScreen` lo lee en un
 `LaunchedEffect(Unit)`, y `NavDisplay` descompone Home al ir a Alexa y la recompone al
-volver: el efecto se relanza, ve el flag todavía a `true` y reabre el diálogo. Cada vez.
+volver: el efecto se relanzaba, veía el flag todavía a `true` y reabría el diálogo. Cada vez.
 
-→ Guard con `rememberSaveable` en `HomeScreen.kt`, que `NavDisplay` conserva por entrada.
+**El primer arreglo fue peor que el bug.** Un guard con `rememberSaveable` en `HomeScreen`
+dio la vuelta al problema: como `Routes.Home` es un data class, volver a pedir la
+vinculación produce una entrada **igual** a la anterior, `NavDisplay` le restaura su estado
+guardado, el guard seguía consumido y el diálogo ya no salía **nunca más** en cuanto lo
+cancelabas una vez.
+
+Los dos bugs son el mismo error de fondo: **una ruta no es un evento**. Un parámetro de
+navegación describe *dónde estás*, y aquí se estaba usando para decir *qué acaba de pasar*.
+
+→ `PendingHomeAction`, un objeto de Koin con una petición de un solo uso:
+`requestLinkAccount()` la deja puesta, `consumeLinkAccount()` la devuelve una vez y la apaga.
+El flag sale de `Routes.Home` por completo, así que la clase entera de bug desaparece.
 
 ### 5. Apóstrofes escapados a la vista, en catalán e inglés
 
@@ -181,13 +203,34 @@ Android XML: lo pinta tal cual. En español no se notaba porque no lleva apóstr
 Seis casos en `values-ca/strings.xml`, dos en `values/strings.xml`. En ese mismo fichero
 catalán ya había apóstrofes sin escapar que se veían bien — esa es la forma correcta.
 
+### 6. Al crear la cuenta desde Alexa saltaba el diálogo de compartir — **bug**
+
+Creas la cuenta desde la pantalla de Alexa y, nada más terminar, se abre el diálogo de
+compartir lista. Nadie lo ha pedido.
+
+`linkAccountWithEmail()` terminaba siempre en `setState { showCustomDialog(true) }`, y ese
+`customDialog` **es** el `ShareListaCompraDialog`. Estaba bien mientras el único camino para
+llegar a vincular fuera "compartir requiere cuenta", donde abrir el diálogo de compartir al
+acabar es exactamente lo que quieres. La pantalla de Alexa añadió un segundo camino y heredó
+el final del primero. Lo mismo pasaba en `signInWithExistingAccountAndDiscardAnonymous()`.
+
+→ `LinkAccountOrigin { SHARE, ALEXA }` en `ListaCompraState`, se fija al abrir el diálogo y
+se consulta al cerrarlo. El valor por defecto es `SHARE`, que es el comportamiento de antes:
+si algún día aparece un tercer camino y se olvida marcarlo, se comporta como siempre en vez
+de callarse.
+
 ---
 
 ## Qué queda por probar
 
 1. **Bloque 4 entero.** Necesita una segunda cuenta de Amazon. Es la prueba que da nombre al plan.
 2. **El paso 1 por la tarjeta `LinkAccount`**, con esa misma cuenta limpia. Si sigue sin botón, bloquea la certificación.
-3. **Repasar 22, 23, 25 y 26** cuando estén los arreglos compilados.
+3. **Crear cuenta desde la pantalla de Alexa, en Android y en iOS**, con el arreglo del punto 6: debe terminar sin diálogo de compartir y **con las listas del anónimo intactas**.
+4. **Cancelar ese diálogo y volver a pedirlo.** Tiene que salir otra vez, tantas como haga falta. Es lo que rompió el primer arreglo del punto 4.
+5. **Volver atrás desde la pantalla de Alexa sin haber pulsado nada.** No debe salir ningún diálogo. Es el bug original.
+6. **Compartir una lista siendo anónimo**, que es el camino que NO debía cambiar: ahí el diálogo de compartir sí tiene que salir al crear la cuenta.
+
+Los pasos 23 y 26 quedaron verificados el 23 ago 2026 con los arreglos ya puestos.
 
 ---
 

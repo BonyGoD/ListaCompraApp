@@ -14,6 +14,7 @@ import dev.bonygod.listacompra.home.domain.usecase.DeleteAllProductosUseCase
 import dev.bonygod.listacompra.home.domain.usecase.DeleteProductoUseCase
 import dev.bonygod.listacompra.home.domain.usecase.GetProductosUseCase
 import dev.bonygod.listacompra.home.domain.usecase.UpdateProductoUseCase
+import dev.bonygod.listacompra.home.ui.composables.interactions.LinkAccountOrigin
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEffect
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
@@ -260,6 +261,7 @@ class ListaCompraViewModel(
 
             is ListaCompraEvent.OnShareAccountRequiredConfirm -> {
                 setState { showShareRequiresAccountDialog(false) }
+                setState { setLinkAccountOrigin(LinkAccountOrigin.SHARE) }
                 setState { showLinkAccountDialog(true) }
             }
 
@@ -269,7 +271,10 @@ class ListaCompraViewModel(
             is ListaCompraEvent.OnLinkEmailChange -> setState { updateLinkEmail(event.text) }
             is ListaCompraEvent.OnLinkPasswordChange -> setState { updateLinkPassword(event.text) }
             is ListaCompraEvent.OnLinkAccountConfirm -> linkAccountWithEmail()
-            is ListaCompraEvent.OnOpenLinkAccountDialog -> setState { showLinkAccountDialog(true) }
+            is ListaCompraEvent.OnOpenLinkAccountDialog -> {
+                setState { setLinkAccountOrigin(LinkAccountOrigin.ALEXA) }
+                setState { showLinkAccountDialog(true) }
+            }
 
             is ListaCompraEvent.OnDismissLinkAccountDialog -> {
                 setState { showLinkAccountDialog(false) }
@@ -302,7 +307,12 @@ class ListaCompraViewModel(
                     setState { clearLinkFields() }
                     stopNotificationsListener()
                     loadUserDataSuspending()
-                    setState { showCustomDialog(true) }
+                    // Solo abre el diálogo de compartir si se vino de ahí. Desde la
+                    // pantalla de Alexa el usuario no ha pedido compartir nada, y le
+                    // salía de la nada nada más crear la cuenta.
+                    if (state.value.linkAccountOrigin == LinkAccountOrigin.SHARE) {
+                        setState { showCustomDialog(true) }
+                    }
                 },
                 onFailure = { error ->
                     if (error is LoginFailure.CredentialAlreadyInUse) {
@@ -333,7 +343,12 @@ class ListaCompraViewModel(
                     setState { showLinkAccountDialog(false) }
                     setState { clearLinkFields() }
                     loadUserDataSuspending()
-                    setState { showCustomDialog(true) }
+                    // Solo abre el diálogo de compartir si se vino de ahí. Desde la
+                    // pantalla de Alexa el usuario no ha pedido compartir nada, y le
+                    // salía de la nada nada más crear la cuenta.
+                    if (state.value.linkAccountOrigin == LinkAccountOrigin.SHARE) {
+                        setState { showCustomDialog(true) }
+                    }
                 },
                 onFailure = { error ->
                     val errorMessage = (error as? Exception)?.message ?: "Error desconocido"

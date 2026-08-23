@@ -43,7 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * Contenido de la pantalla Alexa. Tres estados, según fase 5 del plan de Alexa:
  * - Anónimo: no hay selector, solo aviso + enlace al flujo de vincular cuenta ya
- *   existente (reutiliza LinkAccountDialog vía Routes.Home(openLinkAccount = true)).
+ *   existente (reutiliza LinkAccountDialog vía PendingHomeAction.requestLinkAccount()).
  * - Con cuenta, sin vincular (alexaVinculada == false): la vinculación se hace desde
  *   la app de Alexa, no desde aquí.
  * - Vinculado: selector de a qué lista escribe Alexa, alimentado por `getListas()`.

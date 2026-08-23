@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.alexa.ui.composables
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -90,7 +91,18 @@ fun AlexaContent(
                         .fillMaxSize()
                         .padding(paddingValues)
                         .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    // Sin vincular hay una sola tarjeta pequeña, y arriba del todo deja
+                    // media pantalla vacía debajo. Centrada parece puesta a propósito.
+                    // Vinculado hay dos tarjetas que ya llenan, y ahí manda el orden de
+                    // lectura: configuración arriba. Como el contenido puede pasarse de
+                    // alto —muchas listas, o el tamaño de fuente del sistema subido—, el
+                    // scroll sigue puesto y el centrado solo aplica mientras quepa.
+                    verticalArrangement = if (state.alexaVinculada) {
+                        Arrangement.Top
+                    } else {
+                        Arrangement.Center
+                    }
                 ) {
                     AlexaSection(state = state, onEvent = onEvent)
                 }

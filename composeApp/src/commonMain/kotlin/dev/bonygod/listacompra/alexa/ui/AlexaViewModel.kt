@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dev.bonygod.listacompra.alexa.ui.composables.interactions.AlexaEvent
 import dev.bonygod.listacompra.alexa.ui.composables.interactions.AlexaState
 import dev.bonygod.listacompra.core.navigation.Navigator
+import dev.bonygod.listacompra.core.navigation.PendingHomeAction
 import dev.bonygod.listacompra.core.navigation.Routes
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.IsAnonymousUserUseCase
@@ -23,6 +24,7 @@ import kotlinx.coroutines.launch
  */
 class AlexaViewModel(
     private val navigator: Navigator,
+    private val pendingHomeAction: PendingHomeAction,
     private val getListasUseCase: GetListasUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val isAnonymousUserUseCase: IsAnonymousUserUseCase,
@@ -94,8 +96,10 @@ class AlexaViewModel(
         when (event) {
             is AlexaEvent.GoBack -> navigator.goBack()
             is AlexaEvent.SelectListaAlexa -> selectListaAlexa(event.listaId)
-            is AlexaEvent.OnLinkAccountForAlexaClick ->
-                navigator.clearAndNavigateTo(Routes.Home(userId, openLinkAccount = true))
+            is AlexaEvent.OnLinkAccountForAlexaClick -> {
+                pendingHomeAction.requestLinkAccount()
+                navigator.clearAndNavigateTo(Routes.Home(userId))
+            }
         }
     }
 

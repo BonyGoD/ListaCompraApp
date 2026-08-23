@@ -5,15 +5,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,14 +67,19 @@ fun AlexaSection(
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                TextButton(
+                Spacer(modifier = Modifier.height(12.dp))
+                // El botón dice "Crear cuenta" pero abre el diálogo de vinculación
+                // (linkAccountWithEmailUseCase) a propósito, no Routes.Register: es el
+                // único camino que crea la cuenta sin tirar las listas del anónimo.
+                Button(
                     onClick = { onEvent(AlexaEvent.OnLinkAccountForAlexaClick) },
-                    contentPadding = PaddingValues(0.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
                 ) {
                     Text(
                         text = stringResource(Res.string.mislistas_alexa_link_account_button),
-                        color = PrimaryBlue,
+                        color = Color.White,
                         fontWeight = FontWeight.SemiBold
                     )
                 }

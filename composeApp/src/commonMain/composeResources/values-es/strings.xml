@@ -113,9 +113,9 @@
     <string name="mislistas_rename_dialog_title">Renombrar lista</string>
     <string name="mislistas_rename_dialog_confirm_button">Renombrar</string>
     <string name="mislistas_alexa_section_title">Alexa</string>
-    <string name="mislistas_alexa_anonymous_message">Para usar Alexa necesitas una cuenta con correo o Google. Las sesiones anónimas no se pueden vincular.</string>
-    <string name="mislistas_alexa_link_account_button">Vincular cuenta</string>
-    <string name="mislistas_alexa_not_linked_message">La vinculación se hace desde la app de Alexa, no desde aquí. Abre la app de Alexa, ve a Más → Skills, busca la skill y pulsa Vincular cuenta.</string>
+    <string name="mislistas_alexa_anonymous_message">Para usar Alexa necesitas crear una cuenta. Las sesiones anónimas no se pueden vincular.</string>
+    <string name="mislistas_alexa_link_account_button">Crear cuenta</string>
+    <string name="mislistas_alexa_not_linked_message">La vinculación se hace desde la app de Alexa, no desde aquí. Ve a Skills y juegos → Mis skills, elige esta skill y pulsa Configuración → Vincular cuenta. Si aún no la tienes, búscala en Skills y juegos e instálala primero.</string>
     <string name="mislistas_alexa_selector_title">Lista donde escribe Alexa</string>
     <string name="mislistas_alexa_default_hint">Si no eliges ninguna, Alexa añade a tu lista predeterminada.</string>
     <string name="mislistas_alexa_active_badge">Activa en Alexa</string>

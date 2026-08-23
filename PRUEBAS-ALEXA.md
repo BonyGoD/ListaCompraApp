@@ -3,15 +3,17 @@
 Guion de la sesión de pruebas, para pasar de una vez con las fases 1 a 5 desplegadas.
 Referencia completa: `PLAN-ALEXA-MULTIUSUARIO.md`, sección 9.
 
+**Pasada completa el 23 ago 2026.** Resultado abajo, en "Qué salió mal".
+
 **Antes de empezar, marca esto:**
 
-- [ ] Fase 3 desplegada en producción (`api-devware`, rama `feature/alexa-resolver-usuario` mergeada)
-- [ ] Fase 5 compilada e instalada en Android
-- [ ] Fase 5 compilada e instalada en iOS
-- [ ] Reglas de Firestore publicadas, con TTL sobre `alexa_oauth_codes.expiraEn`
+- [x] Fase 3 desplegada en producción (`api-devware`, rama `feature/alexa-resolver-usuario` mergeada)
+- [x] Fase 5 compilada e instalada en Android
+- [x] Fase 5 compilada e instalada en iOS
+- [x] Reglas de Firestore publicadas, con TTL sobre `alexa_oauth_codes.expiraEn`
 - [ ] Dos cuentas de prueba distintas, cada una con al menos una lista
-- [ ] Un Echo o la app de Alexa en el móvil
-- [ ] Consola de Firestore abierta
+- [x] Un Echo o la app de Alexa en el móvil
+- [x] Consola de Firestore abierta
 
 ---
 
@@ -28,89 +30,164 @@ rechazado, el `invalid_client`, la rotación del refresh token y el
 
 | # | Paso | Esperado | OK |
 |---|---|---|---|
-| 1 | Hablar a la skill **sin estar vinculado** | Responde *"Para usar tu lista de la compra, vincula tu cuenta desde la app de Alexa"* **y la app de Alexa pinta el botón de vincular** | ☐ |
-| 2 | Pulsar ese botón → entrar con **correo** | "Cuenta vinculada correctamente" | ☐ |
-| 3 | Firestore | Hay doc en `alexa_refresh_tokens`; el de `alexa_oauth_codes` está `usado: true` | ☐ |
-| 4 | Desvincular y repetir con **Google** | Igual que con correo | ☐ |
-| 5 | Intentar vincular en **sesión anónima** | Sale el aviso, no deja seguir | ☐ |
+| 1 | Hablar a la skill **sin estar vinculado** | Responde *"Para usar tu lista de la compra, vincula tu cuenta desde la app de Alexa"* **y la app de Alexa pinta el botón de vincular** | ✅ |
+| 2 | Pulsar ese botón → entrar con **correo** | "Cuenta vinculada correctamente" | ✅ |
+| 3 | Firestore | Hay doc en `alexa_refresh_tokens`; el de `alexa_oauth_codes` está `usado: true` | ✅ |
+| 4 | Desvincular y repetir con **Google** | Igual que con correo | ✅ |
+| 5 | Intentar vincular en **sesión anónima** | Sale el aviso, no deja seguir | ⊘ |
 
-> **El paso 4 es el que más riesgo tiene.** Es la prueba de `signInWithPopup` dentro del
-> navegador incrustado de Amazon, donde los popups fallan a menudo. **Si el correo funciona
-> y Google no, el problema es el popup, no el OAuth** — y la alternativa sería
-> `signInWithRedirect`, que obliga a rehacer el flujo de vuelta. Anótalo tal cual lo veas.
+> **Paso 1 — con matiz.** Se vincula, pero por Skill → Configuración → Vincular cuenta.
+> La pantalla a la que lleva la **tarjeta `LinkAccount`** salía sin botón, y ese es el
+> camino que usará la gente y el que prueba Amazon al certificar.
+>
+> Hubo una causa real y está arreglada: `Your Secret` estaba **vacío** en el Account
+> Linking del console de Amazon, así que la configuración era inválida y por eso tampoco
+> dejaba guardar. Se rellenó y guardó. Pero esta cuenta habilitó la skill mientras estaba
+> rota y arrastra esa configuración; inhabilitar y volver a habilitar no la limpia, así
+> que no se puede saber si lo que queda es residuo o un fallo de verdad.
+>
+> **Se decide en el paso 14**, con la segunda cuenta de Amazon, que nunca vio la
+> configuración rota.
+
+> **Paso 5 — no se puede probar por Alexa.** No hay forma de meter una sesión anónima en
+> la app de Alexa: la vinculación empieza siempre desde una cuenta de Amazon. Lo que sí se
+> prueba, y es lo que importa, es que la app **avise antes de dejar llegar hasta ahí** —
+> eso es el paso 22. El rechazo del lado servidor (`access_denied` en
+> `POST /alexa/oauth/code` cuando el idToken es anónimo) ya quedó verificado el 22 ago.
 
 ## Bloque 2 — Uso
 
 | # | Paso | Esperado | OK |
 |---|---|---|---|
-| 6 | *"Alexa, abre lista de la compra"* | Bienvenida, ya no la tarjeta de vincular | ☐ |
-| 7 | *"añade leche"* | Confirma y aparece en la app **sin recargar** | ☐ |
-| 8 | Firestore | Está en `lista-compra/{listaAlexa}/productos` con `fecha` como Timestamp, `isImportant: false`, `isPurchased: false` | ☐ |
-| 9 | *"añade papel de cocina"* | Entra completo, no truncado a "papel" | ☐ |
-| 10 | *"ayuda"* | Responde algo útil, sesión abierta | ☐ |
-| 11 | *"para"* y *"cancela"* | Cierran limpio | ☐ |
+| 6 | *"Alexa, abre compras pendientes"* | Bienvenida, ya no la tarjeta de vincular | ✅ |
+| 7 | *"añade leche"* | Confirma y aparece en la app **sin recargar** | ✅ |
+| 8 | Firestore | Está en `lista-compra/{listaAlexa}/productos` con `fecha` como Timestamp, `isImportant: false`, `isPurchased: false` | ✅ |
+| 9 | *"añade papel de cocina"* | Entra completo, no truncado a "papel" | ✅ |
+| 10 | *"ayuda"* | Responde algo útil, sesión abierta | ✅ |
+| 11 | *"para"* y *"cancela"* | Cierran limpio | ✅ |
 
 > Los pasos 10 y 11 son **obligatorios para certificar**: Amazon los prueba siempre.
 
 ## Bloque 3 — Colisión del nombre de invocación
 
-**El bloque que puede cambiar el nombre de la skill.** Hazlo en frío, sin haber abierto
-la skill antes (si vienes de una sesión, di *"para"* y espera un poco).
+**Superado por el propio cambio de nombre.** El bloque existía para decidir si había que
+renombrar la skill; se renombró a **compras pendientes** antes de esta pasada, y esa
+decisión ya está tomada. Los pasos 12 y 13 hablaban de *"lista de la compra"*, que ya no
+es el nombre de nada.
 
-| # | Frase | Anota quién contesta | OK |
+| # | Frase | Resultado | OK |
 |---|---|---|---|
-| 12 | *"Alexa, añade leche a la lista de la compra"* | ¿Tu skill o la lista nativa de Amazon? | ☐ |
-| 13 | *"Alexa, pídele a lista de la compra que añada leche"* | ¿Funciona? | ☐ |
+| 12 | *"Alexa, añade leche a la lista de la compra"* | Va a la lista nativa de Amazon, **como se espera** | ⊘ |
+| 13 | *"Alexa, pídele a lista de la compra que añada leche"* | Nombre obsoleto | ⊘ |
 
-**Cómo distinguirlo, dos señales independientes:**
-- **La voz.** Tu skill dice *"leche añadido a la lista correctamente"*. Cualquier otra
-  redacción es la nativa.
-- **Dónde acaba.** Firestore → tu skill. App de Alexa → Listas → la nativa.
-
-**Cómo se lee el resultado:**
-
-| 12 | 13 | Qué significa | Qué hacer |
-|---|---|---|---|
-| ✅ | ✅ | No hay colisión | Nada, el nombre se queda |
-| ❌ | ✅ | La nativa se come la frase natural, pero la fórmula explícita llega | **Probar a renombrar** a *"lista del súper"* y repetir 12 |
-| ❌ | ❌ | El nombre está bloqueado | **Renombrar** obligatoriamente |
-| ✅ | ❌ | Raro; repetir para descartar un fallo de reconocimiento | — |
+Que la frase del 12 se la quede la lista nativa **ya no es un fallo, es lo correcto**: es
+justo lo que avisa el bloque de frases de la pantalla de Alexa en la app.
 
 ## Bloque 4 — Multiusuario
 
-**Es la prueba que da nombre a todo esto.**
+**Es la prueba que da nombre a todo esto. PENDIENTE: hace falta una segunda cuenta de Amazon.**
 
 | # | Paso | Esperado | OK |
 |---|---|---|---|
-| 14 | Vincular la **segunda cuenta** con otra cuenta de Amazon | Vincula | ☐ |
+| 14 | Vincular la **segunda cuenta** con otra cuenta de Amazon, **entrando por la tarjeta `LinkAccount`** (ver nota del paso 1) | Vincula, y esta vez la pantalla **sí** trae botón | ☐ |
 | 15 | Añadir un producto desde cada una | Ambas confirman | ☐ |
 | 16 | Firestore y las dos apps | **Cada producto en su lista. Ninguna cuenta ve el de la otra** | ☐ |
+
+> **Que desde una cuenta no aparezcan productos ajenos no sustituye a esta prueba.** Lo
+> que demuestra es que se respeta el `uid` del token al escribir, y eso ya se sabía. Lo que
+> falta por ver es que **dos cuentas de Amazon distintas produzcan `uid` distintos**, y eso
+> solo se ve teniendo las dos. El riesgo es bajo —el `uid` sale del JWT y no hay estado
+> compartido en medio— pero bajo no es cero, y es el titular de todo el plan.
 
 ## Bloque 5 — Lista y caducidad
 
 | # | Paso | Esperado | OK |
 |---|---|---|---|
-| 17 | En la app: MisListas → sección Alexa → elegir una segunda lista | Se marca como activa | ☐ |
-| 18 | *"añade huevos"* | Va a la **nueva** lista | ☐ |
-| 19 | Quitar `listaAlexa` a mano en Firestore y dictar otro producto | Cae en `listas[0]`, la predeterminada | ☐ |
-| 20 | Esperar a que caduque el access token (>1 h) y volver a dictar | Funciona sin intervención: Alexa refresca sola | ☐ |
+| 17 | Menú lateral → **Alexa** → elegir una segunda lista | Se marca como activa | ✅ |
+| 18 | *"añade huevos"* | Va a la **nueva** lista | ✅ |
+| 19 | Quitar `listaAlexa` a mano en Firestore y dictar otro producto | Cae en `listas[0]`, la predeterminada | ✅ |
+| 20 | Esperar a que caduque el access token (>1 h) y volver a dictar | Funciona sin intervención: Alexa refresca sola | ✅ |
 
-> El paso 20 tarda una hora. Déjalo lanzado y sigue con lo demás.
+> El paso 17 ya no se llega desde MisListas: la sección se mudó a pantalla propia, en el
+> menú lateral.
 
 ## Bloque 6 — La app, en los dos sistemas
 
 | # | Paso | Esperado | OK |
 |---|---|---|---|
-| 21 | **Android**: MisListas con la sección Alexa, con cuenta vinculada | Selector visible, lista activa marcada | ☐ |
-| 22 | **Android**: la misma pantalla en sesión anónima | Aviso, sin selector, y el enlace lleva al diálogo de vincular cuenta | ☐ |
-| 23 | **Android**: cuenta sin vincular | Explica que se vincula desde la app de Alexa | ☐ |
-| 24 | **Android**: usuario **sin ninguna lista** | Se ve la sección de Alexa **y** el mensaje de "no tienes listas" | ☐ |
-| 25 | **iOS**: repetir 21, 17 y 18 | Igual que en Android | ☐ |
-| 26 | Los tres idiomas: español, catalán e inglés | Ningún texto sin traducir en la sección Alexa | ☐ |
+| 21 | **Android**: pantalla de Alexa con cuenta vinculada | Selector visible, lista activa marcada | ✅ |
+| 22 | **Android**: la misma pantalla en sesión anónima | Aviso, sin selector, y el botón lleva a crear cuenta | ✅ |
+| 23 | **Android**: cuenta sin vincular | Explica que se vincula desde la app de Alexa | ✅ |
+| 24 | **Android**: usuario **sin ninguna lista** | Se ve la pantalla de Alexa **y** en MisListas el mensaje de "no tienes listas" | ✅ |
+| 25 | **iOS**: repetir 21, 17 y 18 | Igual que en Android | ✅ |
+| 26 | Los tres idiomas: español, catalán e inglés | Ningún texto sin traducir ni mal escrito | ❌ |
 
-> El paso 24 es el que más vigilancia pide: la fase 5 **cambió** cómo se ve la pantalla sin
-> listas. Antes era un mensaje centrado a pantalla completa; ahora la sección de Alexa va
-> primero y el mensaje queda dentro del `LazyColumn`.
+---
+
+## Qué salió mal — 23 ago 2026
+
+Cinco cosas. Cuatro son de texto y presentación; la cuarta es un bug de navegación real.
+
+### 1. El saludo de la skill nombraba a la competencia
+
+`ALEXA_RESPONSES.WELCOME` decía *"Abriendo **lista de la compra**. ¿Qué quieres añadir?"*.
+Dices *"abre compras pendientes"* y te contesta con el nombre de otra cosa — y no de
+cualquier cosa: **"lista de la compra" es el nombre de la lista nativa de Alexa**, la
+confusión que lleva todo el plan intentando evitar.
+
+→ `api-devware`, `api/constantes.js`.
+
+### 2. El aviso de sesión anónima, mal redactado
+
+Decía *"necesitas una cuenta con correo o Google"*, que describe el requisito por sus
+proveedores en vez de decir qué tiene que hacer el usuario. Y la acción era un texto
+pulsable, no un botón.
+
+→ `mislistas_alexa_anonymous_message` y `mislistas_alexa_link_account_button`, tres idiomas,
+más el `TextButton` de `AlexaSection.kt`.
+
+**El destino del botón NO cambia**, aunque diga "Crear cuenta": sigue abriendo el diálogo
+de vinculación. `Routes.Register` crearía una cuenta nueva y **tiraría las listas del
+anónimo**; `linkAccountWithEmailUseCase` las conserva. Por eso el menú lateral ya enseña un
+`DataLossWarningDialog` antes de mandar a Login.
+
+### 3. El camino dentro de la app de Alexa estaba mal descrito
+
+`mislistas_alexa_not_linked_message` decía *"Más → Skills, busca la skill y pulsa Vincular
+cuenta"*. El circuito real, comprobado:
+
+| Situación | Camino |
+|---|---|
+| Skill ya instalada | Skills y juegos → Mis skills → Activado → la skill → Configuración → Vincular cuenta |
+| Sin instalar | Skills y juegos → buscarla → instalar → Configuración → Vincular cuenta |
+
+### 4. El diálogo de crear cuenta reaparecía solo — **bug**
+
+Entrar en la pantalla de Alexa y volver atrás hacía salir el diálogo de "Crea tu cuenta"
+sin pedirlo. En Android y en iOS.
+
+`AlexaViewModel` navega con `Routes.Home(userId, openLinkAccount = true)`, y ese flag se
+queda grabado **para siempre** en esa entrada del backstack. `HomeScreen` lo lee en un
+`LaunchedEffect(Unit)`, y `NavDisplay` descompone Home al ir a Alexa y la recompone al
+volver: el efecto se relanza, ve el flag todavía a `true` y reabre el diálogo. Cada vez.
+
+→ Guard con `rememberSaveable` en `HomeScreen.kt`, que `NavDisplay` conserva por entrada.
+
+### 5. Apóstrofes escapados a la vista, en catalán e inglés
+
+Se leía `S\'ha produït un error`. `composeResources` **no procesa el escape `\'`** de
+Android XML: lo pinta tal cual. En español no se notaba porque no lleva apóstrofes.
+
+Seis casos en `values-ca/strings.xml`, dos en `values/strings.xml`. En ese mismo fichero
+catalán ya había apóstrofes sin escapar que se veían bien — esa es la forma correcta.
+
+---
+
+## Qué queda por probar
+
+1. **Bloque 4 entero.** Necesita una segunda cuenta de Amazon. Es la prueba que da nombre al plan.
+2. **El paso 1 por la tarjeta `LinkAccount`**, con esa misma cuenta limpia. Si sigue sin botón, bloquea la certificación.
+3. **Repasar 22, 23, 25 y 26** cuando estén los arreglos compilados.
 
 ---
 
@@ -119,6 +196,10 @@ la skill antes (si vienes de una sesión, di *"para"* y espera un poco).
 - **La skill responde 401 a todo** → mira los logs de Vercel. Si dice `ALEXA_SKILL_ID no
   está configurada`, falta la variable en ese entorno. Si dice `ALEXA_JWT_SECRET no está
   configurada`, lo mismo. Cualquier otra cosa es fallo de firma real.
+- **La app de Alexa no pinta el botón de vincular** → antes de tocar código, mira
+  `Your Secret` en el Account Linking del console. Si el campo enseña el placeholder
+  "Enter client secret", está **vacío**, la configuración es inválida y por eso tampoco
+  te deja guardar. Pasó el 23 ago 2026.
 - **Vincula pero la skill sigue pidiendo vincular** → el access token no verifica. Casi
   seguro que `ALEXA_JWT_SECRET` no es la misma con la que se firmó, o falta.
 - **Vincula y dicta bien pero no aparece en la app** → mira a qué `listaId` fue en los logs

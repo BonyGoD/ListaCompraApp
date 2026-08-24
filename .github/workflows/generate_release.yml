@@ -4,6 +4,15 @@ on:
   push:
     branches:
       - main
+  # Vista previa manual: se puede lanzar desde cualquier rama y **no crea ningun
+  # release ni tag**, solo escribe las notas en el resumen del job. Sirve para ver
+  # que se va a publicar antes de mergear la rama de release a main.
+  #
+  # Ojo: GitHub solo enseña el boton "Run workflow" si el workflow con el trigger
+  # `workflow_dispatch` esta en la rama por defecto. Hasta que esto llegue a main,
+  # la vista previa se hace en local:
+  #     python .github/scripts/release_notes.py
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -40,12 +49,21 @@ jobs:
           echo "📱 Current version: ${{ steps.gradle_version.outputs.version }}"
           echo "📱 Previous version: ${{ steps.previous_version.outputs.prev_version }}"
           echo "========================================"
-          
+
           if [ -z "${{ steps.gradle_version.outputs.version }}" ]; then
             echo "❌ ERROR: No se pudo leer la versión actual"
             exit 1
           fi
-          
+
+          # En la vista previa manual no hay bump que detectar: HEAD^ dentro de la
+          # rama de release ya lleva el mismo versionName, asi que la comparacion
+          # diria "no bump" y no se generaria nada. Se fuerza a proposito.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "👀 Vista previa manual: no se creara release ni tag"
+            echo "bump=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           if [ "${{ steps.gradle_version.outputs.version }}" = "${{ steps.previous_version.outputs.prev_version }}" ]; then
             echo "ℹ️  No version bump detected - skipping release"
             echo "💡 Para crear un release, incrementa versionName en androidApp/build.gradle.kts"
@@ -57,54 +75,53 @@ jobs:
             echo "bump=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Generate changelog from merged PRs in develop
+      # El changelog sale de los commits que este merge trae a main, no de una
+      # consulta por fechas a la API de PRs. El porque esta escrito en la cabecera de
+      # .github/scripts/release_notes.py, que es el mismo archivo que se puede
+      # ejecutar en local para ver el resultado sin mergear nada.
+      - name: Generate changelog
         if: steps.version_compare.outputs.bump == 'true'
-        id: changelog
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_VERSION: ${{ steps.gradle_version.outputs.version }}
+          PREV_VERSION: ${{ steps.previous_version.outputs.prev_version }}
+          REPO: ${{ github.repository }}
         run: |
-          echo "=== Generando changelog desde PRs mergeadas en develop ==="
-
-          # Obtener la fecha de publicación del último release
-          LAST_RELEASE_DATE=$(curl -s \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/latest" | \
-            jq -r '.published_at // "1970-01-01T00:00:00Z"')
-
-          echo "📅 Último release publicado: $LAST_RELEASE_DATE"
-
-          # Obtener PRs mergeadas en develop después del último release
-          # Paginamos hasta 100 por seguridad
-          PRS=$(curl -s \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls?state=closed&base=develop&sort=updated&direction=desc&per_page=100" | \
-            jq -r --arg since "$LAST_RELEASE_DATE" \
-            '[.[] | select(.merged_at != null and .merged_at > $since)] | .[] | "- \(.title) (#\(.number))"')
-
-          echo "=== PRs encontradas ==="
-          echo "$PRS"
-          echo "======================"
-
-          CHANGELOG="## What's Changed"
-
-          if [ -n "$PRS" ]; then
-            CHANGELOG="${CHANGELOG}"$'\n'"${PRS}"
-          else
-            echo "⚠️ No se encontraron PRs, usando mensaje por defecto"
-            CHANGELOG="${CHANGELOG}"$'\n'"- Release version v${{ steps.gradle_version.outputs.version }}"
+          # En un push a main, HEAD es el merge y el tag anterior existe.
+          # En la vista previa manual, HEAD es la punta de la rama de release y el
+          # tag de su propia version todavia no existe: se toma el mas alto que haya.
+          PREV_TAG="v${PREV_VERSION}"
+          if ! git rev-parse -q --verify "refs/tags/${PREV_TAG}" >/dev/null; then
+            PREV_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]' | head -1)
+            PREV_VERSION="${PREV_TAG#v}"
           fi
 
-          echo "$CHANGELOG" > changelog.txt
+          if [ -n "$PREV_TAG" ]; then
+            RANGE="${PREV_TAG}..HEAD"
+          else
+            echo "⚠️  No hay ningun tag v*; uso los commits que introduce este commit"
+            RANGE="HEAD^..HEAD"
+            PREV_VERSION=""
+          fi
+
+          echo "📜 Rango: ${RANGE}"
+          export RANGE PREV_VERSION
+
+          python3 .github/scripts/release_notes.py > changelog.txt
 
           echo ""
           echo "=== CHANGELOG FINAL ==="
           cat changelog.txt
           echo "=== FIN CHANGELOG ==="
 
+          # Renderizado en la pestana Summary del job, que es donde de verdad se lee
+          {
+            echo "## Notas de la v${NEW_VERSION}"
+            echo ""
+            cat changelog.txt
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Create Release
-        if: steps.version_compare.outputs.bump == 'true'
+        if: steps.version_compare.outputs.bump == 'true' && github.event_name != 'workflow_dispatch'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "v${{ steps.gradle_version.outputs.version }}"

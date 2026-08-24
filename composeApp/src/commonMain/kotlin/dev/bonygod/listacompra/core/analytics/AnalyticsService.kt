@@ -1,8 +1,28 @@
 package dev.bonygod.listacompra.core.analytics
 
+import dev.bonygod.listacompra.getPlatform
 import dev.gitlive.firebase.analytics.FirebaseAnalytics
 
 class AnalyticsService(private val analytics: FirebaseAnalytics) {
+
+    init {
+        // Los builds de depuracion NO envian analitica. Crashlytics ya se apagaba en
+        // debug (MainActivity.configureCrashlytics), pero Analytics no, y eso ensuciaba
+        // las metricas de produccion: cada instalacion limpia durante el desarrollo
+        // —borrar datos, reinstalar, un emulador nuevo— crea un identificador de
+        // instancia nuevo que Firebase cuenta como una persona distinta.
+        //
+        // Se vio el 23 ago 2026: Firebase daba 78 usuarios activos de 30 dias y Play
+        // Console, que solo cuenta instalaciones venidas de la tienda, daba entre 7 y 10.
+        //
+        // El valor se guarda en el dispositivo y sobrevive a los reinicios, asi que en
+        // release se pone a true explicitamente para revertir cualquier false anterior.
+        try {
+            analytics.setAnalyticsCollectionEnabled(!getPlatform().isDebugBuild)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     fun logEvent(eventName: String, params: Map<String, Any>? = null) {
         try {

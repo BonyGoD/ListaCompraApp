@@ -5,5 +5,7 @@ data class Usuario(
     val nombre: String,
     val email: String,
     val apiKey: String,
-    val listas: List<String>
+    val listas: List<String>,
+    val listaAlexa: String = "",
+    val alexaVinculada: Boolean = false
 )

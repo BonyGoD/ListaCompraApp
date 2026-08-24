@@ -7,6 +7,14 @@ import dev.bonygod.listacompra.home.ui.model.ListaCompraUI
 import dev.bonygod.listacompra.home.ui.model.UserUI
 import dev.bonygod.listacompra.login.ui.composables.model.NotificationsUI
 
+/**
+ * Desde dónde se abrió el diálogo de vincular cuenta. Decide qué pasa DESPUÉS de crearla:
+ * quien venía de "compartir requiere cuenta" espera que se abra el diálogo de compartir
+ * —era el único camino cuando se escribió esto—, pero quien venía de la pantalla de Alexa
+ * no ha pedido compartir nada y le aparecía de la nada.
+ */
+enum class LinkAccountOrigin { SHARE, ALEXA }
+
 data class ListaCompraState(
     val dialogState: Boolean = false,
     val error: String? = null,
@@ -31,12 +39,14 @@ data class ListaCompraState(
     val showNotifications: Boolean = false,
     val showDeleteAccount: Boolean = false,
     val isAnonymous: Boolean = false,
+    val alexaVinculada: Boolean = false,
     val showDataLossWarning: Boolean = false,
     val showShareRequiresAccount: Boolean = false,
     val showLinkAccount: Boolean = false,
     val linkEmail: TextFieldValue = TextFieldValue(""),
     val linkPassword: TextFieldValue = TextFieldValue(""),
-    val showLinkCredentialInUse: Boolean = false
+    val showLinkCredentialInUse: Boolean = false,
+    val linkAccountOrigin: LinkAccountOrigin = LinkAccountOrigin.SHARE
 ) {
     fun showDeleteAccountDialog(show: Boolean): ListaCompraState {
         return copy(showDeleteAccount = show)
@@ -44,6 +54,10 @@ data class ListaCompraState(
 
     fun setAnonymous(isAnonymous: Boolean): ListaCompraState {
         return copy(isAnonymous = isAnonymous)
+    }
+
+    fun setAlexaVinculada(alexaVinculada: Boolean): ListaCompraState {
+        return copy(alexaVinculada = alexaVinculada)
     }
 
     fun showDataLossWarningDialog(show: Boolean): ListaCompraState {
@@ -88,6 +102,10 @@ data class ListaCompraState(
 
     fun showCustomDialog(show: Boolean): ListaCompraState {
         return copy(customDialog = show)
+    }
+
+    fun setLinkAccountOrigin(origin: LinkAccountOrigin): ListaCompraState {
+        return copy(linkAccountOrigin = origin)
     }
 
     fun showMenu(): ListaCompraState {

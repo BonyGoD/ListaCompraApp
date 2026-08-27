@@ -157,7 +157,7 @@ def main() -> None:
         raise SystemExit("Ejecuta esto desde la raiz del repo: no veo androidApp/build.gradle.kts")
 
     new = os.environ.get("NEW_VERSION") or find(r'versionName\s*=\s*"([^"]+)"', gradle, "")
-    repo = os.environ.get("REPO") or "BonyGoD/Lista-compra-app"
+    repo = os.environ.get("REPO") or "BonyGoD/ListaCompraApp"
 
     rng = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("RANGE", "")
     prev = os.environ.get("PREV_VERSION", "")

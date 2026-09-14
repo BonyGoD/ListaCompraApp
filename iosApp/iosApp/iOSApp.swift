@@ -2,7 +2,6 @@ import SwiftUI
 import Firebase
 import GoogleSignIn
 import SignInKMPSwift
-import GoogleMobileAds
 import AdMobKMPSwift
 import CrashlyticsKMPSwift
 import ComposeApp
@@ -16,17 +15,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Inicializar el helper para escuchar las notificaciones de Kotlin (GoogleSignIn)
         _ = SignInCallbackHelper.shared
 
-        // Inicializar Google Mobile Ads SDK
-        MobileAds.shared.start()
-
-        // Inicializar el helper para escuchar las notificaciones de Kotlin (AdMob)
-        _ = AdMobCallbackHelper.shared
-
-        // Precargar el intersticial usando el Ad Unit ID correcto desde Kotlin
-        let preloader = InterstitialAdPreloader()
-        if preloader.isInterstitialEnabled() {
-            AdPreloader.shared.preloadAd(adUnitId: preloader.getAdUnitId())
-        }
+        // Arranca el SDK de Google Mobile Ads y los puentes de banner e
+        // intersticial con Kotlin. La precarga del intersticial no se dispara
+        // aquí: la pide Kotlin con AdMobKMP.initializeAds() (MainViewController),
+        // que es quien conoce el AdMobConfig y el interruptor interstitialEnabled.
+        AdMobKMPBridge.start()
 
         return true
     }

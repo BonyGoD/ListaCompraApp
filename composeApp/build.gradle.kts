@@ -71,6 +71,9 @@ kotlin {
 
             // CrashlyticsKMP (JitPack)
             implementation(libs.bonygod.crashlyticskmp)
+
+            // AdMobKMP (JitPack)
+            implementation(libs.bonygod.admobkmp)
         }
 
         commonTest.dependencies {
@@ -94,8 +97,8 @@ kotlin {
             implementation(libs.googleid)
             implementation(libs.play.services.auth)
 
-            // AdMob
-            implementation(libs.play.services.ads)
+            // AdMob: play-services-ads ya no se declara aquí. AdMobKMP la trae
+            // como `api` en su androidMain, así que llega transitiva.
         }
     }
 }

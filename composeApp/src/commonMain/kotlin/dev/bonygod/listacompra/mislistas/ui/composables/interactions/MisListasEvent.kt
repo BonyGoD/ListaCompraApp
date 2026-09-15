@@ -7,5 +7,7 @@ sealed class MisListasEvent {
     data class ConfirmRename(val listaId: String, val nombre: String) : MisListasEvent()
     data object ShowCreateDialog : MisListasEvent()
     data class ConfirmCreate(val nombre: String) : MisListasEvent()
+    data class ShowDeleteDialog(val listaId: String, val nombre: String, val esPropia: Boolean) : MisListasEvent()
+    data class ConfirmDelete(val listaId: String) : MisListasEvent()
     data object DismissDialog : MisListasEvent()
 }

@@ -59,6 +59,11 @@
     <string name="menu_lateral_login_or_register">Iniciar sesión / Crear cuenta</string>
     <string name="menu_lateral_data_loss_message">Si inicias sesión con otra cuenta, la lista que has creado aquí no se conservará.</string>
     <string name="menu_lateral_version_label">Versión</string>
+    <string name="menu_lateral_edit_nombre_description">Editar nombre</string>
+    <string name="menu_lateral_edit_nombre_dialog_title">Editar nombre</string>
+    <string name="menu_lateral_edit_nombre_field_label">Nombre</string>
+    <string name="menu_lateral_edit_nombre_dialog_confirm_button">Guardar</string>
+    <string name="menu_lateral_edit_nombre_dialog_cancel_button">Cancelar</string>
     <string name="delete_account_title">¿Eliminar cuenta permanentemente?</string>
     <string name="delete_account_subtitle">Esta acción es irreversible. Se eliminarán todos tus datos y listas de compra.</string>
     <string name="delete_account_button">Eliminar cuenta</string>
@@ -112,6 +117,13 @@
     <string name="mislistas_new_dialog_confirm_button">Crear</string>
     <string name="mislistas_rename_dialog_title">Renombrar lista</string>
     <string name="mislistas_rename_dialog_confirm_button">Renombrar</string>
+    <string name="mislistas_delete_dialog_title">Eliminar lista</string>
+    <string name="mislistas_delete_dialog_message">Se borra para todas las personas con las que la compartes.</string>
+    <string name="mislistas_delete_dialog_confirm_button">Eliminar</string>
+    <string name="mislistas_leave_dialog_title">Salir de la lista</string>
+    <string name="mislistas_leave_dialog_message">Dejará de aparecerte, pero no se borra para nadie más.</string>
+    <string name="mislistas_leave_dialog_confirm_button">Salir</string>
+    <string name="mislistas_delete_description">Eliminar lista</string>
     <string name="mislistas_alexa_section_title">Alexa</string>
     <string name="mislistas_alexa_anonymous_message">Para usar Alexa necesitas crear una cuenta. Las sesiones anónimas no se pueden vincular.</string>
     <string name="mislistas_alexa_link_account_button">Crear cuenta</string>

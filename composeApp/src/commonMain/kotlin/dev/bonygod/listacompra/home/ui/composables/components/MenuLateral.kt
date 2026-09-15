@@ -5,17 +5,30 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.bonygod.listacompra.common.ui.theme.PrimaryBlue
 import dev.bonygod.listacompra.core.AppConstants
 import dev.bonygod.listacompra.getPlatform
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
@@ -23,11 +36,17 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.basura_black
+import listacompra.composeapp.generated.resources.edit_icon
 import listacompra.composeapp.generated.resources.listas
 import listacompra.composeapp.generated.resources.logout
 import listacompra.composeapp.generated.resources.menu_lateral_alexa_linked
 import listacompra.composeapp.generated.resources.menu_lateral_alexa_not_linked
 import listacompra.composeapp.generated.resources.menu_lateral_delete_account
+import listacompra.composeapp.generated.resources.menu_lateral_edit_nombre_dialog_cancel_button
+import listacompra.composeapp.generated.resources.menu_lateral_edit_nombre_dialog_confirm_button
+import listacompra.composeapp.generated.resources.menu_lateral_edit_nombre_dialog_title
+import listacompra.composeapp.generated.resources.menu_lateral_edit_nombre_description
+import listacompra.composeapp.generated.resources.menu_lateral_edit_nombre_field_label
 import listacompra.composeapp.generated.resources.menu_lateral_login_or_register
 import listacompra.composeapp.generated.resources.menu_lateral_logout
 import listacompra.composeapp.generated.resources.menu_lateral_my_lists
@@ -64,17 +83,38 @@ fun MenuLateral(
                     onCloseDrawer()
                 }
         )
+        Row(
+            modifier = Modifier
+                .padding(top = 38.dp, bottom = 2.dp)
+                .clickable { setEvent(ListaCompraEvent.OnEditNombreClick) }
+                .padding(vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
+                fontWeight = FontWeight.Bold,
+                text = state.user.nombre
+            )
+            Icon(
+                painter = painterResource(Res.drawable.edit_icon),
+                tint = Color.Gray,
+                contentDescription = stringResource(Res.string.menu_lateral_edit_nombre_description),
+                modifier = Modifier
+                    .padding(start = 6.dp)
+                    .size(16.dp)
+            )
+        }
+        if (state.showEditNombreDialog) {
+            EditNombreDialog(
+                initialNombre = state.user.nombre,
+                onConfirm = { nombre -> setEvent(ListaCompraEvent.ConfirmEditNombre(nombre)) },
+                onDismiss = { setEvent(ListaCompraEvent.DismissEditNombreDialog) }
+            )
+        }
         Text(
-            modifier = Modifier.padding(bottom = 2.dp, top = 50.dp),
+            modifier = Modifier.padding(bottom = 16.dp),
             fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
-            fontWeight = FontWeight.Bold,
-            text = state.user.nombre
-        )
-        Text(
-            modifier = Modifier,
-            color = Color.LightGray,
-            fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
-            fontSize = 10.sp,
+            fontSize = 14.sp,
             text = state.user.email
         )
         Row(
@@ -247,6 +287,51 @@ fun MenuLateral(
             fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
         )
     }
+}
+
+@Composable
+private fun EditNombreDialog(
+    initialNombre: String,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var nombre by remember { mutableStateOf(initialNombre) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(Res.string.menu_lateral_edit_nombre_dialog_title),
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            OutlinedTextField(
+                value = nombre,
+                onValueChange = { if (it.length <= 40) nombre = it },
+                label = { Text(stringResource(Res.string.menu_lateral_edit_nombre_field_label)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = {
+                    if (nombre.isNotBlank()) onConfirm(nombre.trim())
+                })
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { if (nombre.isNotBlank()) onConfirm(nombre.trim()) },
+                enabled = nombre.isNotBlank()
+            ) {
+                Text(stringResource(Res.string.menu_lateral_edit_nombre_dialog_confirm_button), color = PrimaryBlue)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.menu_lateral_edit_nombre_dialog_cancel_button), color = Color.Gray)
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true)

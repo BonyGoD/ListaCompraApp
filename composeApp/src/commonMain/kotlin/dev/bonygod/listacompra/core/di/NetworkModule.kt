@@ -32,11 +32,13 @@ import dev.bonygod.listacompra.login.domain.usecase.ResetPasswordUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ResolveSessionUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
 import dev.bonygod.listacompra.login.domain.usecase.SignInAnonymouslyUseCase
+import dev.bonygod.listacompra.login.domain.usecase.UpdateNombreUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserRegisterUseCase
 import dev.bonygod.listacompra.login.ui.AuthViewModel
 import dev.bonygod.listacompra.login.ui.SplashViewModel
 import dev.bonygod.listacompra.mislistas.domain.usecase.AddNewListaUseCase
+import dev.bonygod.listacompra.mislistas.domain.usecase.DeleteListaUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.GetAlexaConfigUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.GetListasUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.RenameListaUseCase
@@ -95,12 +97,14 @@ val dataModule = module {
     single { SetDefaultListaUseCase(get()) }
     single { RenameListaUseCase(get()) }
     single { AddNewListaUseCase(get()) }
+    single { DeleteListaUseCase(get()) }
     single { GetAlexaConfigUseCase(get()) }
     single { SetListaAlexaUseCase(get()) }
     single { SignInAnonymouslyUseCase(get()) }
     single { ResolveSessionUseCase(get(), get(), get()) }
     single { IsAnonymousUserUseCase(get()) }
     single { LinkAccountWithEmailUseCase(get()) }
+    single { UpdateNombreUseCase(get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

@@ -59,6 +59,11 @@
     <string name="menu_lateral_login_or_register">Inicia sessió / Crea un compte</string>
     <string name="menu_lateral_data_loss_message">Si inicies sessió amb un altre compte, la llista que has creat aquí no es conservarà.</string>
     <string name="menu_lateral_version_label">Versió</string>
+    <string name="menu_lateral_edit_nombre_description">Editar nom</string>
+    <string name="menu_lateral_edit_nombre_dialog_title">Editar nom</string>
+    <string name="menu_lateral_edit_nombre_field_label">Nom</string>
+    <string name="menu_lateral_edit_nombre_dialog_confirm_button">Desar</string>
+    <string name="menu_lateral_edit_nombre_dialog_cancel_button">Cancel·lar</string>
     <string name="delete_account_title">Eliminar compte permanentment?</string>
     <string name="delete_account_subtitle">Aquesta acció és irreversible. S'eliminaran totes les teves dades i llistes de la compra.</string>
     <string name="delete_account_button">Elimina compte</string>
@@ -112,6 +117,13 @@
     <string name="mislistas_new_dialog_confirm_button">Crear</string>
     <string name="mislistas_rename_dialog_title">Reanomenar llista</string>
     <string name="mislistas_rename_dialog_confirm_button">Reanomenar</string>
+    <string name="mislistas_delete_dialog_title">Eliminar llista</string>
+    <string name="mislistas_delete_dialog_message">S'elimina per a totes les persones amb qui la comparteixes.</string>
+    <string name="mislistas_delete_dialog_confirm_button">Eliminar</string>
+    <string name="mislistas_leave_dialog_title">Sortir de la llista</string>
+    <string name="mislistas_leave_dialog_message">Deixarà d'aparèixer-te, però no s'elimina per a ningú més.</string>
+    <string name="mislistas_leave_dialog_confirm_button">Sortir</string>
+    <string name="mislistas_delete_description">Eliminar llista</string>
     <string name="mislistas_alexa_section_title">Alexa</string>
     <string name="mislistas_alexa_anonymous_message">Per fer servir Alexa has de crear un compte. Les sessions anònimes no es poden vincular.</string>
     <string name="mislistas_alexa_link_account_button">Crea el compte</string>

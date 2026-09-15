@@ -59,6 +59,11 @@
     <string name="menu_lateral_login_or_register">Log in / Create account</string>
     <string name="menu_lateral_data_loss_message">If you log in with another account, the list you created here will not be kept.</string>
     <string name="menu_lateral_version_label">Version</string>
+    <string name="menu_lateral_edit_nombre_description">Edit name</string>
+    <string name="menu_lateral_edit_nombre_dialog_title">Edit name</string>
+    <string name="menu_lateral_edit_nombre_field_label">Name</string>
+    <string name="menu_lateral_edit_nombre_dialog_confirm_button">Save</string>
+    <string name="menu_lateral_edit_nombre_dialog_cancel_button">Cancel</string>
     <string name="delete_account_title">Delete account permanently?</string>
     <string name="delete_account_subtitle">This action is irreversible. All your data and shopping lists will be deleted.</string>
     <string name="delete_account_button">Delete account</string>
@@ -112,6 +117,13 @@
     <string name="mislistas_new_dialog_confirm_button">Create</string>
     <string name="mislistas_rename_dialog_title">Rename list</string>
     <string name="mislistas_rename_dialog_confirm_button">Rename</string>
+    <string name="mislistas_delete_dialog_title">Delete list</string>
+    <string name="mislistas_delete_dialog_message">This deletes it for everyone you've shared it with.</string>
+    <string name="mislistas_delete_dialog_confirm_button">Delete</string>
+    <string name="mislistas_leave_dialog_title">Leave list</string>
+    <string name="mislistas_leave_dialog_message">It will stop showing up for you, but it won't be deleted for anyone else.</string>
+    <string name="mislistas_leave_dialog_confirm_button">Leave</string>
+    <string name="mislistas_delete_description">Delete list</string>
     <string name="mislistas_alexa_section_title">Alexa</string>
     <string name="mislistas_alexa_anonymous_message">To use Alexa you need to create an account. Anonymous sessions can't be linked.</string>
     <string name="mislistas_alexa_link_account_button">Create account</string>

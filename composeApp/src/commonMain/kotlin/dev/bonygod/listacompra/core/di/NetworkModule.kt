@@ -1,5 +1,7 @@
 package dev.bonygod.listacompra.core.di
 
+import dev.bonygod.admob.kmp.AdMobKMP
+import dev.bonygod.admob.kmp.config.AdMobConfig
 import dev.bonygod.crashlytics.kmp.core.CrashReporter
 import dev.bonygod.crashlytics.kmp.core.CrashlyticsKMP
 import dev.bonygod.listacompra.BuildConfig
@@ -104,6 +106,20 @@ val dataModule = module {
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
+    // Único punto de arranque común a Android e iOS: initKoin() lo invocan
+    // ListaCompraApp.onCreate() y MainViewController(), así que configurar
+    // AdMobKMP aquí evita tener dos sitios que mantener sincronizados.
+    AdMobKMP.configure(
+        AdMobConfig(
+            androidBannerId = BuildConfig.ADMOB_ANDROID_BANNER,
+            androidInterstitialId = BuildConfig.ADMOB_ANDROID_INTERSTITIAL,
+            iosBannerId = BuildConfig.ADMOB_IOS_BANNER,
+            iosInterstitialId = BuildConfig.ADMOB_IOS_INTERSTITIAL,
+            useTestAds = false, // ⚠️ CAMBIAR A true SOLO PARA DESARROLLO (regla igual a la de AdConstants)
+            interstitialEnabled = false,
+        )
+    )
+
     startKoin {
         config?.invoke(this)
         modules(appModule, viewModelsModule, dataModule)

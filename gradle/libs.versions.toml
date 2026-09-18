@@ -12,6 +12,7 @@ kotlinx-serialization = "1.11.0"
 dateTime = "0.8.0"
 signin-kmp = "2.0.1"
 crashlytics-kmp = "1.0.0"
+admob-kmp = "1.0.0"
 
 #Navigation3
 navigation3-multiplatform-adaptive = "1.3.0-beta02"
@@ -34,9 +35,6 @@ googleid = "1.2.0"
 playServicesAuth = "21.6.0"
 credentialsPlayServicesAuth = "1.6.0"
 
-#AdMob
-playServicesAds = "25.4.0"
-
 #BuildConfig
 buildConfig = "6.0.10"
 
@@ -54,6 +52,7 @@ jetbrains-lifecycle-viewmodelNavigation3 = { module = "org.jetbrains.androidx.li
 #BonyGoD
 bonygod-signinkmp = { module = "com.github.BonyGoD.SignInKMP:signin-kmp", version.ref = "signin-kmp" }
 bonygod-crashlyticskmp = { module = "com.github.BonyGoD.CrashlyticsKMP:crashlytics-kmp", version.ref = "crashlytics-kmp" }
+bonygod-admobkmp = { module = "com.github.BonyGoD.AdMobKMP:admob-kmp", version.ref = "admob-kmp" }
 
 #Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
@@ -71,9 +70,6 @@ androidx-credentials = { module = "androidx.credentials:credentials", version.re
 androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentialsPlayServicesAuth" }
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
-
-#AdMob
-play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 
 #Dependency Injection
 koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }

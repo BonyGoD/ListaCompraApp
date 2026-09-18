@@ -8,8 +8,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import dev.bonygod.admob.kmp.ui.InterstitialAdScreen
 import dev.bonygod.listacompra.home.ui.screens.HomeScreen
-import dev.bonygod.listacompra.login.ui.screens.AdLoadingScreen
 import dev.bonygod.listacompra.login.ui.screens.ForgotPasswordScreen
 import dev.bonygod.listacompra.login.ui.screens.LoginScreen
 import dev.bonygod.listacompra.login.ui.screens.RegisterScreen
@@ -40,7 +40,9 @@ fun NavigationWrapper(snackbarHostState: SnackbarHostState) {
             }
             entry<Routes.AdLoading> { entry ->
                 val userId = entry.userId
-                AdLoadingScreen(userId)
+                // Con interstitialEnabled = false, onFinished se llama de inmediato:
+                // el login sigue igual que hoy, sin pantalla intermedia visible.
+                InterstitialAdScreen(onFinished = { navigator.clearAndNavigateTo(Routes.Home(userId)) })
             }
             entry<Routes.Home> { entry ->
                 HomeScreen(

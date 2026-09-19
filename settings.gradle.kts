@@ -18,6 +18,11 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
+        // JitPack no sirve los .klib de iOS de AdMobKMP 1.0.0 (404); se toman de
+        // la publicación local (publishToMavenLocal en el repo de AdMobKMP).
+        mavenLocal {
+            content { includeGroupAndSubgroups("com.github.BonyGoD") }
+        }
         google {
             mavenContent {
                 includeGroupAndSubgroups("androidx")

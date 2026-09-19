@@ -29,6 +29,7 @@ import dev.bonygod.listacompra.login.domain.usecase.IsAnonymousUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LinkAccountWithEmailUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
+import dev.bonygod.listacompra.login.domain.usecase.UpdateNombreUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.GetListasUseCase
 import kotlinx.coroutines.Job
@@ -81,6 +82,7 @@ class ListaCompraViewModel(
     private val getListasUseCase: GetListasUseCase,
     private val linkAccountWithEmailUseCase: LinkAccountWithEmailUseCase,
     private val userLoginUseCase: UserLoginUseCase,
+    private val updateNombreUseCase: UpdateNombreUseCase,
     private val crashReporter: CrashReporter
 ) : ViewModel() {
     private var notificationsJob: Job? = null
@@ -152,15 +154,18 @@ class ListaCompraViewModel(
                     setState { setAlexaVinculada(!anonymous && usuario.alexaVinculada) }
                     analyticsService.setUserId(usuario.uid)
 
-                        // Obtiene el nombre de la lista activa
-                    _currentListaId.value = usuario.listas[0]
-
                     getListasUseCase().fold(
                         onSuccess = { listas ->
+                            if (listas.isNotEmpty()) {
+                                setState { setUser(state.value.user.copy(listas = listas.map { it.id })) }
+                            }
                             val nombre = listas.firstOrNull()?.nombre ?: "Lista de la compra"
                             setState { setListaNombre(nombre) }
+                            _currentListaId.value = listas.firstOrNull()?.id ?: usuario.listas.firstOrNull()
                         },
-                        onFailure = { /* mantiene el nombre por defecto */ }
+                        onFailure = {
+                            _currentListaId.value = usuario.listas.firstOrNull()
+                        }
                     )
 
                     productosJob = viewModelScope.launch {
@@ -284,6 +289,34 @@ class ListaCompraViewModel(
             is ListaCompraEvent.OnConfirmLinkCredentialInUse -> signInWithExistingAccountAndDiscardAnonymous()
             is ListaCompraEvent.OnCancelLinkCredentialInUse ->
                 setState { showLinkCredentialInUseDialog(false) }
+
+            is ListaCompraEvent.OnEditNombreClick -> setState { showEditNombreDialog(true) }
+            is ListaCompraEvent.DismissEditNombreDialog -> setState { showEditNombreDialog(false) }
+            is ListaCompraEvent.ConfirmEditNombre -> editNombre(event.nombre)
+        }
+    }
+
+    private fun editNombre(nombre: String) {
+        val nombreValido = nombre.trim().take(40)
+        if (nombreValido.isBlank()) return
+        viewModelScope.launch {
+            updateNombreUseCase(nombreValido).fold(
+                onSuccess = {
+                    setState { setUser(state.value.user.copy(nombre = nombreValido)) }
+                    setState { showEditNombreDialog(false) }
+                },
+                onFailure = { error ->
+                    val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
+                    val errorTitle = getString(Res.string.home_alert_error_update_title)
+                    setState { showEditNombreDialog(false) }
+                    setState {
+                        showErrorAlert(
+                            errorTitle,
+                            message = errorMessage
+                        )
+                    }
+                }
+            )
         }
     }
 

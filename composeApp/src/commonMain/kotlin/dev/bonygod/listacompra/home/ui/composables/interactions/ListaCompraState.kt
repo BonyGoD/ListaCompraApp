@@ -46,7 +46,8 @@ data class ListaCompraState(
     val linkEmail: TextFieldValue = TextFieldValue(""),
     val linkPassword: TextFieldValue = TextFieldValue(""),
     val showLinkCredentialInUse: Boolean = false,
-    val linkAccountOrigin: LinkAccountOrigin = LinkAccountOrigin.SHARE
+    val linkAccountOrigin: LinkAccountOrigin = LinkAccountOrigin.SHARE,
+    val showEditNombreDialog: Boolean = false
 ) {
     fun showDeleteAccountDialog(show: Boolean): ListaCompraState {
         return copy(showDeleteAccount = show)
@@ -86,6 +87,10 @@ data class ListaCompraState(
 
     fun showLinkCredentialInUseDialog(show: Boolean): ListaCompraState {
         return copy(showLinkCredentialInUse = show)
+    }
+
+    fun showEditNombreDialog(show: Boolean): ListaCompraState {
+        return copy(showEditNombreDialog = show)
     }
 
     fun showNotificationBottomSheet(show: Boolean): ListaCompraState {

@@ -2,5 +2,6 @@
 data class ListaInfoUI(
     val id: String = "",
     val nombre: String = "",
-    val isDefault: Boolean = false
+    val isDefault: Boolean = false,
+    val esPropia: Boolean = false
 )

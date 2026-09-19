@@ -60,7 +60,16 @@ import listacompra.composeapp.generated.resources.mislistas_empty_message
 import listacompra.composeapp.generated.resources.mislistas_name_field_label
 import listacompra.composeapp.generated.resources.mislistas_dialog_cancel_button
 import listacompra.composeapp.generated.resources.mislistas_default_badge
+import listacompra.composeapp.generated.resources.mislistas_delete_dialog_title
+import listacompra.composeapp.generated.resources.mislistas_delete_dialog_message
+import listacompra.composeapp.generated.resources.mislistas_delete_dialog_confirm_button
+import listacompra.composeapp.generated.resources.mislistas_leave_dialog_title
+import listacompra.composeapp.generated.resources.mislistas_leave_dialog_message
+import listacompra.composeapp.generated.resources.mislistas_leave_dialog_confirm_button
+import listacompra.composeapp.generated.resources.mislistas_delete_description
 import listacompra.composeapp.generated.resources.back_button
+import listacompra.composeapp.generated.resources.basura_black
+import listacompra.composeapp.generated.resources.edit_icon
 import listacompra.composeapp.generated.resources.listas
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -89,6 +98,14 @@ fun MisListasContent(
             initialNombre = "",
             confirmLabel = stringResource(Res.string.mislistas_new_dialog_confirm_button),
             onConfirm = { nombre -> onEvent(MisListasEvent.ConfirmCreate(nombre)) },
+            onDismiss = { onEvent(MisListasEvent.DismissDialog) }
+        )
+    }
+
+    if (state.deleteDialogListaId != null) {
+        DeleteListaDialog(
+            esPropia = state.deleteDialogEsPropia,
+            onConfirm = { onEvent(MisListasEvent.ConfirmDelete(state.deleteDialogListaId)) },
             onDismiss = { onEvent(MisListasEvent.DismissDialog) }
         )
     }
@@ -164,8 +181,12 @@ fun MisListasContent(
                     items(state.listas) { lista ->
                         ListaItem(
                             lista = lista,
+                            canDelete = state.listas.size > 1,
                             onSelect = { onEvent(MisListasEvent.SelectLista(lista.id)) },
-                            onRename = { onEvent(MisListasEvent.ShowRenameDialog(lista.id, lista.nombre)) }
+                            onRename = { onEvent(MisListasEvent.ShowRenameDialog(lista.id, lista.nombre)) },
+                            onDelete = {
+                                onEvent(MisListasEvent.ShowDeleteDialog(lista.id, lista.nombre, lista.esPropia))
+                            }
                         )
                     }
                 }
@@ -218,10 +239,45 @@ private fun NombreDialog(
 }
 
 @Composable
+private fun DeleteListaDialog(
+    esPropia: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val title = stringResource(
+        if (esPropia) Res.string.mislistas_delete_dialog_title else Res.string.mislistas_leave_dialog_title
+    )
+    val message = stringResource(
+        if (esPropia) Res.string.mislistas_delete_dialog_message else Res.string.mislistas_leave_dialog_message
+    )
+    val confirmLabel = stringResource(
+        if (esPropia) Res.string.mislistas_delete_dialog_confirm_button else Res.string.mislistas_leave_dialog_confirm_button
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = title, fontWeight = FontWeight.Bold) },
+        text = { Text(text = message) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(confirmLabel, color = Color.Red)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.mislistas_dialog_cancel_button), color = Color.Gray)
+            }
+        }
+    )
+}
+
+@Composable
 private fun ListaItem(
     lista: ListaInfoUI,
+    canDelete: Boolean,
     onSelect: () -> Unit,
-    onRename: () -> Unit
+    onRename: () -> Unit,
+    onDelete: () -> Unit
 ) {
     val shape = RoundedCornerShape(12.dp)
     val borderColor = if (lista.isDefault) PrimaryBlue else Color.LightGray
@@ -264,7 +320,18 @@ private fun ListaItem(
         }
         // Rename button
         IconButton(onClick = onRename) {
-            Text(text = "✏️", fontSize = 18.sp)
+            Icon(
+                painter = painterResource(Res.drawable.edit_icon),
+                contentDescription = stringResource(Res.string.mislistas_rename_dialog_title),
+                modifier = Modifier.size(18.dp)
+            )
+        }
+        IconButton(onClick = onDelete, enabled = canDelete) {
+            Icon(
+                painter = painterResource(Res.drawable.basura_black),
+                contentDescription = stringResource(Res.string.mislistas_delete_description),
+                modifier = Modifier.size(18.dp)
+            )
         }
     }
 }

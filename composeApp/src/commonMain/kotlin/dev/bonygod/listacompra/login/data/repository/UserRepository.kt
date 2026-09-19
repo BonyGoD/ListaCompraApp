@@ -82,6 +82,16 @@ class UserRepository(
         }
     }
 
+    suspend fun updateNombre(nombre: String): Result<Unit> {
+        return try {
+            usersDS.updateNombre(nombre)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.updateNombre")
+            Result.failure(e.toUserFailure())
+        }
+    }
+
     suspend fun repairUserDocument(uid: String, nombre: String, email: String): Result<Usuario> {
         return try {
             val userResponse = usersDS.repairUserDocument(uid, nombre, email)
@@ -208,6 +218,16 @@ class UserRepository(
             Result.success(Unit)
         } catch (e: Exception) {
             crashReporter.recordException(e, "UserRepository.renameNombreLista")
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun deleteLista(listaId: String, esPropia: Boolean): Result<Unit> {
+        return try {
+            usersDS.deleteLista(listaId, esPropia)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.deleteLista")
             Result.failure(e.toUserFailure())
         }
     }

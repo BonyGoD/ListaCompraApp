@@ -6,6 +6,7 @@ import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.navigation.Routes
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.AddNewListaUseCase
+import dev.bonygod.listacompra.mislistas.domain.usecase.DeleteListaUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.GetListasUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.RenameListaUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.SetDefaultListaUseCase
@@ -22,7 +23,8 @@ class MisListasViewModel(
     private val setDefaultListaUseCase: SetDefaultListaUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val renameListaUseCase: RenameListaUseCase,
-    private val addNewListaUseCase: AddNewListaUseCase
+    private val addNewListaUseCase: AddNewListaUseCase,
+    private val deleteListaUseCase: DeleteListaUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MisListasState())
@@ -40,7 +42,12 @@ class MisListasViewModel(
                         onSuccess = { listas ->
                             _state.value = _state.value.copy(
                                 listas = listas.map {
-                                    ListaInfoUI(id = it.id, nombre = it.nombre, isDefault = it.isDefault)
+                                    ListaInfoUI(
+                                        id = it.id,
+                                        nombre = it.nombre,
+                                        isDefault = it.isDefault,
+                                        esPropia = it.esPropia
+                                    )
                                 },
                                 isLoading = false
                             )
@@ -74,10 +81,19 @@ class MisListasViewModel(
             is MisListasEvent.ConfirmRename -> renameLista(event.listaId, event.nombre)
             is MisListasEvent.ShowCreateDialog -> _state.value = _state.value.copy(showCreateDialog = true)
             is MisListasEvent.ConfirmCreate -> createLista(event.nombre)
+            is MisListasEvent.ShowDeleteDialog -> _state.value = _state.value.copy(
+                deleteDialogListaId = event.listaId,
+                deleteDialogNombre = event.nombre,
+                deleteDialogEsPropia = event.esPropia
+            )
+            is MisListasEvent.ConfirmDelete -> deleteLista(event.listaId)
             is MisListasEvent.DismissDialog -> _state.value = _state.value.copy(
                 renameDialogListaId = null,
                 renameDialogCurrentNombre = "",
-                showCreateDialog = false
+                showCreateDialog = false,
+                deleteDialogListaId = null,
+                deleteDialogNombre = "",
+                deleteDialogEsPropia = false
             )
         }
     }
@@ -104,6 +120,31 @@ class MisListasViewModel(
                 onSuccess = { loadListas() },
                 onFailure = { e ->
                     _state.value = _state.value.copy(error = e.message ?: "Error al renombrar la lista")
+                }
+            )
+        }
+    }
+
+    private fun deleteLista(listaId: String) {
+        if (_state.value.listas.size <= 1) {
+            _state.value = _state.value.copy(
+                deleteDialogListaId = null,
+                deleteDialogNombre = "",
+                deleteDialogEsPropia = false
+            )
+            return
+        }
+        val esPropia = _state.value.deleteDialogEsPropia
+        viewModelScope.launch {
+            _state.value = _state.value.copy(
+                deleteDialogListaId = null,
+                deleteDialogNombre = "",
+                deleteDialogEsPropia = false
+            )
+            deleteListaUseCase(listaId, esPropia).fold(
+                onSuccess = { loadListas() },
+                onFailure = { e ->
+                    _state.value = _state.value.copy(error = e.message ?: "Error al borrar la lista")
                 }
             )
         }

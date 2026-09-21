@@ -55,6 +55,8 @@
     <string name="menu_lateral_alexa_linked">Alexa · Linked</string>
     <string name="menu_lateral_alexa_not_linked">Alexa · Not linked</string>
     <string name="menu_lateral_notifications">Notifications</string>
+    <string name="menu_lateral_notifications_enabled">Notifications · On</string>
+    <string name="menu_lateral_notifications_disabled">Notifications · Off</string>
     <string name="menu_lateral_logout">Log out</string>
     <string name="menu_lateral_delete_account">Delete account</string>
     <string name="menu_lateral_login_or_register">Log in / Create account</string>
@@ -144,4 +146,14 @@
 
     <string name="notifications_permission_denied_title">Notifications disabled</string>
     <string name="notifications_permission_denied_message">You can turn them on anytime from the system Settings for this app.</string>
+
+    <string name="notifications_offer_dialog_title">Want us to let you know?</string>
+    <string name="notifications_offer_dialog_message">We'll send you a notification when someone shares a list with you.</string>
+    <string name="notifications_offer_dialog_accept_button">Yes, notify me</string>
+    <string name="notifications_offer_dialog_decline_button">Not now</string>
+
+    <string name="notifications_status_dialog_enabled_title">Notifications enabled</string>
+    <string name="notifications_status_dialog_enabled_message">We'll let you know when someone shares a list with you. To turn them off, go to the system Settings.</string>
+    <string name="notifications_status_dialog_open_settings_button">Open settings</string>
+    <string name="notifications_status_dialog_close_button">Close</string>
 </resources>

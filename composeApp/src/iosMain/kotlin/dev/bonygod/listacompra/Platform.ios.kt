@@ -2,6 +2,8 @@ package dev.bonygod.listacompra
 
 import platform.Foundation.NSBundle
 import platform.Foundation.NSLocale
+import platform.Foundation.currentLocale
+import platform.Foundation.languageCode
 import platform.UIKit.UIDevice
 import kotlin.experimental.ExperimentalNativeApi
 

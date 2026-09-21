@@ -59,6 +59,29 @@ sealed class ListaCompraEvent {
     data class ConfirmEditNombre(val nombre: String) : ListaCompraEvent()
     data object DismissEditNombreDialog : ListaCompraEvent()
 
+    /** "Sí, avisadme" en el diálogo propio: marca el aviso como ofrecido y lanza el
+     *  diálogo del sistema (resultado por OnNotificationsPermissionResult). */
+    data object OnNotificationsOfferAccept : ListaCompraEvent()
+
+    /** "Ahora no": marca el aviso como ofrecido sin llegar a pedir el permiso. */
+    data object OnNotificationsOfferDecline : ListaCompraEvent()
+
+    /** El permiso se pidió desde la entrada del menú lateral: si ya pasó por ahí,
+     *  el diálogo propio de Home no tiene sentido y no debe volver a ofrecerse. */
+    data object OnNotificationsPermissionRequestedFromMenu : ListaCompraEvent()
+
+    /** La entrada del menú, cuando ya están activadas: no hace falta volver a pedir el
+     *  permiso, solo enseñar el diálogo de estado (modo "activadas"). */
+    data object OnNotificationsStatusClick : ListaCompraEvent()
+
+    /** Cerrar el diálogo de estado de notificaciones sin hacer nada más. */
+    data object OnCloseNotificationsStatusDialog : ListaCompraEvent()
+
+    /** "Abrir ajustes" en el diálogo de estado: aquí solo se cierra el diálogo. Abrir los
+     *  ajustes de verdad lo hace HomeScreen en el mismo lambda que dispara este evento,
+     *  sin pasar por el canal de efectos (ver comentario en HomeScreen). */
+    data object OnOpenNotificationsSettingsClick : ListaCompraEvent()
+
     /** Abre el diálogo de vinculación de cuenta directamente, sin pasar por el aviso
      *  de "compartir requiere cuenta". Lo usa la pantalla Alexa, que deja la petición
      *  en `PendingHomeAction` antes de navegar a Home. */

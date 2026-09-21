@@ -10,6 +10,8 @@ import ComposeApp
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     private var isFCMTokenRequestPending = false
+    private var isKotlinTapBridgeReady = false
+    private var hasPendingNotificationTap = false
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
@@ -92,6 +94,26 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             }
             self?.fetchAndPublishFCMToken()
         }
+
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("PushNotificationTapBridgeReady"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            self.isKotlinTapBridgeReady = true
+            if self.hasPendingNotificationTap {
+                self.hasPendingNotificationTap = false
+                self.publishNotificationTap()
+            }
+        }
+    }
+
+    private func publishNotificationTap() {
+        NotificationCenter.default.post(
+            name: NSNotification.Name("PushNotificationTapped"),
+            object: nil
+        )
     }
 
     private func fetchAndPublishFCMToken() {
@@ -138,6 +160,16 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
+        let tipo = response.notification.request.content.userInfo["tipo"] as? String
+        if tipo == "lista_compartida" {
+            // Con la app cerrada, iOS llama aquí antes de que Kotlin arranque: el tap
+            // se guarda y se publica cuando Kotlin avisa de que ya escucha.
+            if isKotlinTapBridgeReady {
+                publishNotificationTap()
+            } else {
+                hasPendingNotificationTap = true
+            }
+        }
         completionHandler()
     }
 }

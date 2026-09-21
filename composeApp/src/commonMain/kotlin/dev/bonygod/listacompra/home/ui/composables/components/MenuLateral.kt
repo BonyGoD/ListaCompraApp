@@ -52,6 +52,8 @@ import listacompra.composeapp.generated.resources.menu_lateral_login_or_register
 import listacompra.composeapp.generated.resources.menu_lateral_logout
 import listacompra.composeapp.generated.resources.menu_lateral_my_lists
 import listacompra.composeapp.generated.resources.menu_lateral_notifications
+import listacompra.composeapp.generated.resources.menu_lateral_notifications_disabled
+import listacompra.composeapp.generated.resources.menu_lateral_notifications_enabled
 import listacompra.composeapp.generated.resources.menu_lateral_share_list
 import listacompra.composeapp.generated.resources.menu_lateral_version_label
 import listacompra.composeapp.generated.resources.notification_blank
@@ -194,10 +196,25 @@ fun MenuLateral(
             )
         }
         if (!state.isAnonymous) {
+            val notificationsStatusLabel = if (state.notificacionesActivadas) {
+                stringResource(Res.string.menu_lateral_notifications_enabled)
+            } else {
+                stringResource(Res.string.menu_lateral_notifications_disabled)
+            }
             Row(
                 modifier = Modifier.padding(start = 10.dp, top = 30.dp)
                     .clickable {
-                        requestNotificationPermission()
+                        if (state.notificacionesActivadas) {
+                            // Ya están activadas: pedir el permiso otra vez no serviría de
+                            // nada (el sistema contestaría "sí" sin enseñar nada). Solo se
+                            // enseña el estado.
+                            setEvent(ListaCompraEvent.OnNotificationsStatusClick)
+                        } else {
+                            requestNotificationPermission()
+                        }
+                        // Ya se pidió desde aquí: si no se marca, el diálogo propio de Home
+                        // volvería a ofrecerlo en el siguiente arranque sin sentido.
+                        setEvent(ListaCompraEvent.OnNotificationsPermissionRequestedFromMenu)
                         onCloseDrawer()
                     },
                 horizontalArrangement = Arrangement.Center,
@@ -213,7 +230,7 @@ fun MenuLateral(
                     fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
-                    text = stringResource(Res.string.menu_lateral_notifications)
+                    text = notificationsStatusLabel
                 )
             }
         }

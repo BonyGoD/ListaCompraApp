@@ -47,7 +47,10 @@ data class ListaCompraState(
     val linkPassword: TextFieldValue = TextFieldValue(""),
     val showLinkCredentialInUse: Boolean = false,
     val linkAccountOrigin: LinkAccountOrigin = LinkAccountOrigin.SHARE,
-    val showEditNombreDialog: Boolean = false
+    val showEditNombreDialog: Boolean = false,
+    val showNotificationsOfferDialog: Boolean = false,
+    val notificacionesActivadas: Boolean = false,
+    val showNotificationsStatusDialog: Boolean = false
 ) {
     fun showDeleteAccountDialog(show: Boolean): ListaCompraState {
         return copy(showDeleteAccount = show)
@@ -92,6 +95,27 @@ data class ListaCompraState(
     fun showEditNombreDialog(show: Boolean): ListaCompraState {
         return copy(showEditNombreDialog = show)
     }
+
+    fun showNotificationsOfferDialog(show: Boolean): ListaCompraState {
+        return copy(showNotificationsOfferDialog = show)
+    }
+
+    fun setNotificacionesActivadas(activadas: Boolean): ListaCompraState {
+        return copy(notificacionesActivadas = activadas)
+    }
+
+    fun showNotificationsStatusDialog(show: Boolean): ListaCompraState {
+        return copy(showNotificationsStatusDialog = show)
+    }
+
+    /** Antes de ofrecer el permiso de notificaciones no debe apilarse sobre ningún otro
+     *  diálogo de Home: si alguno de estos está abierto, la oferta se pospone al siguiente
+     *  arranque en vez de mostrarse encima. */
+    fun hasAnyDialogAbierto(): Boolean =
+        dialogState || showErrorAlert || showSuccessAlert || showBottomSheet ||
+            showDeleteAccount || showDataLossWarning || showShareRequiresAccount ||
+            showLinkAccount || showLinkCredentialInUse || showEditNombreDialog ||
+            customDialog || showNotificationsOfferDialog || showNotificationsStatusDialog
 
     fun updateNotifications(notifications: List<NotificationsUI>): ListaCompraState {
         return copy(notifications = notifications)

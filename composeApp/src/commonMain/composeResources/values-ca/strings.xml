@@ -55,6 +55,8 @@
     <string name="menu_lateral_alexa_linked">Alexa · Vinculada</string>
     <string name="menu_lateral_alexa_not_linked">Alexa · Sense vincular</string>
     <string name="menu_lateral_notifications">Notificacions</string>
+    <string name="menu_lateral_notifications_enabled">Notificacions · Activades</string>
+    <string name="menu_lateral_notifications_disabled">Notificacions · Desactivades</string>
     <string name="menu_lateral_logout">Tancar sessió</string>
     <string name="menu_lateral_delete_account">Eliminar compte</string>
     <string name="menu_lateral_login_or_register">Inicia sessió / Crea un compte</string>
@@ -144,4 +146,14 @@
 
     <string name="notifications_permission_denied_title">Notificacions desactivades</string>
     <string name="notifications_permission_denied_message">Les pots activar quan vulguis des dels ajustos del sistema per a aquesta app.</string>
+
+    <string name="notifications_offer_dialog_title">T'avisem?</string>
+    <string name="notifications_offer_dialog_message">T'enviarem una notificació quan algú comparteixi una llista amb tu.</string>
+    <string name="notifications_offer_dialog_accept_button">Sí, avisa'm</string>
+    <string name="notifications_offer_dialog_decline_button">Ara no</string>
+
+    <string name="notifications_status_dialog_enabled_title">Notificacions activades</string>
+    <string name="notifications_status_dialog_enabled_message">T'avisarem quan algú comparteixi una llista amb tu. Per desactivar-les, vés als ajustos del sistema.</string>
+    <string name="notifications_status_dialog_open_settings_button">Obre els ajustos</string>
+    <string name="notifications_status_dialog_close_button">Tanca</string>
 </resources>

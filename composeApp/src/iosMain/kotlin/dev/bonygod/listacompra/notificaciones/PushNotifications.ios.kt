@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.notificaciones
 
+import dev.bonygod.listacompra.core.navigation.PendingNotificationAction
 import dev.bonygod.listacompra.login.domain.usecase.GuardarTokenPushUseCase
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CoroutineScope
@@ -23,11 +24,14 @@ private const val TOKEN_REQUESTED_NOTIFICATION = "FCMTokenRequested"
 private const val TOKEN_RESPONSE_NOTIFICATION = "FCMTokenResponse"
 private const val TOKEN_REFRESHED_NOTIFICATION = "FCMTokenRefreshed"
 private const val TOKEN_USER_INFO_KEY = "token"
+private const val TAP_NOTIFICATION = "PushNotificationTapped"
+private const val TAP_BRIDGE_READY_NOTIFICATION = "PushNotificationTapBridgeReady"
 
 @OptIn(ExperimentalForeignApi::class)
 actual object PushNotifications : KoinComponent {
     private val guardarTokenPushUseCase: GuardarTokenPushUseCase by inject()
     private val appScope: CoroutineScope by inject(named("appScope"))
+    private val pendingNotificationAction: PendingNotificationAction by inject()
 
     actual fun initialize() {
         NSNotificationCenter.defaultCenter.addObserverForName(
@@ -40,6 +44,19 @@ actual object PushNotifications : KoinComponent {
                 appScope.launch { guardarTokenPushUseCase(token) }
             }
         }
+
+        NSNotificationCenter.defaultCenter.addObserverForName(
+            name = TAP_NOTIFICATION,
+            `object` = null,
+            queue = NSOperationQueue.mainQueue
+        ) { _: NSNotification? ->
+            pendingNotificationAction.requestNotificaciones()
+        }
+
+        NSNotificationCenter.defaultCenter.postNotificationName(
+            TAP_BRIDGE_READY_NOTIFICATION,
+            `object` = null
+        )
     }
 
     actual suspend fun getToken(): String? = withTimeoutOrNull(10.seconds) {

@@ -12,6 +12,7 @@ import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.navigation.PendingHomeAction
 import dev.bonygod.listacompra.core.navigation.PendingNotificationAction
 import dev.bonygod.listacompra.core.network.NetworkProvider
+import dev.bonygod.listacompra.core.preferences.PreferenciasLocales
 import dev.bonygod.listacompra.home.data.datasource.ListaCompraDataSource
 import dev.bonygod.listacompra.home.data.repository.ProductosRepository
 import dev.bonygod.listacompra.home.domain.usecase.AddProductoUseCase
@@ -65,6 +66,7 @@ val appModule = module {
     single { Navigator(get()) }
     single { PendingHomeAction() }
     single { PendingNotificationAction() }
+    single { PreferenciasLocales() }
     single { NetworkProvider().provideFirebaseClient() }
     single { NetworkProvider().provideAnalytics() }
     single { NetworkProvider().provideAuth() }

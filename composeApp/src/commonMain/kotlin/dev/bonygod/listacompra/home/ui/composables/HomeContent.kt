@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,7 +44,6 @@ import dev.bonygod.listacompra.common.ui.theme.SecondaryBlue
 import dev.bonygod.listacompra.home.ui.composables.components.AddProductBottomSheet
 import dev.bonygod.listacompra.home.ui.composables.components.ConfirmDialog
 import dev.bonygod.listacompra.home.ui.composables.components.ErrorAlert
-import dev.bonygod.listacompra.home.ui.composables.components.ShowNotificationsBottomSheet
 import dev.bonygod.listacompra.home.ui.composables.components.SuccessAlert
 import dev.bonygod.listacompra.home.ui.composables.components.TextComponent
 import dev.bonygod.listacompra.home.ui.composables.components.TextFieldComponent
@@ -115,6 +115,15 @@ fun HomeContent(
                 }
             )
             Column(modifier = Modifier.weight(1f)) {
+                if (state.isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = PrimaryBlue)
+                    }
+                    return@Column
+                }
                 if (data.productos.isEmpty() && state.isAnonymous) {
                     Column(
                         modifier = Modifier
@@ -232,13 +241,6 @@ fun HomeContent(
             state = state,
             onEvent = onEvent,
             onDismiss = { onEvent(ListaCompraEvent.ShowBottomSheet(false)) }
-        )
-    }
-    if (state.showNotifications) {
-        ShowNotificationsBottomSheet(
-            state = state,
-            onEvent = onEvent,
-            onDismiss = { onEvent(ListaCompraEvent.ShowNotificationsBottomSheet(false)) }
         )
     }
 }

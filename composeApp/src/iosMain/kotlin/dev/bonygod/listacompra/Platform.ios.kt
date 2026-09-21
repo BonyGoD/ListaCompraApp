@@ -1,6 +1,7 @@
 package dev.bonygod.listacompra
 
 import platform.Foundation.NSBundle
+import platform.Foundation.NSLocale
 import platform.UIKit.UIDevice
 import kotlin.experimental.ExperimentalNativeApi
 
@@ -11,6 +12,8 @@ class IOSPlatform: Platform {
     @OptIn(ExperimentalNativeApi::class)
     override val isDebugBuild: Boolean
         get() = kotlin.native.Platform.isDebugBinary
+    override val idioma: String
+        get() = normalizeIdioma(NSLocale.currentLocale.languageCode)
 }
 
 actual fun getPlatform(): Platform = IOSPlatform()

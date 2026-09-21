@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.login.data.datasource
 
+import dev.bonygod.listacompra.getPlatform
 import dev.bonygod.listacompra.login.data.model.NotificationsReponse
 import dev.bonygod.listacompra.login.data.model.UserResponse
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
@@ -9,6 +10,8 @@ import dev.bonygod.listacompra.mislistas.domain.model.ListaInfo
 import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.FirebaseUser
+import dev.gitlive.firebase.firestore.FieldPath
+import dev.gitlive.firebase.firestore.FieldValue
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.coroutines.flow.Flow
@@ -197,11 +200,35 @@ class UsersDataSource(
         auth.sendPasswordResetEmail(email)
     }
 
-    /**
-     * Cerrar sesión
-     */
-    suspend fun logOut() {
+    suspend fun logOut(pushToken: String?) {
+        if (pushToken != null) {
+            quitarTokenPushDeEsteDispositivo(pushToken)
+        }
         auth.signOut()
+    }
+
+    private suspend fun quitarTokenPushDeEsteDispositivo(token: String) {
+        val uid = auth.currentUser?.uid ?: return
+        try {
+            firebase.collection("usuarios")
+                .document(uid)
+                .updateFields {
+                    FieldPath("fcmTokens", token) to FieldValue.delete
+                }
+        } catch (e: Exception) {
+        }
+    }
+
+    suspend fun guardarTokenPush(token: String) {
+        val user = auth.currentUser ?: return
+        if (user.isAnonymous) return
+        firebase.collection("usuarios")
+            .document(user.uid)
+            .updateFields {
+                FieldPath("fcmTokens", token, "plataforma") to getPlatform().name
+                FieldPath("fcmTokens", token, "actualizado") to Timestamp.now()
+                "idioma" to getPlatform().idioma
+            }
     }
 
     /**
@@ -399,7 +426,7 @@ class UsersDataSource(
                 throw Exception("Error al borrar la cuenta de autenticación: ${e.message}")
             }
         }
-        logOut()
+        logOut(pushToken = null)
     }
 
     /**

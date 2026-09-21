@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import dev.bonygod.listacompra.common.ui.DataLossWarningDialog
 import dev.bonygod.listacompra.core.navigation.PendingHomeAction
+import dev.bonygod.listacompra.core.navigation.PendingNotificationAction
 import dev.bonygod.listacompra.home.ui.ListaCompraViewModel
 import dev.bonygod.listacompra.home.ui.composables.HomeContent
 import dev.bonygod.listacompra.home.ui.composables.components.DeleteAccountDialog
@@ -37,6 +38,7 @@ fun HomeScreen(
 ) {
     val viewModel: ListaCompraViewModel = koinViewModel()
     val pendingHomeAction: PendingHomeAction = koinInject()
+    val pendingNotificationAction: PendingNotificationAction = koinInject()
     val state = viewModel.state.collectAsState()
     val scope = rememberCoroutineScope()
 
@@ -45,15 +47,21 @@ fun HomeScreen(
         viewModel.loadUserData()
     }
 
-    // Entrada desde la pantalla propia de Alexa: usuario anónimo que necesita crear una
-    // cuenta antes de poder usar Alexa. Reutiliza el mismo diálogo y flujo de linkWithEmail
-    // que ya existe para "compartir requiere cuenta", solo cambia cómo se abre.
-    //
-    // La petición viaja por PendingHomeAction y no dentro de la ruta: ahí se consume sola.
-    // Léete el porqué en PendingHomeAction, que salió de dos bugs seguidos.
     LaunchedEffect(Unit) {
         if (pendingHomeAction.consumeLinkAccount()) {
             viewModel.onEvent(ListaCompraEvent.OnOpenLinkAccountDialog)
+        }
+    }
+
+    LaunchedEffect(pendingNotificationAction.notificacionesRequested) {
+        if (pendingNotificationAction.consumeNotificaciones()) {
+            viewModel.onEvent(ListaCompraEvent.OnNotificacionesClick)
+        }
+    }
+
+    LaunchedEffect(pendingHomeAction.recargarHomeRequested) {
+        if (pendingHomeAction.consumeRecargarHome()) {
+            viewModel.loadUserData()
         }
     }
 

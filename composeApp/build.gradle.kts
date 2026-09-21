@@ -50,6 +50,8 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
 
+            implementation(libs.ktor.client.core)
+
             // Navigation 3
             implementation(libs.jetbrains.material3.adaptiveNavigation3)
             implementation(libs.jetbrains.lifecycle.viewmodelNavigation3)
@@ -90,6 +92,7 @@ kotlin {
             // Firebase
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.auth)
+            implementation(libs.firebase.messaging)
 
             // Sign In with Google
             implementation(libs.androidx.credentials)
@@ -99,6 +102,12 @@ kotlin {
 
             // AdMob: play-services-ads ya no se declara aquí. AdMobKMP la trae
             // como `api` en su androidMain, así que llega transitiva.
+
+            implementation(libs.ktor.client.okhttp)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }

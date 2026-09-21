@@ -7,6 +7,7 @@ import dev.bonygod.crashlytics.kmp.core.CrashlyticsConfig
 import dev.bonygod.crashlytics.kmp.core.CrashlyticsKMP
 import dev.bonygod.crashlytics.kmp.core.CrashlyticsKeys
 import dev.bonygod.listacompra.core.di.initKoin
+import dev.bonygod.listacompra.notificaciones.PushNotifications
 
 fun MainViewController() = ComposeUIViewController(
     configure = {
@@ -22,6 +23,7 @@ fun MainViewController() = ComposeUIViewController(
         // en AppDelegate) antes de que se cree este ViewController.
         initKoin()
         AdMobKMP.initializeAds()
+        PushNotifications.initialize()
     }
 ) {
     App()

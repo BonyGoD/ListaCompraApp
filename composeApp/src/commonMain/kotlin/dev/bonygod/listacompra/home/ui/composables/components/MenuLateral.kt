@@ -33,6 +33,7 @@ import dev.bonygod.listacompra.core.AppConstants
 import dev.bonygod.listacompra.getPlatform
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
+import dev.bonygod.listacompra.notificaciones.rememberNotificationPermissionRequester
 import listacompra.composeapp.generated.resources.Inter_Italic
 import listacompra.composeapp.generated.resources.Res
 import listacompra.composeapp.generated.resources.basura_black
@@ -50,6 +51,7 @@ import listacompra.composeapp.generated.resources.menu_lateral_edit_nombre_field
 import listacompra.composeapp.generated.resources.menu_lateral_login_or_register
 import listacompra.composeapp.generated.resources.menu_lateral_logout
 import listacompra.composeapp.generated.resources.menu_lateral_my_lists
+import listacompra.composeapp.generated.resources.menu_lateral_notifications
 import listacompra.composeapp.generated.resources.menu_lateral_share_list
 import listacompra.composeapp.generated.resources.menu_lateral_version_label
 import listacompra.composeapp.generated.resources.notification_blank
@@ -72,6 +74,9 @@ fun MenuLateral(
     } else {
         painterResource(Res.drawable.notification_blank)
     }
+    val requestNotificationPermission = rememberNotificationPermissionRequester { granted ->
+        setEvent(ListaCompraEvent.OnNotificationsPermissionResult(granted))
+    }
     Column(modifier = Modifier.padding(16.dp)) {
         Icon(
             painter = notificationIcon,
@@ -79,7 +84,7 @@ fun MenuLateral(
             contentDescription = "Icono menú",
             modifier = Modifier.align(Alignment.End)
                 .clickable {
-                    setEvent(ListaCompraEvent.ShowNotificationsBottomSheet(true))
+                    setEvent(ListaCompraEvent.OnNotificacionesClick)
                     onCloseDrawer()
                 }
         )
@@ -187,6 +192,30 @@ fun MenuLateral(
                 color = Color.Gray,
                 text = alexaLabel
             )
+        }
+        if (!state.isAnonymous) {
+            Row(
+                modifier = Modifier.padding(start = 10.dp, top = 30.dp)
+                    .clickable {
+                        requestNotificationPermission()
+                        onCloseDrawer()
+                    },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.notification_blank),
+                    tint = Color.Gray,
+                    contentDescription = stringResource(Res.string.menu_lateral_notifications),
+                )
+                Text(
+                    modifier = Modifier.padding(start = 5.dp),
+                    fontFamily = FontFamily(Font(Res.font.Inter_Italic)),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
+                    text = stringResource(Res.string.menu_lateral_notifications)
+                )
+            }
         }
         val logoutOrLoginEvent = if (state.isAnonymous) {
             ListaCompraEvent.OnLoginFromMenuClick

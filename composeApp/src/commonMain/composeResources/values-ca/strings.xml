@@ -54,6 +54,7 @@
     <string name="menu_lateral_share_list">Compartir llista</string>
     <string name="menu_lateral_alexa_linked">Alexa · Vinculada</string>
     <string name="menu_lateral_alexa_not_linked">Alexa · Sense vincular</string>
+    <string name="menu_lateral_notifications">Notificacions</string>
     <string name="menu_lateral_logout">Tancar sessió</string>
     <string name="menu_lateral_delete_account">Eliminar compte</string>
     <string name="menu_lateral_login_or_register">Inicia sessió / Crea un compte</string>
@@ -101,12 +102,12 @@
     <string name="home_alert_error_delete_account_title">Error en eliminar el compte</string>
     <string name="home_alert_share_rate_limit_message">Has d'esperar 5 minuts abans de tornar-ho a provar.</string>
 
-
     <!-- Notificaciones y Mis Listas -->
     <string name="notifications_sheet_title">Notificacions</string>
-    <string name="notifications_sheet_shared_suffix"> t'ha compartit la seva llista</string>
+    <string name="notifications_sheet_shared_suffix">t'ha compartit la seva llista</string>
     <string name="notifications_sheet_accept_button">Acceptar</string>
     <string name="notifications_sheet_cancel_button">Cancel·lar</string>
+    <string name="notifications_sheet_empty_message">No tens cap invitació</string>
     <string name="mislistas_screen_title">Les meves llistes</string>
     <string name="mislistas_back_description">Tornar</string>
     <string name="mislistas_empty_message">No tens cap llista disponible</string>
@@ -140,4 +141,7 @@
 
     <!-- Pantalla Alexa (pròpia, accessible des del menú lateral) -->
     <string name="alexa_screen_title">Alexa</string>
+
+    <string name="notifications_permission_denied_title">Notificacions desactivades</string>
+    <string name="notifications_permission_denied_message">Les pots activar quan vulguis des dels ajustos del sistema per a aquesta app.</string>
 </resources>

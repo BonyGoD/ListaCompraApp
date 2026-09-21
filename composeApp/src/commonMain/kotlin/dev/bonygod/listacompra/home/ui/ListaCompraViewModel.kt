@@ -20,11 +20,10 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.home.ui.mapper.toUI
 import dev.bonygod.listacompra.home.ui.model.ListaCompraUI
-import dev.bonygod.listacompra.login.domain.usecase.AddSharedListUseCase
 import dev.bonygod.listacompra.login.domain.usecase.DeleteAccountUseCase
-import dev.bonygod.listacompra.login.domain.usecase.DeleteNotificationUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
+import dev.bonygod.listacompra.login.domain.usecase.GuardarTokenPushUseCase
 import dev.bonygod.listacompra.login.domain.usecase.IsAnonymousUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LinkAccountWithEmailUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
@@ -32,6 +31,7 @@ import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UpdateNombreUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.GetListasUseCase
+import dev.bonygod.listacompra.notificaciones.PushNotifications
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,7 +46,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import listacompra.composeapp.generated.resources.Res
-import listacompra.composeapp.generated.resources.home_alert_error_accept_invitation_title
 import listacompra.composeapp.generated.resources.home_alert_error_add_product_title
 import listacompra.composeapp.generated.resources.home_alert_error_delete_account_title
 import listacompra.composeapp.generated.resources.home_alert_error_delete_list_title
@@ -57,6 +56,8 @@ import listacompra.composeapp.generated.resources.home_alert_error_login_title
 import listacompra.composeapp.generated.resources.home_alert_error_share_title
 import listacompra.composeapp.generated.resources.home_alert_error_update_title
 import listacompra.composeapp.generated.resources.home_alert_share_rate_limit_message
+import listacompra.composeapp.generated.resources.notifications_permission_denied_message
+import listacompra.composeapp.generated.resources.notifications_permission_denied_title
 import org.jetbrains.compose.resources.getString
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
@@ -76,13 +77,12 @@ class ListaCompraViewModel(
     private val logoutUseCase: LogOutUseCase,
     private val getNotificationsUseCase: GetNotificationsUseCase,
     private val shareListaCompraUseCase: ShareListaCompraUseCase,
-    private val addSharedListUseCase: AddSharedListUseCase,
-    private val deleteNotificationUseCase: DeleteNotificationUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
     private val getListasUseCase: GetListasUseCase,
     private val linkAccountWithEmailUseCase: LinkAccountWithEmailUseCase,
     private val userLoginUseCase: UserLoginUseCase,
     private val updateNombreUseCase: UpdateNombreUseCase,
+    private val guardarTokenPushUseCase: GuardarTokenPushUseCase,
     private val crashReporter: CrashReporter
 ) : ViewModel() {
     private var notificationsJob: Job? = null
@@ -162,9 +162,11 @@ class ListaCompraViewModel(
                             val nombre = listas.firstOrNull()?.nombre ?: "Lista de la compra"
                             setState { setListaNombre(nombre) }
                             _currentListaId.value = listas.firstOrNull()?.id ?: usuario.listas.firstOrNull()
+                            if (_currentListaId.value == null) setState { setLoaded() }
                         },
                         onFailure = {
                             _currentListaId.value = usuario.listas.firstOrNull()
+                            if (_currentListaId.value == null) setState { setLoaded() }
                         }
                     )
 
@@ -189,19 +191,17 @@ class ListaCompraViewModel(
                         showErrorAlert(
                             errorTitle,
                             message = errorMessage
-                        )
-                        // Suscribirse al flow compartido de productos
-                        // Suscribirse al flow compartido de notificaciones
+                        ).setLoaded()
                     }
                     sharedState.showLoading(false)
                 }
             )
         } catch (e: Exception) {
             e.printStackTrace()
+            setState { setLoaded() }
             sharedState.showLoading(false)
         }
     }
-
 
     fun onEvent(event: ListaCompraEvent) {
         when (event) {
@@ -241,15 +241,15 @@ class ListaCompraViewModel(
             is ListaCompraEvent.DismissCustomDialog -> setState { showCustomDialog(false) }
             is ListaCompraEvent.ShareList -> shareList(event.email)
             is ListaCompraEvent.OnShareTextFieldChange -> setState { updateShareTextField(event.text) }
-            is ListaCompraEvent.ShowNotificationsBottomSheet -> setState { showNotificationBottomSheet(event.show) }
-            is ListaCompraEvent.OnAcceptSharedList -> acceptSharedList(event.listaId, event.listaNombre)
-            is ListaCompraEvent.OnCancelSharedList -> cancelSharedList(event.listaId)
             is ListaCompraEvent.OnDeleteAccountClick -> setState { showDeleteAccountDialog(true) }
             is ListaCompraEvent.DismissDeleteAccountDialog -> setState { showDeleteAccountDialog(false) }
             is ListaCompraEvent.OnDeleteAccountConfirm -> deleteAccount()
             is ListaCompraEvent.TogglePurchased -> togglePurchased(event.productId)
             is ListaCompraEvent.OnMisListasClick -> navigator.navigateTo(Routes.MisListas)
             is ListaCompraEvent.OnAlexaClick -> navigator.navigateTo(Routes.Alexa)
+            is ListaCompraEvent.OnNotificacionesClick -> onNotificacionesClick()
+            is ListaCompraEvent.OnNotificationsPermissionResult ->
+                onNotificationsPermissionResult(event.granted)
             is ListaCompraEvent.OnForceCrashClick -> crashReporter.forceCrash()
             is ListaCompraEvent.OnForceNonFatalClick -> crashReporter.recordException(
                 Exception("Non-fatal de prueba desde el menú lateral"),
@@ -317,6 +317,21 @@ class ListaCompraViewModel(
                     }
                 }
             )
+        }
+    }
+
+    private fun onNotificationsPermissionResult(granted: Boolean) {
+        viewModelScope.launch {
+            if (granted) {
+                val token = PushNotifications.getToken()
+                if (token != null) {
+                    guardarTokenPushUseCase(token)
+                }
+            } else {
+                val title = getString(Res.string.notifications_permission_denied_title)
+                val message = getString(Res.string.notifications_permission_denied_message)
+                setState { showErrorAlert(title, message) }
+            }
         }
     }
 
@@ -424,34 +439,9 @@ class ListaCompraViewModel(
         }
     }
 
-    private fun cancelSharedList(listaId: String) {
-        viewModelScope.launch {
-            deleteNotificationUseCase(listaId)
-            setState { showNotificationBottomSheet(false) }
-        }
-    }
-
-    private fun acceptSharedList(listaId: String, listaNombre: String) {
-        viewModelScope.launch {
-            addSharedListUseCase(listaId, listaNombre).fold(
-                onSuccess = {
-                    deleteNotificationUseCase(listaId)
-                    setState { showNotificationBottomSheet(false) }
-                    // Recarga todos los datos del usuario para que los permisos de Firestore
-                    // estén propagados antes de suscribirse a la nueva lista
-                    loadUserData()
-                },
-                onFailure = { error ->
-                    val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
-                    val errorTitle = getString(Res.string.home_alert_error_accept_invitation_title)
-                    setState {
-                        showErrorAlert(
-                            errorTitle,
-                            message = errorMessage
-                        )
-                    }
-                }
-            )
+    private fun onNotificacionesClick() {
+        if (!isAnonymousUserUseCase()) {
+            navigator.navigateTo(Routes.Notificaciones)
         }
     }
 

@@ -102,7 +102,7 @@
     <string name="home_alert_error_link_account_title">Error linking account</string>
     <string name="home_alert_error_login_title">Error signing in</string>
     <string name="home_alert_error_delete_account_title">Error deleting account</string>
-    <string name="home_alert_share_rate_limit_message">You must wait 5 minutes before trying again.</string>
+    <string name="home_alert_share_rate_limit_message">You must wait 2 minutes before trying again.</string>
 
     <!-- Notificaciones y Mis Listas -->
     <string name="notifications_sheet_title">Notifications</string>

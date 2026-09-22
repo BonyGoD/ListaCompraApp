@@ -66,6 +66,13 @@ import kotlin.time.Duration.Companion.minutes
  *  entrada del menú lateral, para no ofrecerlo dos veces. */
 private const val NOTIFICATIONS_OFFER_KEY = "notifications_permission_offered"
 
+/** Cuándo se envió la última invitación. En preferencias y no en memoria: era un campo
+ *  del ViewModel, así que bastaba con cerrar y reabrir la app para saltarse la espera.
+ *  El servidor aplica su propio límite, más corto, para quien llame al endpoint por
+ *  fuera de la app. */
+private const val ULTIMA_INVITACION_KEY = "ultima_invitacion_ms"
+private val INTERVALO_ENTRE_INVITACIONES = 2.minutes
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class ListaCompraViewModel(
     private val navigator: Navigator,
@@ -92,7 +99,6 @@ class ListaCompraViewModel(
 ) : ViewModel() {
     private var notificationsJob: Job? = null
     private var productosJob: Job? = null
-    private var lastResetRequestTime: Long = 0L
     private val _state = MutableStateFlow(ListaCompraState())
     val state: StateFlow<ListaCompraState> = _state
 
@@ -526,7 +532,8 @@ class ListaCompraViewModel(
 
     private fun shareList(rawEmail: String) {
         val currentTime = Clock.System.now().toEpochMilliseconds()
-        if (currentTime - lastResetRequestTime < 5.minutes.inWholeMilliseconds) {
+        val ultimaInvitacion = preferenciasLocales.getLong(ULTIMA_INVITACION_KEY, 0L)
+        if (currentTime - ultimaInvitacion < INTERVALO_ENTRE_INVITACIONES.inWholeMilliseconds) {
             viewModelScope.launch {
                 setEffect(ListaCompraEffect.ShowError(getString(Res.string.home_alert_share_rate_limit_message)))
             }
@@ -537,8 +544,10 @@ class ListaCompraViewModel(
         viewModelScope.launch {
             shareListaCompraUseCase(user.nombre, user.listaId, email).fold(
                 onSuccess = {
-                    // Actualizar el timestamp después de compartir exitosamente
-                    lastResetRequestTime = Clock.System.now().toEpochMilliseconds()
+                    preferenciasLocales.setLong(
+                        ULTIMA_INVITACION_KEY,
+                        Clock.System.now().toEpochMilliseconds()
+                    )
                     setState { showCustomDialog(false) }
                     setState {
                         showSuccessAlert(

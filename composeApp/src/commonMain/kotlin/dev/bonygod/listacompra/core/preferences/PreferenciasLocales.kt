@@ -9,4 +9,6 @@ package dev.bonygod.listacompra.core.preferences
 expect class PreferenciasLocales() {
     fun getBoolean(clave: String, porDefecto: Boolean): Boolean
     fun setBoolean(clave: String, valor: Boolean)
+    fun getLong(clave: String, porDefecto: Long): Long
+    fun setLong(clave: String, valor: Long)
 }

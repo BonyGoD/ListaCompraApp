@@ -16,4 +16,11 @@ actual class PreferenciasLocales actual constructor() {
     actual fun setBoolean(clave: String, valor: Boolean) {
         prefs.edit().putBoolean(clave, valor).apply()
     }
+
+    actual fun getLong(clave: String, porDefecto: Long): Long =
+        prefs.getLong(clave, porDefecto)
+
+    actual fun setLong(clave: String, valor: Long) {
+        prefs.edit().putLong(clave, valor).apply()
+    }
 }

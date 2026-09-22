@@ -16,4 +16,12 @@ actual class PreferenciasLocales actual constructor() {
     actual fun setBoolean(clave: String, valor: Boolean) {
         defaults.setBool(valor, forKey = clave)
     }
+
+    actual fun getLong(clave: String, porDefecto: Long): Long {
+        return if (defaults.objectForKey(clave) != null) defaults.integerForKey(clave) else porDefecto
+    }
+
+    actual fun setLong(clave: String, valor: Long) {
+        defaults.setInteger(valor, forKey = clave)
+    }
 }

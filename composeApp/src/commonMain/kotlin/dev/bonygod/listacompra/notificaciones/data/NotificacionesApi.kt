@@ -1,7 +1,6 @@
 package dev.bonygod.listacompra.notificaciones.data
 
 import dev.gitlive.firebase.auth.FirebaseAuth
-import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -18,7 +17,7 @@ private const val REQUEST_TIMEOUT_MS = 5_000L
 private data class CompartirListaBody(val email: String, val listaId: String)
 
 class NotificacionesApi(private val auth: FirebaseAuth) {
-    private val client = HttpClient {
+    private val client = crearHttpClient {
         install(HttpTimeout) {
             requestTimeoutMillis = REQUEST_TIMEOUT_MS
         }

@@ -102,7 +102,7 @@
     <string name="home_alert_error_link_account_title">Error al vincular la cuenta</string>
     <string name="home_alert_error_login_title">Error al iniciar sesión</string>
     <string name="home_alert_error_delete_account_title">Error al borrar la cuenta</string>
-    <string name="home_alert_share_rate_limit_message">Debes esperar 5 minutos para volver a intentarlo.</string>
+    <string name="home_alert_share_rate_limit_message">Debes esperar 2 minutos para volver a intentarlo.</string>
 
     <!-- Notificaciones y Mis Listas -->
     <string name="notifications_sheet_title">Notificaciones</string>

@@ -1,5 +1,9 @@
 package dev.bonygod.listacompra.core.navigation
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
 /**
  * Peticiones de un solo uso que una pantalla deja hechas para Home antes de navegar a ella.
  *
@@ -18,6 +22,9 @@ class PendingHomeAction {
 
     private var linkAccountRequested = false
 
+    var recargarHomeRequested by mutableStateOf(false)
+        private set
+
     /** La pantalla de Alexa pide que Home abra el diálogo de crear cuenta al llegar. */
     fun requestLinkAccount() {
         linkAccountRequested = true
@@ -27,6 +34,16 @@ class PendingHomeAction {
     fun consumeLinkAccount(): Boolean {
         val requested = linkAccountRequested
         linkAccountRequested = false
+        return requested
+    }
+
+    fun requestRecargarHome() {
+        recargarHomeRequested = true
+    }
+
+    fun consumeRecargarHome(): Boolean {
+        val requested = recargarHomeRequested
+        recargarHomeRequested = false
         return requested
     }
 }

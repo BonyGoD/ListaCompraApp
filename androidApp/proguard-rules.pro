@@ -166,6 +166,23 @@
 }
 
 # ==========================================
+# Ktor / OkHttp
+# ==========================================
+# OkHttp referencia proveedores de TLS opcionales (conscrypt, bouncycastle, openjsse) que
+# en Android no se usan y no están en el classpath. Sin estas líneas, R8 corta la
+# compilación con una lista de "Missing classes". Ktor 3.6 arrastra OkHttp 5, que ya no
+# trae dentro del artefacto las reglas que sí traía la 4.12.
+#
+# No hace falta ningún -keep para el motor: se nombra explícitamente en
+# HttpClientFactory.android.kt, así que R8 lo alcanza desde el código.
+-dontwarn io.ktor.**
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
+
+# ==========================================
 # Crashlytics - simbolización de stack traces
 # ==========================================
 # `-keepattributes SourceFile,LineNumberTable` lo aporta el consumer-rules.pro de

@@ -1,5 +1,6 @@
 package dev.bonygod.listacompra.login.data.datasource
 
+import dev.bonygod.listacompra.getPlatform
 import dev.bonygod.listacompra.login.data.model.NotificationsReponse
 import dev.bonygod.listacompra.login.data.model.UserResponse
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
@@ -9,6 +10,8 @@ import dev.bonygod.listacompra.mislistas.domain.model.ListaInfo
 import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.FirebaseUser
+import dev.gitlive.firebase.firestore.FieldPath
+import dev.gitlive.firebase.firestore.FieldValue
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.Timestamp
 import kotlinx.coroutines.flow.Flow
@@ -119,6 +122,21 @@ class UsersDataSource(
         )
     }
 
+    suspend fun updateNombre(nombre: String) {
+        val uid = auth.currentUser?.uid.orEmpty()
+        firebase.collection("usuarios")
+            .document(uid)
+            .set(
+                data = mapOf("nombre" to nombre),
+                merge = true
+            )
+        try {
+            auth.currentUser?.updateProfile(displayName = nombre)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private suspend fun updateUserProfile(uid: String, nombre: String, email: String) {
         firebase.collection("usuarios")
             .document(uid)
@@ -137,9 +155,10 @@ class UsersDataSource(
         val credential = EmailAuthProvider.credential(email, password)
         val result = currentUser.linkWithCredential(credential)
         val uid = result.user?.uid.orEmpty()
-        val nombre = email.substringBefore("@")
-        updateUserProfile(uid, nombre, email)
         val userDoc = firebase.collection("usuarios").document(uid).get()
+        val nombreExistente = userDoc.get("nombre") as? String ?: ""
+        val nombre = nombreExistente.ifBlank { email.substringBefore("@") }
+        updateUserProfile(uid, nombre, email)
         return UserResponse(
             uid = uid,
             nombre = nombre,
@@ -181,11 +200,35 @@ class UsersDataSource(
         auth.sendPasswordResetEmail(email)
     }
 
-    /**
-     * Cerrar sesión
-     */
-    suspend fun logOut() {
+    suspend fun logOut(pushToken: String?) {
+        if (pushToken != null) {
+            quitarTokenPushDeEsteDispositivo(pushToken)
+        }
         auth.signOut()
+    }
+
+    private suspend fun quitarTokenPushDeEsteDispositivo(token: String) {
+        val uid = auth.currentUser?.uid ?: return
+        try {
+            firebase.collection("usuarios")
+                .document(uid)
+                .updateFields {
+                    FieldPath("fcmTokens", token) to FieldValue.delete
+                }
+        } catch (e: Exception) {
+        }
+    }
+
+    suspend fun guardarTokenPush(token: String) {
+        val user = auth.currentUser ?: return
+        if (user.isAnonymous) return
+        firebase.collection("usuarios")
+            .document(user.uid)
+            .updateFields {
+                FieldPath("fcmTokens", token, "plataforma") to getPlatform().name
+                FieldPath("fcmTokens", token, "actualizado") to Timestamp.now()
+                "idioma" to getPlatform().idioma
+            }
     }
 
     /**
@@ -383,7 +426,7 @@ class UsersDataSource(
                 throw Exception("Error al borrar la cuenta de autenticación: ${e.message}")
             }
         }
-        logOut()
+        logOut(pushToken = null)
     }
 
     /**
@@ -398,15 +441,93 @@ class UsersDataSource(
         val defaultListaId = listaIds.firstOrNull() ?: ""
         @Suppress("UNCHECKED_CAST")
         val nombresListas = (userDoc.get("nombresListas") as? Map<String, String>) ?: emptyMap()
+        val listaAlexa = userDoc.get("listaAlexa") as? String ?: ""
 
-        return listaIds.map { listaId ->
-            val nombre = nombresListas[listaId] ?: try {
-                val listaDoc = firebase.collection("lista-compra").document(listaId).get()
-                listaDoc.get("nombre") as? String ?: "Lista de la compra"
+        val listasVivas = mutableListOf<ListaInfo>()
+        val listasABorrar = mutableListOf<String>()
+
+        listaIds.forEach { listaId ->
+            val listaDoc = try {
+                firebase.collection("lista-compra").document(listaId).get()
             } catch (e: Exception) {
-                "Lista de la compra"
+                val nombre = nombresListas[listaId] ?: "Lista de la compra"
+                listasVivas.add(
+                    ListaInfo(id = listaId, nombre = nombre, isDefault = listaId == defaultListaId, esPropia = false)
+                )
+                return@forEach
             }
-            ListaInfo(id = listaId, nombre = nombre, isDefault = listaId == defaultListaId)
+            if (!listaDoc.exists) {
+                listasABorrar.add(listaId)
+                return@forEach
+            }
+            val nombre = nombresListas[listaId] ?: (listaDoc.get("nombre") as? String ?: "Lista de la compra")
+            val owner = listaDoc.get("owner") as? String
+            listasVivas.add(
+                ListaInfo(id = listaId, nombre = nombre, isDefault = listaId == defaultListaId, esPropia = owner == userUID)
+            )
+        }
+
+        if (listasABorrar.isNotEmpty()) {
+            podarListasInexistentes(userUID, listaIds, nombresListas, listaAlexa, listasABorrar)
+        }
+
+        return listasVivas
+    }
+
+    private suspend fun podarListasInexistentes(
+        userUID: String,
+        listaIds: List<String>,
+        nombresListas: Map<String, String>,
+        listaAlexa: String,
+        idsABorrar: List<String>
+    ) {
+        try {
+            val listasRestantes = listaIds - idsABorrar.toSet()
+            val nombresRestantes = nombresListas - idsABorrar.toSet()
+            val campos = mutableListOf<Pair<String, Any?>>(
+                "listas" to listasRestantes,
+                "nombresListas" to nombresRestantes
+            )
+            if (listaAlexa in idsABorrar) {
+                campos.add("listaAlexa" to "")
+            }
+            firebase.collection("usuarios").document(userUID).update(*campos.toTypedArray())
+        } catch (e: Exception) {
+        }
+    }
+
+    suspend fun deleteLista(listaId: String, esPropia: Boolean) {
+        val userUID = auth.currentUser?.uid.orEmpty()
+
+        if (esPropia) {
+            deleteProductosEnLotes(listaId)
+            firebase.collection("lista-compra").document(listaId).delete()
+        }
+
+        val userDoc = firebase.collection("usuarios").document(userUID).get()
+        val currentListas = (userDoc.get("listas") as? List<String>) ?: emptyList()
+        @Suppress("UNCHECKED_CAST")
+        val currentNombres = (userDoc.get("nombresListas") as? Map<String, String>) ?: emptyMap()
+        val currentListaAlexa = userDoc.get("listaAlexa") as? String ?: ""
+
+        val campos = mutableListOf<Pair<String, Any?>>(
+            "listas" to (currentListas - listaId),
+            "nombresListas" to (currentNombres - listaId)
+        )
+        if (currentListaAlexa == listaId) {
+            campos.add("listaAlexa" to "")
+        }
+        firebase.collection("usuarios").document(userUID).update(*campos.toTypedArray())
+    }
+
+    private suspend fun deleteProductosEnLotes(listaId: String) {
+        val productosCollection =
+            firebase.collection("lista-compra").document(listaId).collection("productos")
+        val documentos = productosCollection.get().documents
+        documentos.chunked(500).forEach { lote ->
+            val batch = firebase.batch()
+            lote.forEach { documento -> batch.delete(documento.reference) }
+            batch.commit()
         }
     }
 
@@ -498,6 +619,6 @@ class UsersDataSource(
             ),
             merge = true
         )
-        return ListaInfo(id = newListaId, nombre = nombre, isDefault = false)
+        return ListaInfo(id = newListaId, nombre = nombre, isDefault = false, esPropia = true)
     }
 }

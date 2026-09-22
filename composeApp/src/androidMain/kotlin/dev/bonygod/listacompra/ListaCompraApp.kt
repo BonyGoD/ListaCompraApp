@@ -1,17 +1,16 @@
 package dev.bonygod.listacompra
 
 import android.app.Application
+import dev.bonygod.admob.kmp.AdMobKMP
+import dev.bonygod.admob.kmp.initializeAds
 import dev.bonygod.crashlytics.kmp.core.CrashlyticsConfig
 import dev.bonygod.crashlytics.kmp.core.CrashlyticsKMP
 import dev.bonygod.crashlytics.kmp.core.CrashlyticsKeys
-import dev.bonygod.listacompra.ads.AdConstants
-import dev.bonygod.listacompra.ads.AdMobInitializer
-import dev.bonygod.listacompra.ads.InterstitialAdManager
-import dev.bonygod.listacompra.ads.getInterstitialAdUnitId
 import dev.bonygod.listacompra.core.di.appModule
 import dev.bonygod.listacompra.core.di.dataModule
 import dev.bonygod.listacompra.core.di.initKoin
 import dev.bonygod.listacompra.core.di.viewModelsModule
+import dev.bonygod.listacompra.notificaciones.PushNotifications
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.logger.Level
@@ -20,19 +19,9 @@ class ListaCompraApp: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Inicializar contexto de la plataforma
         initPlatform(this)
 
-        // Inicializar AdMob
-            // Precargar el intersticial después de inicializar AdMob
-        AdMobInitializer.initialize(this) {
-            if (AdConstants.INTERSTITIAL_ENABLED) {
-                InterstitialAdManager.preloadAd(
-                    this,
-                    AdConstants.getInterstitialAdUnitId()
-                )
-            }
-        }
+        PushNotifications.initialize()
 
         CrashlyticsKMP.initialize(
             CrashlyticsConfig(
@@ -46,5 +35,7 @@ class ListaCompraApp: Application() {
             androidContext(this@ListaCompraApp)
             modules(appModule, viewModelsModule, dataModule)
         }
+
+        AdMobKMP.initializeAds(this)
     }
 }

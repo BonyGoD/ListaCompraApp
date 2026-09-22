@@ -54,11 +54,19 @@
     <string name="menu_lateral_share_list">Compartir lista</string>
     <string name="menu_lateral_alexa_linked">Alexa · Vinculada</string>
     <string name="menu_lateral_alexa_not_linked">Alexa · Sin vincular</string>
+    <string name="menu_lateral_notifications">Notificaciones</string>
+    <string name="menu_lateral_notifications_enabled">Notificaciones · Activadas</string>
+    <string name="menu_lateral_notifications_disabled">Notificaciones · Desactivadas</string>
     <string name="menu_lateral_logout">Cerrar sesión</string>
     <string name="menu_lateral_delete_account">Eliminar cuenta</string>
     <string name="menu_lateral_login_or_register">Iniciar sesión / Crear cuenta</string>
     <string name="menu_lateral_data_loss_message">Si inicias sesión con otra cuenta, la lista que has creado aquí no se conservará.</string>
     <string name="menu_lateral_version_label">Versión</string>
+    <string name="menu_lateral_edit_nombre_description">Editar nombre</string>
+    <string name="menu_lateral_edit_nombre_dialog_title">Editar nombre</string>
+    <string name="menu_lateral_edit_nombre_field_label">Nombre</string>
+    <string name="menu_lateral_edit_nombre_dialog_confirm_button">Guardar</string>
+    <string name="menu_lateral_edit_nombre_dialog_cancel_button">Cancelar</string>
     <string name="delete_account_title">¿Eliminar cuenta permanentemente?</string>
     <string name="delete_account_subtitle">Esta acción es irreversible. Se eliminarán todos tus datos y listas de compra.</string>
     <string name="delete_account_button">Eliminar cuenta</string>
@@ -94,14 +102,14 @@
     <string name="home_alert_error_link_account_title">Error al vincular la cuenta</string>
     <string name="home_alert_error_login_title">Error al iniciar sesión</string>
     <string name="home_alert_error_delete_account_title">Error al borrar la cuenta</string>
-    <string name="home_alert_share_rate_limit_message">Debes esperar 5 minutos para volver a intentarlo.</string>
-
+    <string name="home_alert_share_rate_limit_message">Debes esperar 2 minutos para volver a intentarlo.</string>
 
     <!-- Notificaciones y Mis Listas -->
     <string name="notifications_sheet_title">Notificaciones</string>
-    <string name="notifications_sheet_shared_suffix"> te ha compartido su lista</string>
+    <string name="notifications_sheet_shared_suffix">te ha compartido su lista</string>
     <string name="notifications_sheet_accept_button">Aceptar</string>
     <string name="notifications_sheet_cancel_button">Cancelar</string>
+    <string name="notifications_sheet_empty_message">No tienes invitaciones</string>
     <string name="mislistas_screen_title">Mis listas</string>
     <string name="mislistas_back_description">Volver</string>
     <string name="mislistas_empty_message">No tienes listas disponibles</string>
@@ -112,6 +120,13 @@
     <string name="mislistas_new_dialog_confirm_button">Crear</string>
     <string name="mislistas_rename_dialog_title">Renombrar lista</string>
     <string name="mislistas_rename_dialog_confirm_button">Renombrar</string>
+    <string name="mislistas_delete_dialog_title">Eliminar lista</string>
+    <string name="mislistas_delete_dialog_message">Se borra para todas las personas con las que la compartes.</string>
+    <string name="mislistas_delete_dialog_confirm_button">Eliminar</string>
+    <string name="mislistas_leave_dialog_title">Salir de la lista</string>
+    <string name="mislistas_leave_dialog_message">Dejará de aparecerte, pero no se borra para nadie más.</string>
+    <string name="mislistas_leave_dialog_confirm_button">Salir</string>
+    <string name="mislistas_delete_description">Eliminar lista</string>
     <string name="mislistas_alexa_section_title">Alexa</string>
     <string name="mislistas_alexa_anonymous_message">Para usar Alexa necesitas crear una cuenta. Las sesiones anónimas no se pueden vincular.</string>
     <string name="mislistas_alexa_link_account_button">Crear cuenta</string>
@@ -128,4 +143,17 @@
 
     <!-- Pantalla Alexa (propia, accesible desde el menú lateral) -->
     <string name="alexa_screen_title">Alexa</string>
+
+    <string name="notifications_permission_denied_title">Notificaciones desactivadas</string>
+    <string name="notifications_permission_denied_message">Puedes activarlas cuando quieras desde los ajustes del sistema para esta app.</string>
+
+    <string name="notifications_offer_dialog_title">¿Te avisamos?</string>
+    <string name="notifications_offer_dialog_message">Te enviaremos una notificación cuando alguien comparta una lista contigo.</string>
+    <string name="notifications_offer_dialog_accept_button">Sí, avisadme</string>
+    <string name="notifications_offer_dialog_decline_button">Ahora no</string>
+
+    <string name="notifications_status_dialog_enabled_title">Notificaciones activadas</string>
+    <string name="notifications_status_dialog_enabled_message">Te avisaremos cuando alguien comparta una lista contigo. Para desactivarlas, ve a los ajustes del sistema.</string>
+    <string name="notifications_status_dialog_open_settings_button">Abrir ajustes</string>
+    <string name="notifications_status_dialog_close_button">Cerrar</string>
 </resources>

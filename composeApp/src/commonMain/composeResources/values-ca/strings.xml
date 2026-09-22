@@ -54,11 +54,19 @@
     <string name="menu_lateral_share_list">Compartir llista</string>
     <string name="menu_lateral_alexa_linked">Alexa · Vinculada</string>
     <string name="menu_lateral_alexa_not_linked">Alexa · Sense vincular</string>
+    <string name="menu_lateral_notifications">Notificacions</string>
+    <string name="menu_lateral_notifications_enabled">Notificacions · Activades</string>
+    <string name="menu_lateral_notifications_disabled">Notificacions · Desactivades</string>
     <string name="menu_lateral_logout">Tancar sessió</string>
     <string name="menu_lateral_delete_account">Eliminar compte</string>
     <string name="menu_lateral_login_or_register">Inicia sessió / Crea un compte</string>
     <string name="menu_lateral_data_loss_message">Si inicies sessió amb un altre compte, la llista que has creat aquí no es conservarà.</string>
     <string name="menu_lateral_version_label">Versió</string>
+    <string name="menu_lateral_edit_nombre_description">Editar nom</string>
+    <string name="menu_lateral_edit_nombre_dialog_title">Editar nom</string>
+    <string name="menu_lateral_edit_nombre_field_label">Nom</string>
+    <string name="menu_lateral_edit_nombre_dialog_confirm_button">Desar</string>
+    <string name="menu_lateral_edit_nombre_dialog_cancel_button">Cancel·lar</string>
     <string name="delete_account_title">Eliminar compte permanentment?</string>
     <string name="delete_account_subtitle">Aquesta acció és irreversible. S'eliminaran totes les teves dades i llistes de la compra.</string>
     <string name="delete_account_button">Elimina compte</string>
@@ -94,14 +102,14 @@
     <string name="home_alert_error_link_account_title">Error en vincular el compte</string>
     <string name="home_alert_error_login_title">Error en iniciar sessió</string>
     <string name="home_alert_error_delete_account_title">Error en eliminar el compte</string>
-    <string name="home_alert_share_rate_limit_message">Has d'esperar 5 minuts abans de tornar-ho a provar.</string>
-
+    <string name="home_alert_share_rate_limit_message">Has d'esperar 2 minuts abans de tornar-ho a provar.</string>
 
     <!-- Notificaciones y Mis Listas -->
     <string name="notifications_sheet_title">Notificacions</string>
-    <string name="notifications_sheet_shared_suffix"> t'ha compartit la seva llista</string>
+    <string name="notifications_sheet_shared_suffix">t'ha compartit la seva llista</string>
     <string name="notifications_sheet_accept_button">Acceptar</string>
     <string name="notifications_sheet_cancel_button">Cancel·lar</string>
+    <string name="notifications_sheet_empty_message">No tens cap invitació</string>
     <string name="mislistas_screen_title">Les meves llistes</string>
     <string name="mislistas_back_description">Tornar</string>
     <string name="mislistas_empty_message">No tens cap llista disponible</string>
@@ -112,6 +120,13 @@
     <string name="mislistas_new_dialog_confirm_button">Crear</string>
     <string name="mislistas_rename_dialog_title">Reanomenar llista</string>
     <string name="mislistas_rename_dialog_confirm_button">Reanomenar</string>
+    <string name="mislistas_delete_dialog_title">Eliminar llista</string>
+    <string name="mislistas_delete_dialog_message">S'elimina per a totes les persones amb qui la comparteixes.</string>
+    <string name="mislistas_delete_dialog_confirm_button">Eliminar</string>
+    <string name="mislistas_leave_dialog_title">Sortir de la llista</string>
+    <string name="mislistas_leave_dialog_message">Deixarà d'aparèixer-te, però no s'elimina per a ningú més.</string>
+    <string name="mislistas_leave_dialog_confirm_button">Sortir</string>
+    <string name="mislistas_delete_description">Eliminar llista</string>
     <string name="mislistas_alexa_section_title">Alexa</string>
     <string name="mislistas_alexa_anonymous_message">Per fer servir Alexa has de crear un compte. Les sessions anònimes no es poden vincular.</string>
     <string name="mislistas_alexa_link_account_button">Crea el compte</string>
@@ -128,4 +143,17 @@
 
     <!-- Pantalla Alexa (pròpia, accessible des del menú lateral) -->
     <string name="alexa_screen_title">Alexa</string>
+
+    <string name="notifications_permission_denied_title">Notificacions desactivades</string>
+    <string name="notifications_permission_denied_message">Les pots activar quan vulguis des dels ajustos del sistema per a aquesta app.</string>
+
+    <string name="notifications_offer_dialog_title">T'avisem?</string>
+    <string name="notifications_offer_dialog_message">T'enviarem una notificació quan algú comparteixi una llista amb tu.</string>
+    <string name="notifications_offer_dialog_accept_button">Sí, avisa'm</string>
+    <string name="notifications_offer_dialog_decline_button">Ara no</string>
+
+    <string name="notifications_status_dialog_enabled_title">Notificacions activades</string>
+    <string name="notifications_status_dialog_enabled_message">T'avisarem quan algú comparteixi una llista amb tu. Per desactivar-les, vés als ajustos del sistema.</string>
+    <string name="notifications_status_dialog_open_settings_button">Obre els ajustos</string>
+    <string name="notifications_status_dialog_close_button">Tanca</string>
 </resources>

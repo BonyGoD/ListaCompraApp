@@ -8,5 +8,8 @@ data class MisListasState(
     val error: String? = null,
     val renameDialogListaId: String? = null,
     val renameDialogCurrentNombre: String = "",
-    val showCreateDialog: Boolean = false
+    val showCreateDialog: Boolean = false,
+    val deleteDialogListaId: String? = null,
+    val deleteDialogNombre: String = "",
+    val deleteDialogEsPropia: Boolean = false
 )

@@ -50,8 +50,18 @@ class UserRepository(
         }
     }
 
-    suspend fun logOut() {
-        usersDS.logOut()
+    suspend fun logOut(pushToken: String?) {
+        usersDS.logOut(pushToken)
+    }
+
+    suspend fun guardarTokenPush(token: String): Result<Unit> {
+        return try {
+            usersDS.guardarTokenPush(token)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.guardarTokenPush")
+            Result.failure(e.toUserFailure())
+        }
     }
 
     suspend fun getActualUser(): Result<Usuario> {
@@ -78,6 +88,16 @@ class UserRepository(
             Result.success(userResponse.toDomain())
         } catch (e: Exception) {
             crashReporter.recordException(e, "UserRepository.signInAnonymously")
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun updateNombre(nombre: String): Result<Unit> {
+        return try {
+            usersDS.updateNombre(nombre)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.updateNombre")
             Result.failure(e.toUserFailure())
         }
     }
@@ -208,6 +228,16 @@ class UserRepository(
             Result.success(Unit)
         } catch (e: Exception) {
             crashReporter.recordException(e, "UserRepository.renameNombreLista")
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun deleteLista(listaId: String, esPropia: Boolean): Result<Unit> {
+        return try {
+            usersDS.deleteLista(listaId, esPropia)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.deleteLista")
             Result.failure(e.toUserFailure())
         }
     }

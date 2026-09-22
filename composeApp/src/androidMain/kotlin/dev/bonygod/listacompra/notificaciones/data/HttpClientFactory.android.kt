@@ -1,0 +1,8 @@
+package dev.bonygod.listacompra.notificaciones.data
+
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.okhttp.OkHttp
+
+internal actual fun crearHttpClient(configuracion: HttpClientConfig<*>.() -> Unit): HttpClient =
+    HttpClient(OkHttp) { configuracion() }

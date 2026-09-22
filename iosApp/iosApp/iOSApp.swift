@@ -1,13 +1,18 @@
 import SwiftUI
 import Firebase
+import FirebaseMessaging
+import UserNotifications
 import GoogleSignIn
 import SignInKMPSwift
-import GoogleMobileAds
 import AdMobKMPSwift
 import CrashlyticsKMPSwift
 import ComposeApp
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+    private var isFCMTokenRequestPending = false
+    private var isKotlinTapBridgeReady = false
+    private var hasPendingNotificationTap = false
+
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         FirebaseApp.configure()
@@ -16,16 +21,25 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Inicializar el helper para escuchar las notificaciones de Kotlin (GoogleSignIn)
         _ = SignInCallbackHelper.shared
 
-        // Inicializar Google Mobile Ads SDK
-        MobileAds.shared.start()
+        // Arranca el SDK de Google Mobile Ads y los puentes de banner e
+        // intersticial con Kotlin. La precarga del intersticial no se dispara
+        // aquí: la pide Kotlin con AdMobKMP.initializeAds() (MainViewController),
+        // que es quien conoce el AdMobConfig y el interruptor interstitialEnabled.
+        AdMobKMPBridge.start()
 
-        // Inicializar el helper para escuchar las notificaciones de Kotlin (AdMob)
-        _ = AdMobCallbackHelper.shared
+        UNUserNotificationCenter.current().delegate = self
+        Messaging.messaging().delegate = self
+        setupPushNotificationsBridge()
 
-        // Precargar el intersticial usando el Ad Unit ID correcto desde Kotlin
-        let preloader = InterstitialAdPreloader()
-        if preloader.isInterstitialEnabled() {
-            AdPreloader.shared.preloadAd(adUnitId: preloader.getAdUnitId())
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .authorized, .provisional, .ephemeral:
+                DispatchQueue.main.async {
+                    application.registerForRemoteNotifications()
+                }
+            default:
+                break
+            }
         }
 
         return true
@@ -37,6 +51,126 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         options: [UIApplication.OpenURLOptionsKey : Any] = [:]
     ) -> Bool {
         return GIDSignIn.sharedInstance.handle(url)
+    }
+
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
+        Messaging.messaging().apnsToken = deviceToken
+
+        if isFCMTokenRequestPending {
+            isFCMTokenRequestPending = false
+            fetchAndPublishFCMToken()
+        }
+    }
+
+    func application(
+        _ application: UIApplication,
+        didFailToRegisterForRemoteNotificationsWithError error: Error
+    ) {
+        if isFCMTokenRequestPending {
+            isFCMTokenRequestPending = false
+            #if DEBUG
+            print("🔔 [Push-Swift] Fallo registrando en APNs: \(error)")
+            #endif
+            NotificationCenter.default.post(
+                name: NSNotification.Name("FCMTokenResponse"),
+                object: nil,
+                userInfo: [:]
+            )
+        }
+    }
+
+    private func setupPushNotificationsBridge() {
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("FCMTokenRequested"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            if Messaging.messaging().apnsToken == nil {
+                self?.isFCMTokenRequestPending = true
+                return
+            }
+            self?.fetchAndPublishFCMToken()
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("PushNotificationTapBridgeReady"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            self.isKotlinTapBridgeReady = true
+            if self.hasPendingNotificationTap {
+                self.hasPendingNotificationTap = false
+                self.publishNotificationTap()
+            }
+        }
+    }
+
+    private func publishNotificationTap() {
+        NotificationCenter.default.post(
+            name: NSNotification.Name("PushNotificationTapped"),
+            object: nil
+        )
+    }
+
+    private func fetchAndPublishFCMToken() {
+        Messaging.messaging().token { token, error in
+            if let error = error {
+                #if DEBUG
+                print("🔔 [Push-Swift] Error obteniendo el token FCM: \(error)")
+                #endif
+            }
+            NotificationCenter.default.post(
+                name: NSNotification.Name("FCMTokenResponse"),
+                object: nil,
+                userInfo: token != nil ? ["token": token!] : [:]
+            )
+        }
+    }
+}
+
+extension AppDelegate: MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        #if DEBUG
+        print("🔔 [Push-Swift] Token FCM (registro): \(fcmToken ?? "nil")")
+        #endif
+        guard let fcmToken = fcmToken else { return }
+        NotificationCenter.default.post(
+            name: NSNotification.Name("FCMTokenRefreshed"),
+            object: nil,
+            userInfo: ["token": fcmToken]
+        )
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .list, .sound])
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let tipo = response.notification.request.content.userInfo["tipo"] as? String
+        if tipo == "lista_compartida" {
+            // Con la app cerrada, iOS llama aquí antes de que Kotlin arranque: el tap
+            // se guarda y se publica cuando Kotlin avisa de que ya escucha.
+            if isKotlinTapBridgeReady {
+                publishNotificationTap()
+            } else {
+                hasPendingNotificationTap = true
+            }
+        }
+        completionHandler()
     }
 }
 

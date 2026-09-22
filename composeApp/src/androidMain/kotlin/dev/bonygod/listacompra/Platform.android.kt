@@ -2,6 +2,7 @@ package dev.bonygod.listacompra
 
 import android.content.Context
 import android.os.Build
+import java.util.Locale
 
 internal lateinit var appContext: Context
     private set
@@ -16,6 +17,8 @@ class AndroidPlatform : Platform {
         }
     override val isDebugBuild: Boolean
         get() = (appContext.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+    override val idioma: String
+        get() = normalizeIdioma(Locale.getDefault().language)
 }
 
 actual fun getPlatform(): Platform = AndroidPlatform()

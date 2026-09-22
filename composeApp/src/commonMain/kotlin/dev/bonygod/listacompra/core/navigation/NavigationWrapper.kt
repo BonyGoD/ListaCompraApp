@@ -16,6 +16,7 @@ import dev.bonygod.listacompra.login.ui.screens.RegisterScreen
 import dev.bonygod.listacompra.login.ui.screens.SplashScreen
 import dev.bonygod.listacompra.alexa.ui.screens.AlexaScreen
 import dev.bonygod.listacompra.mislistas.ui.screens.MisListasScreen
+import dev.bonygod.listacompra.notificaciones.ui.screens.NotificacionesScreen
 import org.koin.compose.koinInject
 
 @Composable
@@ -55,6 +56,9 @@ fun NavigationWrapper(snackbarHostState: SnackbarHostState) {
             }
             entry<Routes.Alexa> {
                 AlexaScreen()
+            }
+            entry<Routes.Notificaciones> {
+                NotificacionesScreen()
             }
         },
         transitionSpec = {

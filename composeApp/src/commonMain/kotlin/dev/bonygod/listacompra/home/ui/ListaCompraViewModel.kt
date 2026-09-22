@@ -9,6 +9,7 @@ import dev.bonygod.listacompra.core.CustomFailures.LoginFailure
 import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.navigation.Routes
+import dev.bonygod.listacompra.core.preferences.PreferenciasLocales
 import dev.bonygod.listacompra.home.domain.usecase.AddProductoUseCase
 import dev.bonygod.listacompra.home.domain.usecase.DeleteAllProductosUseCase
 import dev.bonygod.listacompra.home.domain.usecase.DeleteProductoUseCase
@@ -20,11 +21,10 @@ import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraEvent
 import dev.bonygod.listacompra.home.ui.composables.interactions.ListaCompraState
 import dev.bonygod.listacompra.home.ui.mapper.toUI
 import dev.bonygod.listacompra.home.ui.model.ListaCompraUI
-import dev.bonygod.listacompra.login.domain.usecase.AddSharedListUseCase
 import dev.bonygod.listacompra.login.domain.usecase.DeleteAccountUseCase
-import dev.bonygod.listacompra.login.domain.usecase.DeleteNotificationUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetNotificationsUseCase
 import dev.bonygod.listacompra.login.domain.usecase.GetUserUseCase
+import dev.bonygod.listacompra.login.domain.usecase.GuardarTokenPushUseCase
 import dev.bonygod.listacompra.login.domain.usecase.IsAnonymousUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LinkAccountWithEmailUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
@@ -32,6 +32,7 @@ import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UpdateNombreUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.GetListasUseCase
+import dev.bonygod.listacompra.notificaciones.PushNotifications
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,7 +47,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import listacompra.composeapp.generated.resources.Res
-import listacompra.composeapp.generated.resources.home_alert_error_accept_invitation_title
 import listacompra.composeapp.generated.resources.home_alert_error_add_product_title
 import listacompra.composeapp.generated.resources.home_alert_error_delete_account_title
 import listacompra.composeapp.generated.resources.home_alert_error_delete_list_title
@@ -60,6 +60,18 @@ import listacompra.composeapp.generated.resources.home_alert_share_rate_limit_me
 import org.jetbrains.compose.resources.getString
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
+
+/** Clave en PreferenciasLocales: por dispositivo, no por cuenta, porque el permiso de
+ *  notificaciones también lo es. Se marca tanto desde el diálogo propio como desde la
+ *  entrada del menú lateral, para no ofrecerlo dos veces. */
+private const val NOTIFICATIONS_OFFER_KEY = "notifications_permission_offered"
+
+/** Cuándo se envió la última invitación. En preferencias y no en memoria: era un campo
+ *  del ViewModel, así que bastaba con cerrar y reabrir la app para saltarse la espera.
+ *  El servidor aplica su propio límite, más corto, para quien llame al endpoint por
+ *  fuera de la app. */
+private const val ULTIMA_INVITACION_KEY = "ultima_invitacion_ms"
+private val INTERVALO_ENTRE_INVITACIONES = 2.minutes
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ListaCompraViewModel(
@@ -76,18 +88,17 @@ class ListaCompraViewModel(
     private val logoutUseCase: LogOutUseCase,
     private val getNotificationsUseCase: GetNotificationsUseCase,
     private val shareListaCompraUseCase: ShareListaCompraUseCase,
-    private val addSharedListUseCase: AddSharedListUseCase,
-    private val deleteNotificationUseCase: DeleteNotificationUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
     private val getListasUseCase: GetListasUseCase,
     private val linkAccountWithEmailUseCase: LinkAccountWithEmailUseCase,
     private val userLoginUseCase: UserLoginUseCase,
     private val updateNombreUseCase: UpdateNombreUseCase,
-    private val crashReporter: CrashReporter
+    private val guardarTokenPushUseCase: GuardarTokenPushUseCase,
+    private val crashReporter: CrashReporter,
+    private val preferenciasLocales: PreferenciasLocales
 ) : ViewModel() {
     private var notificationsJob: Job? = null
     private var productosJob: Job? = null
-    private var lastResetRequestTime: Long = 0L
     private val _state = MutableStateFlow(ListaCompraState())
     val state: StateFlow<ListaCompraState> = _state
 
@@ -140,7 +151,7 @@ class ListaCompraViewModel(
     }
 
                         // Actualiza el listaId para activar el flow compartido
-    private suspend fun loadUserDataSuspending() {
+    private suspend fun loadUserDataSuspending(ofrecerNotificaciones: Boolean = true) {
         try {
             getUserUseCase().fold(
                 onSuccess = { usuario ->
@@ -162,9 +173,11 @@ class ListaCompraViewModel(
                             val nombre = listas.firstOrNull()?.nombre ?: "Lista de la compra"
                             setState { setListaNombre(nombre) }
                             _currentListaId.value = listas.firstOrNull()?.id ?: usuario.listas.firstOrNull()
+                            if (_currentListaId.value == null) setState { setLoaded() }
                         },
                         onFailure = {
                             _currentListaId.value = usuario.listas.firstOrNull()
+                            if (_currentListaId.value == null) setState { setLoaded() }
                         }
                     )
 
@@ -180,6 +193,8 @@ class ListaCompraViewModel(
                         }
                     }
 
+                    maybeOfferNotificationsPermission(anonymous, ofrecerNotificaciones)
+
                     sharedState.showLoading(false)
                 },
                 onFailure = { error ->
@@ -189,19 +204,17 @@ class ListaCompraViewModel(
                         showErrorAlert(
                             errorTitle,
                             message = errorMessage
-                        )
-                        // Suscribirse al flow compartido de productos
-                        // Suscribirse al flow compartido de notificaciones
+                        ).setLoaded()
                     }
                     sharedState.showLoading(false)
                 }
             )
         } catch (e: Exception) {
             e.printStackTrace()
+            setState { setLoaded() }
             sharedState.showLoading(false)
         }
     }
-
 
     fun onEvent(event: ListaCompraEvent) {
         when (event) {
@@ -235,21 +248,24 @@ class ListaCompraViewModel(
             is ListaCompraEvent.ShowBottomSheet -> setState { showBottomSheet(event.show) }
             is ListaCompraEvent.UpdateNewProductText -> setState { updateNewProductText(event.text) }
             is ListaCompraEvent.AddProducto -> addProducto()
-            is ListaCompraEvent.OnMenuClick -> setState { showMenu() }
+            is ListaCompraEvent.OnMenuClick -> {
+                setState { showMenu() }
+                refreshNotificationsStatus()
+            }
             is ListaCompraEvent.OnLogoutClick -> logOut()
             is ListaCompraEvent.OnShareListClick -> onShareListClick()
             is ListaCompraEvent.DismissCustomDialog -> setState { showCustomDialog(false) }
             is ListaCompraEvent.ShareList -> shareList(event.email)
             is ListaCompraEvent.OnShareTextFieldChange -> setState { updateShareTextField(event.text) }
-            is ListaCompraEvent.ShowNotificationsBottomSheet -> setState { showNotificationBottomSheet(event.show) }
-            is ListaCompraEvent.OnAcceptSharedList -> acceptSharedList(event.listaId, event.listaNombre)
-            is ListaCompraEvent.OnCancelSharedList -> cancelSharedList(event.listaId)
             is ListaCompraEvent.OnDeleteAccountClick -> setState { showDeleteAccountDialog(true) }
             is ListaCompraEvent.DismissDeleteAccountDialog -> setState { showDeleteAccountDialog(false) }
             is ListaCompraEvent.OnDeleteAccountConfirm -> deleteAccount()
             is ListaCompraEvent.TogglePurchased -> togglePurchased(event.productId)
             is ListaCompraEvent.OnMisListasClick -> navigator.navigateTo(Routes.MisListas)
             is ListaCompraEvent.OnAlexaClick -> navigator.navigateTo(Routes.Alexa)
+            is ListaCompraEvent.OnNotificacionesClick -> onNotificacionesClick()
+            is ListaCompraEvent.OnNotificationsPermissionResult ->
+                onNotificationsPermissionResult(event.granted)
             is ListaCompraEvent.OnForceCrashClick -> crashReporter.forceCrash()
             is ListaCompraEvent.OnForceNonFatalClick -> crashReporter.recordException(
                 Exception("Non-fatal de prueba desde el menú lateral"),
@@ -293,6 +309,17 @@ class ListaCompraViewModel(
             is ListaCompraEvent.OnEditNombreClick -> setState { showEditNombreDialog(true) }
             is ListaCompraEvent.DismissEditNombreDialog -> setState { showEditNombreDialog(false) }
             is ListaCompraEvent.ConfirmEditNombre -> editNombre(event.nombre)
+
+            is ListaCompraEvent.OnNotificationsOfferAccept -> onNotificationsOfferAccept()
+            is ListaCompraEvent.OnNotificationsOfferDecline -> onNotificationsOfferDecline()
+            is ListaCompraEvent.OnNotificationsPermissionRequestedFromMenu ->
+                marcarNotificacionesOfrecidas()
+            is ListaCompraEvent.OnNotificationsStatusClick ->
+                setState { showNotificationsStatusDialog(true) }
+            is ListaCompraEvent.OnCloseNotificationsStatusDialog ->
+                setState { showNotificationsStatusDialog(false) }
+            is ListaCompraEvent.OnOpenNotificationsSettingsClick ->
+                setState { showNotificationsStatusDialog(false) }
         }
     }
 
@@ -320,6 +347,74 @@ class ListaCompraViewModel(
         }
     }
 
+    private fun onNotificationsPermissionResult(granted: Boolean) {
+        viewModelScope.launch {
+            setState { setNotificacionesActivadas(granted) }
+            if (granted) {
+                val token = PushNotifications.getToken()
+                if (token != null) {
+                    guardarTokenPushUseCase(token)
+                }
+            } else {
+                // Sustituye a la alerta de error de antes: mismo mensaje, pero con un botón
+                // que lleva a los ajustes en vez de dejar al usuario sin saber a dónde ir.
+                setState { showNotificationsStatusDialog(true) }
+            }
+        }
+    }
+
+    // Único sitio donde se refresca notificacionesActivadas aparte de OnNotificationsPermissionResult:
+    // el permiso se puede cambiar desde Ajustes, fuera de la app, y ese cambio no dispara
+    // ningún evento propio. Se comprueba al abrir el menú porque es el único sitio donde se ve.
+    private fun refreshNotificationsStatus() {
+        viewModelScope.launch {
+            val estabanActivadas = state.value.notificacionesActivadas
+            val activadas = PushNotifications.hasPermission()
+            setState { setNotificacionesActivadas(activadas) }
+            // Pasaron de desactivadas a activadas fuera de la app: sin guardar el token
+            // aquí, no llegaría a fcmTokens hasta el siguiente arranque.
+            if (!estabanActivadas && activadas) {
+                val token = PushNotifications.getToken()
+                if (token != null) {
+                    guardarTokenPushUseCase(token)
+                }
+            }
+        }
+    }
+
+    // La sesión anónima ya se ha cargado en este punto de loadUserDataSuspending; se pasa
+    // en vez de leerla de state.value porque el setState que la fija puede no haberse
+    // aplicado aún cuando esta función se invoca. ofrecerNotificaciones=false es para el
+    // arranque que sigue a vincular cuenta desde "compartir": ese usuario está en mitad
+    // de compartir, no recibiendo, y ya le sale otro diálogo justo después.
+    private suspend fun maybeOfferNotificationsPermission(anonymous: Boolean, ofrecerNotificaciones: Boolean) {
+        if (!ofrecerNotificaciones) return
+        if (anonymous) return
+        if (PushNotifications.hasPermission()) return
+        if (preferenciasLocales.getBoolean(NOTIFICATIONS_OFFER_KEY, false)) return
+        // No apilar sobre otro diálogo de Home: si hay alguno abierto, se queda sin marcar
+        // como ofrecido y se reintenta en el siguiente arranque.
+        if (state.value.hasAnyDialogAbierto()) return
+        setState { showNotificationsOfferDialog(true) }
+    }
+
+    // El requester del diálogo del sistema es @Composable y vive en HomeScreen, junto con
+    // el diálogo propio; el "Sí, avisadme" de HomeScreen llama a este evento y directamente
+    // al requester en el mismo lambda, así que aquí solo queda marcar y cerrar.
+    private fun onNotificationsOfferAccept() {
+        setState { showNotificationsOfferDialog(false) }
+        marcarNotificacionesOfrecidas()
+    }
+
+    private fun onNotificationsOfferDecline() {
+        setState { showNotificationsOfferDialog(false) }
+        marcarNotificacionesOfrecidas()
+    }
+
+    private fun marcarNotificacionesOfrecidas() {
+        preferenciasLocales.setBoolean(NOTIFICATIONS_OFFER_KEY, true)
+    }
+
     private fun onShareListClick() {
         if (state.value.isAnonymous) {
             setState { showShareRequiresAccountDialog(true) }
@@ -339,11 +434,15 @@ class ListaCompraViewModel(
                     setState { showLinkAccountDialog(false) }
                     setState { clearLinkFields() }
                     stopNotificationsListener()
-                    loadUserDataSuspending()
                     // Solo abre el diálogo de compartir si se vino de ahí. Desde la
                     // pantalla de Alexa el usuario no ha pedido compartir nada, y le
                     // salía de la nada nada más crear la cuenta.
-                    if (state.value.linkAccountOrigin == LinkAccountOrigin.SHARE) {
+                    val vieneDeCompartir = state.value.linkAccountOrigin == LinkAccountOrigin.SHARE
+                    // Si viene de compartir, no se ofrece el permiso en esta carga: se
+                    // apilaría con el diálogo de compartir que se abre justo debajo. Al no
+                    // marcarse como ofrecido, sale en el siguiente arranque.
+                    loadUserDataSuspending(ofrecerNotificaciones = !vieneDeCompartir)
+                    if (vieneDeCompartir) {
                         setState { showCustomDialog(true) }
                     }
                 },
@@ -375,11 +474,12 @@ class ListaCompraViewModel(
                 onSuccess = {
                     setState { showLinkAccountDialog(false) }
                     setState { clearLinkFields() }
-                    loadUserDataSuspending()
+                    val vieneDeCompartir = state.value.linkAccountOrigin == LinkAccountOrigin.SHARE
+                    loadUserDataSuspending(ofrecerNotificaciones = !vieneDeCompartir)
                     // Solo abre el diálogo de compartir si se vino de ahí. Desde la
                     // pantalla de Alexa el usuario no ha pedido compartir nada, y le
                     // salía de la nada nada más crear la cuenta.
-                    if (state.value.linkAccountOrigin == LinkAccountOrigin.SHARE) {
+                    if (vieneDeCompartir) {
                         setState { showCustomDialog(true) }
                     }
                 },
@@ -424,40 +524,16 @@ class ListaCompraViewModel(
         }
     }
 
-    private fun cancelSharedList(listaId: String) {
-        viewModelScope.launch {
-            deleteNotificationUseCase(listaId)
-            setState { showNotificationBottomSheet(false) }
-        }
-    }
-
-    private fun acceptSharedList(listaId: String, listaNombre: String) {
-        viewModelScope.launch {
-            addSharedListUseCase(listaId, listaNombre).fold(
-                onSuccess = {
-                    deleteNotificationUseCase(listaId)
-                    setState { showNotificationBottomSheet(false) }
-                    // Recarga todos los datos del usuario para que los permisos de Firestore
-                    // estén propagados antes de suscribirse a la nueva lista
-                    loadUserData()
-                },
-                onFailure = { error ->
-                    val errorMessage = (error as? Exception)?.message ?: "Error desconocido"
-                    val errorTitle = getString(Res.string.home_alert_error_accept_invitation_title)
-                    setState {
-                        showErrorAlert(
-                            errorTitle,
-                            message = errorMessage
-                        )
-                    }
-                }
-            )
+    private fun onNotificacionesClick() {
+        if (!isAnonymousUserUseCase()) {
+            navigator.navigateTo(Routes.Notificaciones)
         }
     }
 
     private fun shareList(rawEmail: String) {
         val currentTime = Clock.System.now().toEpochMilliseconds()
-        if (currentTime - lastResetRequestTime < 5.minutes.inWholeMilliseconds) {
+        val ultimaInvitacion = preferenciasLocales.getLong(ULTIMA_INVITACION_KEY, 0L)
+        if (currentTime - ultimaInvitacion < INTERVALO_ENTRE_INVITACIONES.inWholeMilliseconds) {
             viewModelScope.launch {
                 setEffect(ListaCompraEffect.ShowError(getString(Res.string.home_alert_share_rate_limit_message)))
             }
@@ -468,8 +544,10 @@ class ListaCompraViewModel(
         viewModelScope.launch {
             shareListaCompraUseCase(user.nombre, user.listaId, email).fold(
                 onSuccess = {
-                    // Actualizar el timestamp después de compartir exitosamente
-                    lastResetRequestTime = Clock.System.now().toEpochMilliseconds()
+                    preferenciasLocales.setLong(
+                        ULTIMA_INVITACION_KEY,
+                        Clock.System.now().toEpochMilliseconds()
+                    )
                     setState { showCustomDialog(false) }
                     setState {
                         showSuccessAlert(

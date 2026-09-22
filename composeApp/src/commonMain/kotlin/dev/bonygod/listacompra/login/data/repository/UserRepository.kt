@@ -50,8 +50,18 @@ class UserRepository(
         }
     }
 
-    suspend fun logOut() {
-        usersDS.logOut()
+    suspend fun logOut(pushToken: String?) {
+        usersDS.logOut(pushToken)
+    }
+
+    suspend fun guardarTokenPush(token: String): Result<Unit> {
+        return try {
+            usersDS.guardarTokenPush(token)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.guardarTokenPush")
+            Result.failure(e.toUserFailure())
+        }
     }
 
     suspend fun getActualUser(): Result<Usuario> {

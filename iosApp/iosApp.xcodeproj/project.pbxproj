@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -203,7 +203,7 @@
 				1383794C2F0B177900B9112C /* XCRemoteSwiftPackageReference "googlesignin-ios" */,
 				13FAEE412F3FC10E007F2243 /* XCRemoteSwiftPackageReference "SignInKMP" */,
 				84C7FC7FE1A058E25C6DEA59 /* XCRemoteSwiftPackageReference "CrashlyticsKMP" */,
-				137353F1305D746B008C08FB /* XCRemoteSwiftPackageReference "AdMobKMP" */,
+				1310C8963061D2E6009CA40F /* XCRemoteSwiftPackageReference "AdMobKMP" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -500,6 +500,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		1310C8963061D2E6009CA40F /* XCRemoteSwiftPackageReference "AdMobKMP" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/BonyGoD/AdMobKMP.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
 		1335CDCF2F0A01A500F6E000 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";

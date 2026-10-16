@@ -8,6 +8,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dev.bonygod.listacompra.core.navigation.PendingNotificationAction
+import dev.bonygod.listacompra.core.review.registrarActivityParaResena
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.initialize
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -37,10 +38,16 @@ class MainActivity : ComponentActivity(), KoinComponent {
         configureCrashlytics()
 
         initPlatform(this)
+        registrarActivityParaResena(this)
         handleNotificationIntent(intent)
         setContent {
             App()
         }
+    }
+
+    override fun onDestroy() {
+        registrarActivityParaResena(null)
+        super.onDestroy()
     }
 
     override fun onNewIntent(intent: Intent) {

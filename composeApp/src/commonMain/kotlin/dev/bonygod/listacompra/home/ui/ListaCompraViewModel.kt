@@ -10,6 +10,8 @@ import dev.bonygod.listacompra.core.analytics.AnalyticsService
 import dev.bonygod.listacompra.core.navigation.Navigator
 import dev.bonygod.listacompra.core.navigation.Routes
 import dev.bonygod.listacompra.core.preferences.PreferenciasLocales
+import dev.bonygod.listacompra.core.review.requestAppReview
+import dev.bonygod.listacompra.getPlatform
 import dev.bonygod.listacompra.home.domain.usecase.AddProductoUseCase
 import dev.bonygod.listacompra.home.domain.usecase.DeleteAllProductosUseCase
 import dev.bonygod.listacompra.home.domain.usecase.DeleteProductoUseCase
@@ -28,11 +30,14 @@ import dev.bonygod.listacompra.login.domain.usecase.GuardarTokenPushUseCase
 import dev.bonygod.listacompra.login.domain.usecase.IsAnonymousUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LinkAccountWithEmailUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
+import dev.bonygod.listacompra.login.domain.usecase.MarcarResenaPedidaUseCase
+import dev.bonygod.listacompra.login.domain.usecase.RegistrarCompraCompletadaUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UpdateNombreUseCase
 import dev.bonygod.listacompra.login.domain.usecase.UserLoginUseCase
 import dev.bonygod.listacompra.mislistas.domain.usecase.GetListasUseCase
 import dev.bonygod.listacompra.notificaciones.PushNotifications
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -95,7 +100,9 @@ class ListaCompraViewModel(
     private val updateNombreUseCase: UpdateNombreUseCase,
     private val guardarTokenPushUseCase: GuardarTokenPushUseCase,
     private val crashReporter: CrashReporter,
-    private val preferenciasLocales: PreferenciasLocales
+    private val preferenciasLocales: PreferenciasLocales,
+    private val registrarCompraCompletadaUseCase: RegistrarCompraCompletadaUseCase,
+    private val marcarResenaPedidaUseCase: MarcarResenaPedidaUseCase
 ) : ViewModel() {
     private var notificationsJob: Job? = null
     private var productosJob: Job? = null
@@ -701,6 +708,11 @@ class ListaCompraViewModel(
     private fun togglePurchased(productId: String) {
         val producto = _state.value.listaCompraUI.productos.find { it.id == productId } ?: return
         val newIsPurchased = !producto.isPurchased
+        // Se mira antes del toggle: marcar (no desmarcar) un producto cuando es el único
+        // pendiente es la transición "había pendientes -> ninguno". Una lista que ya
+        // estaba a cero no pasa por aquí porque no hay nada que marcar.
+        val completaLaCompra = newIsPurchased &&
+            _state.value.listaCompraUI.productos.none { it.id != productId && !it.isPurchased }
         setState { togglePurchased(productId) }
         viewModelScope.launch {
             try {
@@ -712,6 +724,8 @@ class ListaCompraViewModel(
                     producto.isImportant,
                     newIsPurchased
                 )
+                // Solo con el toggle ya guardado: si falla y se revierte, no hubo compra.
+                if (completaLaCompra) registrarCompraCompletada()
             } catch (e: Exception) {
                 e.printStackTrace()
                 crashReporter.recordException(e, "ListaCompraViewModel.togglePurchased")
@@ -724,6 +738,23 @@ class ListaCompraViewModel(
                     )
                 }
             }
+        }
+    }
+
+    /** Cosmético: nada de aquí debe afectar al toggle ni a la pantalla, así que no propaga. */
+    private suspend fun registrarCompraCompletada() {
+        try {
+            val appVersion = getPlatform().appVersion ?: return
+            val contadores = registrarCompraCompletadaUseCase().getOrNull() ?: return
+            if (!contadores.debePedirResena(appVersion)) return
+            // Se marca antes y sin esperar al resultado: la API no dice si llegó a
+            // mostrarse, y reintentar "porque no salió" es lo que quema la cuota.
+            marcarResenaPedidaUseCase(appVersion, contadores.comprasCompletadas)
+            requestAppReview()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "ListaCompraViewModel.registrarCompraCompletada")
         }
     }
 

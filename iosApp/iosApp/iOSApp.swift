@@ -2,6 +2,7 @@ import SwiftUI
 import Firebase
 import FirebaseMessaging
 import UserNotifications
+import StoreKit
 import GoogleSignIn
 import SignInKMPSwift
 import AdMobKMPSwift
@@ -30,6 +31,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self
         setupPushNotificationsBridge()
+        setupAppReviewBridge()
 
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             switch settings.authorizationStatus {
@@ -106,6 +108,21 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                 self.hasPendingNotificationTap = false
                 self.publishNotificationTap()
             }
+        }
+    }
+
+    // requestReview() a secas está obsoleto desde iOS 14; la variante con escena es la que
+    // sirve con el mínimo del proyecto (iOS 15). Kotlin solo avisa; la escena se busca aquí.
+    private func setupAppReviewBridge() {
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("AppReviewRequested"),
+            object: nil,
+            queue: .main
+        ) { _ in
+            let scene = UIApplication.shared.connectedScenes
+                .first { $0.activationState == .foregroundActive } as? UIWindowScene
+            guard let scene = scene else { return }
+            SKStoreReviewController.requestReview(in: scene)
         }
     }
 

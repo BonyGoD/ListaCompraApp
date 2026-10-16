@@ -5,6 +5,7 @@ import dev.bonygod.listacompra.core.CustomFailures.LoginFailure
 import dev.bonygod.listacompra.core.CustomFailures.toUserFailure
 import dev.bonygod.listacompra.login.data.datasource.UsersDataSource
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
+import dev.bonygod.listacompra.login.domain.model.ContadoresResena
 import dev.bonygod.listacompra.login.domain.model.Notifications
 import dev.bonygod.listacompra.login.domain.model.Usuario
 import dev.bonygod.listacompra.mislistas.domain.model.AlexaConfig
@@ -218,6 +219,25 @@ class UserRepository(
             Result.success(Unit)
         } catch (e: Exception) {
             crashReporter.recordException(e, "UserRepository.setListaAlexa")
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun registrarCompraCompletada(): Result<ContadoresResena> {
+        return try {
+            Result.success(usersDS.registrarCompraCompletada())
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.registrarCompraCompletada")
+            Result.failure(e.toUserFailure())
+        }
+    }
+
+    suspend fun marcarResenaPedida(version: String, compras: Int): Result<Unit> {
+        return try {
+            usersDS.marcarResenaPedida(version, compras)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashReporter.recordException(e, "UserRepository.marcarResenaPedida")
             Result.failure(e.toUserFailure())
         }
     }

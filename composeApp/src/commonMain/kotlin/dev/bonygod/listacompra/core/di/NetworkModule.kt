@@ -33,6 +33,8 @@ import dev.bonygod.listacompra.login.domain.usecase.GuardarTokenPushUseCase
 import dev.bonygod.listacompra.login.domain.usecase.IsAnonymousUserUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LinkAccountWithEmailUseCase
 import dev.bonygod.listacompra.login.domain.usecase.LogOutUseCase
+import dev.bonygod.listacompra.login.domain.usecase.MarcarResenaPedidaUseCase
+import dev.bonygod.listacompra.login.domain.usecase.RegistrarCompraCompletadaUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ResetPasswordUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ResolveSessionUseCase
 import dev.bonygod.listacompra.login.domain.usecase.ShareListaCompraUseCase
@@ -122,6 +124,8 @@ val dataModule = module {
     single { IsAnonymousUserUseCase(get()) }
     single { LinkAccountWithEmailUseCase(get()) }
     single { UpdateNombreUseCase(get()) }
+    single { RegistrarCompraCompletadaUseCase(get()) }
+    single { MarcarResenaPedidaUseCase(get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

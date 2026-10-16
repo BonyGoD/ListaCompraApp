@@ -4,6 +4,7 @@ import dev.bonygod.listacompra.getPlatform
 import dev.bonygod.listacompra.login.data.model.NotificationsReponse
 import dev.bonygod.listacompra.login.data.model.UserResponse
 import dev.bonygod.listacompra.login.domain.mapper.toDomain
+import dev.bonygod.listacompra.login.domain.model.ContadoresResena
 import dev.bonygod.listacompra.login.domain.model.Notifications
 import dev.bonygod.listacompra.mislistas.domain.model.AlexaConfig
 import dev.bonygod.listacompra.mislistas.domain.model.ListaInfo
@@ -11,6 +12,7 @@ import dev.gitlive.firebase.auth.EmailAuthProvider
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.firestore.FieldPath
+import dev.gitlive.firebase.firestore.DocumentSnapshot
 import dev.gitlive.firebase.firestore.FieldValue
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.firestore.Timestamp
@@ -573,6 +575,43 @@ class UsersDataSource(
         if (!currentListas.contains(listaId)) return
         firebase.collection("usuarios").document(userUID).set(
             data = mapOf("listaAlexa" to listaId),
+            merge = true
+        )
+    }
+
+    // Sin tipo y con `as?`, como el resto de campos: no depende de cómo decodifique GitLive
+    // un entero de 64 bits y acepta Int, Long o Double en las dos plataformas.
+    private fun DocumentSnapshot.intOrZero(field: String): Int =
+        (get(field) as? Number)?.toInt() ?: 0
+
+    /**
+     * Suma una compra completada y devuelve los contadores ya actualizados. Lee y escribe
+     * en el mismo método para que el llamador evalúe la condición con el valor real del
+     * servidor y no con una copia que pudo quedarse vieja en el estado de la pantalla.
+     * Los usuarios anteriores a estos campos no los tienen: arrancan en cero.
+     */
+    suspend fun registrarCompraCompletada(): ContadoresResena {
+        val userUID = auth.currentUser?.uid.orEmpty()
+        val userDoc = firebase.collection("usuarios").document(userUID).get()
+        val compras = userDoc.intOrZero("comprasCompletadas") + 1
+        firebase.collection("usuarios").document(userUID).set(
+            data = mapOf("comprasCompletadas" to compras),
+            merge = true
+        )
+        return ContadoresResena(
+            comprasCompletadas = compras,
+            resenaPedidaVersion = userDoc.get("resenaPedidaVersion") as? String ?: "",
+            resenaPedidaCompras = userDoc.intOrZero("resenaPedidaCompras")
+        )
+    }
+
+    suspend fun marcarResenaPedida(version: String, compras: Int) {
+        val userUID = auth.currentUser?.uid.orEmpty()
+        firebase.collection("usuarios").document(userUID).set(
+            data = mapOf(
+                "resenaPedidaVersion" to version,
+                "resenaPedidaCompras" to compras
+            ),
             merge = true
         )
     }

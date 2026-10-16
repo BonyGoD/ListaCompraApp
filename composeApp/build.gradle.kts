@@ -103,6 +103,10 @@ kotlin {
             // AdMob: play-services-ads ya no se declara aquí. AdMobKMP la trae
             // como `api` en su androidMain, así que llega transitiva.
 
+            // Valoración en Play
+            implementation(libs.play.review)
+            implementation(libs.play.review.ktx)
+
             implementation(libs.ktor.client.okhttp)
         }
 

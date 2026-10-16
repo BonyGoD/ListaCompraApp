@@ -14,6 +14,9 @@ signin-kmp = "2.0.1"
 crashlytics-kmp = "1.0.0"
 admob-kmp = "1.0.0"
 
+#Play In-App Review
+play-review = "2.0.2"
+
 #Navigation3
 navigation3-multiplatform-adaptive = "1.3.0-beta02"
 navigation3-multiplatform-lifecycle = "2.11.0"
@@ -56,6 +59,10 @@ jetbrains-lifecycle-viewmodelNavigation3 = { module = "org.jetbrains.androidx.li
 bonygod-signinkmp = { module = "com.github.BonyGoD.SignInKMP:signin-kmp", version.ref = "signin-kmp" }
 bonygod-crashlyticskmp = { module = "com.github.BonyGoD.CrashlyticsKMP:crashlytics-kmp", version.ref = "crashlytics-kmp" }
 bonygod-admobkmp = { module = "com.github.BonyGoD.AdMobKMP:admob-kmp", version.ref = "admob-kmp" }
+
+#Play In-App Review
+play-review = { module = "com.google.android.play:review", version.ref = "play-review" }
+play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "play-review" }
 
 #Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }

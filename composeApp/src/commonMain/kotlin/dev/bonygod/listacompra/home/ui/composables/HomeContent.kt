@@ -143,7 +143,11 @@ fun HomeContent(
                     }
                 }
                 LazyColumn(modifier = Modifier.padding(10.dp)) {
-                    items(data.productos) { producto ->
+                    // Con key: la lista llega de un listener de Firestore y cambia sola
+                    // -otro dispositivo, Alexa, o el guardado propio-. Sin identidad
+                    // estable, Compose reutiliza las entradas por posición y puede
+                    // destruir justo la que tiene el campo de edición con el foco.
+                    items(data.productos, key = { it.id }) { producto ->
                         if (state.editingProductId == producto.id) {
                             TextFieldComponent(
                                 onEvent = onEvent,

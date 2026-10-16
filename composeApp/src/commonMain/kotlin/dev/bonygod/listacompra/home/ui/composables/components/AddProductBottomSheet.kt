@@ -15,6 +15,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,9 +32,16 @@ fun AddProductBottomSheet(
     onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
+    val focusManager = LocalFocusManager.current
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        // El campo de dentro puede quedarse con el foco y el teclado abierto cuando el
+        // panel se cierra. Soltarlo antes evita el mismo fallo que el campo de edición
+        // de la lista: el sistema buscando una vista que ya no está en el árbol.
+        onDismissRequest = {
+            focusManager.clearFocus()
+            onDismiss()
+        },
         sheetState = sheetState
     ) {
         Column(
@@ -57,7 +65,10 @@ fun AddProductBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { onEvent(ListaCompraEvent.AddProducto) },
+                onClick = {
+                    focusManager.clearFocus()
+                    onEvent(ListaCompraEvent.AddProducto)
+                },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = state.newProductText.text.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(

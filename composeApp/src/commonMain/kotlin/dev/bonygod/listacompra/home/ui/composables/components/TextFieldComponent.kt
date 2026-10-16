@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,9 +30,19 @@ fun TextFieldComponent(
     state: ListaCompraState,
 ) {
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
+    }
+
+    // Este campo se pide el foco al aparecer y desaparece en cuanto se guarda o se
+    // cancela. Quitar del árbol una vista con el foco y el teclado abierto es lo que
+    // tumbaba la app en 1.5.0: el sistema sigue apuntando a ella para desplazarla y ya
+    // no está. Soltar el foco antes de que se vaya corta el problema de raíz.
+    val terminarEdicion: (ListaCompraEvent) -> Unit = { evento ->
+        focusManager.clearFocus()
+        onEvent(evento)
     }
 
     Row(
@@ -61,7 +72,7 @@ fun TextFieldComponent(
         Text(
             text = "✓",
             modifier = Modifier
-                .clickable { onEvent(ListaCompraEvent.SaveEditedProduct) },
+                .clickable { terminarEdicion(ListaCompraEvent.SaveEditedProduct) },
             fontSize = 24.sp,
             color = Color(0xFF00913F)
         )
@@ -69,7 +80,7 @@ fun TextFieldComponent(
         Text(
             text = "✕",
             modifier = Modifier
-                .clickable { onEvent(ListaCompraEvent.CancelEditing) },
+                .clickable { terminarEdicion(ListaCompraEvent.CancelEditing) },
             fontSize = 24.sp,
             color = Color.Red
         )
